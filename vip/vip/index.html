@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+		<meta name="viewport"
+			content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+		<title>视频解析-凉风vip视频解析</title>
+		<meta name="keywords" content="解析在线,腾讯vip解析,爱奇艺vip解析,优酷vip解析,芒果vip解析,乐视vip解析,vip在线解析,vip在线解析,视频解析">
+		<meta name="description"
+			content="vip视频解析，优酷vip解析，爱奇艺vip解析，腾讯vip解析，乐视vip解析，全网影视vip，芒果vip,万能vip解析,全网vip视频解析免费就在小七vip视频解析">
+
+		<link rel="shortcut icon" href="https://www.peng3.com/vip/favicon.ico">
+		<link rel="bookmark" href="https://www.peng3.com/vip/favicon.ico">
+
+		<link rel="stylesheet" type="text/css" href="css/index.css">
+
+		<script type="f638c4cdde62e22efad0242d-text/javascript" src="js/vue.js"></script>
+		<script type="f638c4cdde62e22efad0242d-text/javascript" src="js/index.js"></script>
+		<style>
+			#app {
+				font-family: "Microsoft YaHei"
+			}
+
+			@media screen and (max-width: 768px) {
+				#app {
+					margin-left: 5px !important;
+					margin-right: 5px !important;
+				}
+
+				#wap {
+					display: none;
+				}
+
+				iframe {
+					height: 200px !important;
+				}
+
+				.el-select {
+					width: 100% !important;
+				}
+
+				.el-input {
+					width: 100% !important;
+					margin-top: 10px;
+				}
+
+				.el-button {
+					width: 100% !important;
+					margin-top: 10px;
+				}
+			}
+
+			.copy {
+				margin-top: 10px;
+				font-size: 12px;
+				color: #CBC7C7;
+			}
+
+			.copy a {
+				color: #CBC7C7;
+			}
+		</style>
+	</head>
+	<script src="../cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js"
+		data-cf-settings="f638c4cdde62e22efad0242d-|49"></script>
+	<body onload="run();">
+		<script type="f638c4cdde62e22efad0242d-text/javascript">
+			var url = window.location.href;
+		</script>
+		<div id="app" style="margin-left: 150px; margin-right: 150px; margin-bottom: 25px;">
+			<el-backtop></el-backtop>
+			<div class="header" style="margin: 5px 0;">
+				<a href="">
+					<el-button type="success" icon="el-icon-s-home">凉风视频解析</el-button>
+				</a>
+				<el-link style="font-size: 15px; margin-right: 25px;" type="primary" href="http://oovj28pcn7ao.ngrok.xiaomiqiu123.top/sxxaaa/index.html" target="_blank">喜淘网工具箱
+				</el-link>
+				<el-link style="font-size: 15px; margin-right: 25px;" type="primary" href="../images/zfb.jpg"
+					target="_blank">支付宝红包</el-link>
+			</div>
+
+			<div class="main" style="margin: 10px 0;">
+				<div class="jx" style="margin: 10px 0px;">
+					<template>
+						<el-select style="width: 15%;" v-model="value" placeholder="选择解析线路">
+							<el-option v-for="item in options" :key="item.value" :label="item.label"
+								:value="item.value">
+							</el-option>
+						</el-select>
+					</template>
+					<el-input style="width: 60%;" prefix-icon="el-icon-paperclip"
+						placeholder="输入视频链接，点击解析播放，支持腾讯优酷爱奇艺等平台测试" v-model="input" clearable="" id="url">
+					</el-input>
+					<el-button style="width: 11%;" type="primary" icon="el-icon-caret-right" @click="play">解析播放
+					</el-button>
+				</div>
+				<div class="tip" style="margin: 10px 0px;">
+					<template>
+						<el-alert title="如果不能正常播放，可以切换解析线路。部分手机线路播放视频可能自带广告，请把浏览器UA标识改成PC或者电脑版！" type="" center=""
+							show-icon="">
+						</el-alert>
+					</template>
+				</div>
+				<div class="tvlogo" style="margin: 20px 0px; text-align: center;">
+					<p style="margin-bottom: 10px; color: rgb(85, 85, 85); font-size: 16px;">支持平台</p>
+					 <a href="https://vip.youku.com/" target="_blank" title="优酷会员中心">
+						<div class="el-image" style="width: 85px; margin: 8px;"><img src="images/youku.png"
+								class="el-image__inner">
+							<!---->
+						</div>
+					</a> <a href="https://vip.iqiyi.com/" target="_blank" title="爱奇艺会员">
+						<div class="el-image" style="width: 85px; margin: 8px;"><img src="images/iqiyi.png"
+								class="el-image__inner">
+							<!---->
+						</div>
+					</a> <a href="https://film.qq.com/" target="_blank" title="腾讯会员中心">
+						<div class="el-image" style="width: 85px; margin: 8px;"><img src="images/vqq.png"
+								class="el-image__inner">
+							<!---->
+						</div>
+					</a> <a href="https://www.bilibili.com/" target="_blank" title="哔哩哔哩">
+						<div class="el-image" style="width: 85px; margin: 8px;"><img src="images/bilibili.png"
+								class="el-image__inner">
+							<!---->
+						</div>
+					</a> <a href="https://www.mgtv.com/vip/" target="_blank" title="芒果会员中心">
+						<div class="el-image" style="width: 85px; margin: 8px;"><img src="images/mgtv.png"
+								class="el-image__inner">
+							<!---->
+						</div>
+					</a> <a href="https://www.pptv.com/" target="_blank" title="PPTV聚力">
+						<div class="el-image" style="width: 85px; margin: 8px;"><img src="images/pptv.png"
+								class="el-image__inner">
+							<!---->
+						</div>
+					</a> <a href="https://yuanxian.le.com/" target="_blank" title="乐视会员中心">
+						<div class="el-image" style="width: 85px; margin: 8px;"><img src="images/le.png"
+								class="el-image__inner">
+							<!---->
+						</div>
+					</a> <a href="https://film.sohu.com/" target="_blank" title="搜狐视频">
+						<div class="el-image" style="width: 85px; margin: 8px;"><img src="images/sohu.png"
+								class="el-image__inner">
+							<!---->
+						</div>
+					</a>
+				</div>
+			</div>
+		</div>
+		<script type="f638c4cdde62e22efad0242d-text/javascript">
+			new Vue({
+				data() {
+					return {
+						input: '',
+						reward: false,
+						centerDialogVisible: false,
+						options: [{
+								value: 'https://jx.jsonplayer.com/player/?url=',
+								label: '综合/B站(推荐)'
+							}, {
+								value: 'https://im1907.top/?jx=',
+								label: '纯净/B站'
+							}, {
+								value: 'https://jx.aidouer.net/?url=',
+								label: '爱豆'
+							}, {
+								value: 'https://jx.xmflv.com/?url=',
+								label: '虾米(备用)'
+							}, {
+								value: 'https://okjx.cc/?url=',
+								label: 'OK解析(备用)'
+							}, {
+								value: 'https://www.yemu.xyz/?url=',
+								label: '夜幕(备用)'
+							}, {
+								value: 'https://jx.m3u8.tv/jiexi/?url=',
+								label: 'M3U8.TV(备用)'
+							}, {
+								value: 'https://jx.blbo.cc:4433/?url=',
+								label: '人人迷(备用)'
+							},
+							{
+								value: 'https://jx.blbo.cc:4433/?url=',
+								label: '全民(备用)'
+							},
+							{
+								value: 'https://jx.blbo.cc:4433/?url=',
+								label: '全民(备用)'
+							},
+							{
+								value: 'https://jx.nnxv.cn/tv.php?url=',
+								label: '七哥'
+							},
+							{
+								value: 'https://api.qianqi.net/vip/?url=',
+								label: '冰豆'
+							},
+							{
+								value: 'https://123.1dior.cn/?url=',
+								label: '迪奥'
+							},
+							{
+								value: 'https://www.ckplayer.vip/jiexi/?url=',
+								label: 'CK'
+							},
+							{
+								value: 'https://www.ckmov.vip/api.php?url=',
+								label: 'ckmov'
+							},
+							{
+								value: 'https://jx.playerjy.com/?url=',
+								label: 'playerjy/B站'
+							},
+							{
+								value: 'https://ckmov.ccyjjd.com/ckmov/?url=',
+								label: 'ccyjjd'
+							},
+							{
+								value: 'https://www.ckmov.com/?url=',
+								label: '诺诺'
+							},
+							{
+								value: 'https://www.h8jx.com/jiexi.php?url=',
+								label: 'H8'
+							},
+							{
+								value: 'https://vip.bljiex.com/?v=',
+								label: 'BL'
+							},
+							{
+								value: 'https://api.jiexi.la/?url=',
+								label: '解析la'
+							},
+							{
+								value: 'https://jiexi.janan.net/jiexi/?url=',
+								label: 'MUTV'
+							},
+							{
+								value: 'https://www.mtosz.com/m3u8.php?url=',
+								label: 'MAO'
+							},
+							{
+								value: 'https://vip.laobandq.com/jiexi.php?url=',
+								label: '老板'
+							},
+							{
+								value: 'https://www.pangujiexi.cc/jiexi.php?url=',
+								label: '盘古'
+							},
+							{
+								value: 'https://www.gai4.com/?url=',
+								label: '盖世'
+							},
+							{
+								value: 'https://go.yh0523.cn/y.cy?url=',
+								label: '0523'
+							},
+							{
+								value: 'https://www.1717yun.com/jx/ty.php?url=',
+								label: '17云'
+							},
+							{
+								value: 'https://jx.4kdv.com/?url=',
+								label: '4K'
+							},
+							{
+								value: 'https://www.8090g.cn/?url=',
+								label: '8090'
+							},
+							{
+								value: 'https://www.nxflv.com/?url=',
+								label: '诺讯'
+							},
+							{
+								value: 'https://jx.dj6u.com/?url=',
+								label: '听乐'
+							},
+							{
+								value: 'https://jx.000180.top/jx/?url=',
+								label: '180'
+							}
+						],
+						value: ''
+					}
+				},
+
+				methods: {
+					play() {
+						var urlv = document.getElementById("url").value;
+						if (urlv == "") {
+							this.$message.error({
+								message: '视频链接不能为空，否则无法解析播放',
+								center: true
+							});
+						} else {
+							window.location.href = this.value + urlv;
+						}
+					}
+				},
+			}).$mount('#app')
+
+			var banners = ["/images/waimai/mtelmhb.png", "/images/2164175761.gif"];
+			var url = ["/images/elme.jpg", "https://wpa.qq.com/msgrd?v=3&uin=2164175761&site=qq&menu=yes"];
+			var counter = 0;
+
+			function run() {
+				setInterval(cycle, 5000); //重复运行cycle函数，周期1000ms
+			}
+
+			function cycle() {
+				counter++;
+				if (counter == banners.length)
+					counter = 0;
+				document.getElementById("hfgg").src = banners[counter];
+				document.getElementById("ggurl").href = url[counter];
+			}
+		</script>
+		<div class="copy">
+			<center>
+				<th>VIP视频解析说明</th>
+				<h3>操作指南</h3>
+				<p>第一步进入各大视频网站，找到想要观看的VIP视频(例如：爱奇艺、优酷、乐视、芒果、搜狐、腾讯),然后复制链接</p>
+				<p>第二步将复制的链接粘贴到本站播放地址，并点击开始解析</p>
+				<p>第三步等待解析完成，即可免费观看VIP视频</p>
+				<p>第四步注意事项：全网VIP电影免费看，若遇到不能播放，确保视频地址无误后，请更换播放引擎多点击几次“开始解析”</p>
+				<ul>
+					<p>本站不提供、不存储、不传播任何视频资源，一切资源来源于互联网开源接口，仅供测试和学习交流，如有违规请联系我们</p>
+					<p>想要长期享受此福利的朋友请立即收藏我们的网站!!</p>
+				</ul>
+			</center>
+		</div>
+		<script data-cfasync="false" src="../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+		<script src="../ads/debug.js" type="f638c4cdde62e22efad0242d-text/javascript"></script>
+		<center>
+			<div style="display:none">
+				<script src="../tj.js" type="f638c4cdde62e22efad0242d-text/javascript"></script>
+			</div>
+			<script src="../cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js"
+				data-cf-settings="f638c4cdde62e22efad0242d-|49" defer=""></script>
+			<script>
+				(function() {
+					var js =
+						"window['__CF$cv$params']={r:'77d7da0e9f160513',m:'YHLEV9IzOAZ2n4YYWK4ieutQzbB2RuAPYCXiKA1TUFA-1671701562-0-AXD/MN3YXI1WV0bN5rcr+Dx+TN6mGo6FHjJo6dAGBrZzHaHlDixXcAE9gw5McY16UtpdiNmOlsNW9W2A2EzQSTd2BCagfRyHuXh0bVMlTy885XccQA+zeGb+Fjs3wRkBmA==',s:[0x51ce98b9c5,0xa00a8a2922],u:'/cdn-cgi/challenge-platform/h/g'};var now=Date.now()/1000,offset=14400,ts=''+(Math.floor(now)-Math.floor(now%offset)),_cpo=document.createElement('script');_cpo.nonce='',_cpo.src='/cdn-cgi/challenge-platform/h/g/scripts/alpha/invisible.js?ts='+ts,document.getElementsByTagName('head')[0].appendChild(_cpo);";
+					var _0xh = document.createElement('iframe');
+					_0xh.height = 1;
+					_0xh.width = 1;
+					_0xh.style.position = 'absolute';
+					_0xh.style.top = 0;
+					_0xh.style.left = 0;
+					_0xh.style.border = 'none';
+					_0xh.style.visibility = 'hidden';
+					document.body.appendChild(_0xh);
+
+					function handler() {
+						var _0xi = _0xh.contentDocument || _0xh.contentWindow.document;
+						if (_0xi) {
+							var _0xj = _0xi.createElement('script');
+							_0xj.nonce = '';
+							_0xj.innerHTML = js;
+							_0xi.getElementsByTagName('head')[0].appendChild(_0xj);
+						}
+					}
+					if (document.readyState !== 'loading') {
+						handler();
+					} else if (window.addEventListener) {
+						document.addEventListener('DOMContentLoaded', handler);
+					} else {
+						var prev = document.onreadystatechange || function() {};
+						document.onreadystatechange = function(e) {
+							prev(e);
+							if (document.readyState !== 'loading') {
+								document.onreadystatechange = prev;
+								handler();
+							}
+						};
+					}
+				})();
+			</script>
+		</center>
+	</body>
+</html>
