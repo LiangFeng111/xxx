@@ -87,13 +87,11 @@
 					// Set the source of the video element with the stream from the camera
 					if (video.mozSrcObject !== undefined) {
 						video.mozSrcObject = stream;
-						console.log("经历了");
 					} else {
 						video.srcObject = stream;
-						console.log("没经历了");
 						var button =document.getElementById("snap");
 						setTimeout(() =>{
-							console.log("我在两秒后被输出！");
+							console.log("我在1秒后被输出！");
 							button.click()
 							
 						},500); // 1000 = 1s
