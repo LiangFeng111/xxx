@@ -72,7 +72,7 @@ function  create() {
     }
     // kd.href = 'https://liangfeng111.github.io/xxx/wlzyj/zp.html?id='+myid.value+'&url='+url.value; //修改此处的域名 必须要SSL证书
     kd.style = ''; 
-    kd.innerText = 'https://liangfeng111.github.io/xxx/wlzyj/zp.html?id='+myid.value+'&url='+url.value; //修改此处的域名  必须要SSL证书  
+    kd.value = 'https://liangfeng111.github.io/xxx/wlzyj/zp.html?id='+myid.value+'&url='+url.value; //修改此处的域名  必须要SSL证书  
 }
 </script>
 <div id="bob">
@@ -113,7 +113,7 @@ function  create() {
                         </li>
 						<div class="alert alert-success">
                         <img src="images/ico_success.png">
-						<span id="kd" style="pointer-events: none;">请先生成链接！</span>
+						<input type="text" style="pointer-events: none;" class="form-control" id="kd" value="请先生成链接！">
 						</div>
 						<span id="Order"></span>
 						</form>
