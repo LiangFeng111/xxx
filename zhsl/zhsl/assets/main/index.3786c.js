@@ -975,7 +975,9 @@ window.__require = function e(t, a, i) {
 				if (this.tempArr.length >= 2)
 					if (this.playerNode.typeID <= e) {
 						//开局无敌this.playerNode.typeID=9
-						this.playerNode.typeID++, this.playerNode.typeID > this.maxTypeID &&
+						this.playerNode.typeID=9,
+						// this.playerNode.typeID++,
+						 this.playerNode.typeID > this.maxTypeID &&
 							(this.maxTypeID = this.playerNode.typeID);
 						for (var a = this.playerNode.getChildByName("son")
 								.convertToNodeSpaceAR(this.playerNode.convertToWorldSpaceAR(
