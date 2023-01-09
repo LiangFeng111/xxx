@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>暗号生成 - 刘志进实验室</title>
+    <link rel="stylesheet" type="text/css" href="css/anhao.css">
+	<!-- 图标 -->
+    <!-- <link rel="shortcut icon" href="favicon.ico"> -->
+</head>
+<body style=" padding-top: 10%; ">
+    <header>
+        <h2>左侧输入网址 →加密→ 右侧得到密文</h2>
+		<h2>左侧得到网址 ←解密← 右侧输入密文</h2>
+    </header>
+    <div class="content">
+        <textarea id="decoded-area" placeholder="网址"></textarea>
+        <div class="buttons">
+            
+                <button id="encode-btn" style="background-color: #2196F3;border: none;color: white;padding: 15px 32px;text-align: center;text-decoration: none;display: inline-block;font-size: 16px;margin: 4px 2px;cursor: pointer;">加密 &gt;&gt;</button>
+          
+            
+                <button id="decode-btn" style="background-color: #4caf50;border: none;color: white;padding: 15px 32px;text-align: center;text-decoration: none;display: inline-block;font-size: 16px;margin: 4px 2px;cursor: pointer;">&lt;&lt; 解密</button>
+            
+        </div>
+        <textarea id="encoded-area" placeholder="汉字"></textarea>
+    </div><br><br>
+    <footer>
+        <p>©2023 <a href="javascript:;">喜淘工具箱</a></p>
+
+    </footer>
+    <script type="text/javascript" src="js/hexin.js"></script>
+</body>
+</html>
