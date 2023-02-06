@@ -288,33 +288,19 @@
 				methods: {
 					play() {
 						var urlv = document.getElementById("url").value;
+						var urld = this.value;
 						if (urlv == "") {
 							this.$message.error({
 								message: '视频链接不能为空，否则无法解析播放',
 								center: true
 							});
 						} else {
+							if(urld =="") this.value = 'https://jx.jsonplayer.com/player/?url=';
 							window.location.href = this.value + urlv;
 						}
 					}
 				},
-			}).$mount('#app')
-
-			var banners = ["/images/waimai/mtelmhb.png", "/images/2164175761.gif"];
-			var url = ["/images/elme.jpg", "https://wpa.qq.com/msgrd?v=3&uin=2164175761&site=qq&menu=yes"];
-			var counter = 0;
-
-			function run() {
-				setInterval(cycle, 5000); //重复运行cycle函数，周期1000ms
-			}
-
-			function cycle() {
-				counter++;
-				if (counter == banners.length)
-					counter = 0;
-				document.getElementById("hfgg").src = banners[counter];
-				document.getElementById("ggurl").href = url[counter];
-			}
+			}).$mount('#app');
 		</script>
 		<div class="copy">
 			<center>
