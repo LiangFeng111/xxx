@@ -212,7 +212,7 @@
 								type: "warning",
 								content: "key 不能为空"
 							});
-// 							v.value="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";
+							v.value="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";
 							t.key = v.value, v.value = "", c(), u.value = !1, g({
 								type: "success",
 								content: "key 存储成功，开始提问吧"
