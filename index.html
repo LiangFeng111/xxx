@@ -6,16 +6,28 @@
   <meta name="keywords" content="css3, html5, js, background video, fullscreen video">
   <meta name="description" content="Super easy to implement HTML5 fullscreen background video library in JavaScript.">
   <style>
-  /** 鼠标样式 开始**/ /** 普通指针样式**/
-body {
-cursor: url(http://www.rilirili.vip/1.cur), default;
-} /** 链接指针样式**/
-a:hover {
-	cursor: url(http://www.rilirili.vip/2.cur), pointer;
-}
-search-input ac_wd search-focus {
-cursor: url(http://www.rilirili.vip/3.cur), text;
-} 
+      /*此为笔者网站较为个性化的鼠标指针样式，可结合个人需要自行修改*/
+      body {
+          cursor: url(lib/BreezeContrast/Arrow.cur), default;
+      }
+      select{
+          cursor: url(lib/BreezeContrast/Hand.cur), pointer;
+      }
+      button,a:hover{
+          cursor: url(lib/BreezeContrast/Hand2.cur), pointer;
+      }
+      input{
+          cursor:url(lib/BreezeContrast/Help.cur), text;
+      }
+      textarea,input:focus{
+          cursor:url(lib/BreezeContrast/IBeam.cur), text;
+      }
+      code{
+          cursor: url(lib/BreezeContrast/Handwriting.cur), default;
+      }
+      pre>code{
+          cursor: url(lib/BreezeContrast/Copy.cur), default;
+      }
     * {
       margin: 0; padding: 0;
     }
@@ -157,7 +169,7 @@ cursor: url(http://www.rilirili.vip/3.cur), text;
 
   <script>try{Typekit.load({ async: true });}catch(e){}</script>
 </head>
-<body style="background-image: url(https://api.ixiaowai.cn/api/api.php);opacity:0.8">
+<body style="background-image: url(https://www.loliapi.com/acg/pc/);opacity:0.8">
     
 <!--<audio style="display:none; height: 0" id="bg-music" preload="auto" src="xiaobai.mp3"></audio>-->
   <div id="container">
