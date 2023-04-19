@@ -1,4 +1,5 @@
 <!doctype html>
+
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1" name="viewport">
@@ -6,33 +7,44 @@
   <meta name="keywords" content="css3, html5, js, background video, fullscreen video">
   <meta name="description" content="Super easy to implement HTML5 fullscreen background video library in JavaScript.">
   <style>
-      /*此为笔者网站较为个性化的鼠标指针样式，可结合个人需要自行修改*/
-      body {
-          cursor: url(lib/BreezeContrast/Arrow.cur), default;
-      }
-      select{
-          cursor: url(lib/BreezeContrast/Hand.cur), pointer;
-      }
-      button,a:hover{
-          cursor: url(lib/BreezeContrast/Hand2.cur), pointer;
-      }
-      input{
-          cursor:url(lib/BreezeContrast/Help.cur), text;
-      }
-      textarea,input:focus{
-          cursor:url(lib/BreezeContrast/IBeam.cur), text;
-      }
-      code{
-          cursor: url(lib/BreezeContrast/Handwriting.cur), default;
-      }
-      pre>code{
-          cursor: url(lib/BreezeContrast/Copy.cur), default;
-      }
-    * {
-      margin: 0; padding: 0;
+    /*此为笔者网站较为个性化的鼠标指针样式，可结合个人需要自行修改*/
+    body {
+      cursor: url(lib/BreezeContrast/Arrow.cur), default;
     }
 
-    html, body {
+    select {
+      cursor: url(lib/BreezeContrast/Hand.cur), pointer;
+    }
+
+    button,
+    a:hover {
+      cursor: url(lib/BreezeContrast/Hand2.cur), pointer;
+    }
+
+    input {
+      cursor: url(lib/BreezeContrast/Help.cur), text;
+    }
+
+    textarea,
+    input:focus {
+      cursor: url(lib/BreezeContrast/IBeam.cur), text;
+    }
+
+    code {
+      cursor: url(lib/BreezeContrast/Handwriting.cur), default;
+    }
+
+    pre>code {
+      cursor: url(lib/BreezeContrast/Copy.cur), default;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
       width: 100%;
       height: 100%;
       overflow: hidden;
@@ -41,23 +53,29 @@
     #container {
       overflow: hidden;
       position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
     }
 
     #background_video {
       position: absolute;
 
-      top: 50%; left: 50%;
+      top: 50%;
+      left: 50%;
       transform: translate(-50%, -50%);
 
       object-fit: cover;
-      height: 100%; width: 100%;
+      height: 100%;
+      width: 100%;
     }
 
     #video_cover {
       position: absolute;
 
-      width: 100%; height: 100%;
+      width: 100%;
+      height: 100%;
 
       background: url(https://www.loliapi.com/acg/pc/) no-repeat;
       background-size: cover;
@@ -73,9 +91,11 @@
     #play img {
       width: 100px;
     }
+
     #pause img {
       width: 90px;
     }
+
     #pause {
       display: none;
     }
@@ -99,8 +119,11 @@
 
     #overlay {
       position: absolute;
-      top: 0; right: 0; left: 0; bottom: 0;
-      background: rgba(0,0,0,0.5);
+      top: 0;
+      right: 0;
+      left: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
     }
 
     #main_content {
@@ -122,12 +145,12 @@
     }
 
     #main_content .sub_head {
-      color: rgba(255,255,255,0.5);
+      color: rgba(255, 255, 255, 0.5);
       font-size: 18px;
     }
 
     #main_content .info {
-      color: rgba(255,255,255,0.5);
+      color: rgba(255, 255, 255, 0.5);
       font-size: 12px;
       margin-top: 10px;
     }
@@ -137,7 +160,7 @@
     }
 
     .links a {
-      border: 2px solid rgba(255,255,255,0.20);
+      border: 2px solid rgba(255, 255, 255, 0.20);
       border-radius: 61px;
       font-size: 12px;
       color: #FFFFFF;
@@ -151,27 +174,34 @@
 
     #footer {
       position: absolute;
-      bottom: 0; left: 0; right: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
     }
+
     #footer a {
-      color: rgba(255,255,255,0.5);
+      color: rgba(255, 255, 255, 0.5);
       text-decoration: none;
       margin: 10px;
       font-size: 12px;
     }
+
     #footer a:first-child {
       float: left;
     }
+
     #footer a:last-child {
       float: right;
     }
   </style>
 
-  <script>try{Typekit.load({ async: true });}catch(e){}</script>
+  <script>try { Typekit.load({ async: true }); } catch (e) { }</script>
 </head>
+
+
 <body style="background-image: url(https://www.loliapi.com/acg/pc/);opacity:0.8">
-    
-<!--<audio style="display:none; height: 0" id="bg-music" preload="auto" src="xiaobai.mp3"></audio>-->
+
+  <!--<audio style="display:none; height: 0" id="bg-music" preload="auto" src="xiaobai.mp3"></audio>-->
   <div id="container">
     <video id="background_video" loop="" muted=""></video>
     <div id="video_cover"></div>
@@ -181,37 +211,41 @@
     <section id="main_content">
       <div id="head">
         <h1>喜淘网工具箱</h1>
-      </div> 
-        <div class="links">
-			<a href="http://8.130.120.230:8080">liangfeng博客</a>
-            <a href="http://8.130.120.230:5700">青龙面板</a>
-		</div>
-	  <div class="links">
-		<a href="vip/vip/">影视vip解析</a>
-		  <a href="chatgpt/">机器人</a>
-<!--		<a href="hz/">短信轰炸</a>-->
-<!--		<a href="xjj/">美女视频</a>-->
-<!-- 		<a href="wlzyj/">网恋照妖镜</a> -->
-		<a href="tgrj/">舔狗日记</a>
-<!-- 		<a href="luo_pan/">罗盘时钟</a> -->
-		<a href="psb/">配色表</a>
-		<a href="idcard/">图片加水印</a>
-		<a href="jggcf/">九宫格图拆分器</a>
-		<a href="qqjsq/">亲戚关系计算器</a>
-		<a href="anhao/">暗号口令在线转换</a>
-	  </div>
-	  <div class="links">
-	  		<a href="zhsl/zhsl/">召唤神龙</a>
-<!--			<a href="cdr/">吃豆人游戏</a>-->
-	  </div>
+      </div>
+      <div class="links">
+        <a href="http://8.130.120.230:8080">liangfeng博客</a>
+        <a href="http://8.130.120.230:5700">青龙面板</a>
+      </div>
+      <div class="links">
+        <a href="vip/vip/">影视vip解析</a>
+        <a href="chatgpt/">机器人</a>
+        <!--		<a href="hz/">短信轰炸</a>-->
+        <!--		<a href="xjj/">美女视频</a>-->
+        <!-- 		<a href="wlzyj/">网恋照妖镜</a> -->
+        <a href="tgrj/">舔狗日记</a>
+        <!-- 		<a href="luo_pan/">罗盘时钟</a> -->
+        <a href="psb/">配色表</a>
+        <a href="idcard/">图片加水印</a>
+        <a href="jggcf/">九宫格图拆分器</a>
+        <a href="qqjsq/">亲戚关系计算器</a>
+        <a href="anhao/">暗号口令在线转换</a>
+      </div>
+      <div class="links">
+        <a href="zhsl/zhsl/">召唤神龙</a>
+        <!--			<a href="cdr/">吃豆人游戏</a>-->
+      </div>
     </section>
   </div>
-<div class="web_notice" style="position: fixed;top: 0;left: 0;width: 100%;height: 100%;background: rgba(0,0,0,0.3);z-index: 99999;">
-<div style="position: fixed;top: 50%;left: 50%;width: 550px;background: #FFF;transform: translate(-50%, -50%);border-radius: 40px;padding: 50px 40px;">
-            <h3 style="font-weight: bold;text-align: center;font-size: 30px;">网站通知</h3>
-            <div style="font-size: 16px;margin-top: 26px;line-height: 30px;color: #999;">有问题联系QQ：2629337569</div><a style="display: block;background: #98a3ff;color:#FFF;text-align: center;font-weight: bold;font-size: 19px;line-height: 60px;margin: 0 auto;margin-top: 45px;border-radius: 32px;width: 80%;" onclick="javascript:document.querySelector('.web_notice').remove()">我知道了</a>
+  <div class="web_notice"
+    style="position: fixed;top: 0;left: 0;width: 100%;height: 100%;background: rgba(0,0,0,0.3);z-index: 99999;">
+    <div
+      style="position: fixed;top: 50%;left: 50%;width: 550px;background: #FFF;transform: translate(-50%, -50%);border-radius: 40px;padding: 50px 40px;">
+      <h3 style="font-weight: bold;text-align: center;font-size: 30px;">网站通知</h3>
+      <div style="font-size: 16px;margin-top: 26px;line-height: 30px;color: #999;">有问题联系QQ：2629337569</div><a
+        style="display: block;background: #98a3ff;color:#FFF;text-align: center;font-weight: bold;font-size: 19px;line-height: 60px;margin: 0 auto;margin-top: 45px;border-radius: 32px;width: 80%;"
+        onclick="javascript:document.querySelector('.web_notice').remove()">我知道了</a>
     </div>
-</div>
+  </div>
   <div id="footer">
     <a href="#">请遵守法律，不要拿我东西去犯法，或者侵害他人</a>
 
@@ -224,4 +258,3 @@
   </div>
 
 </body>
-
