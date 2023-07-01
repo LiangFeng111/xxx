@@ -1,2 +1,2 @@
 # xxx
-订阅链接：https://link.clashofclans.com/en?action=OpenLayout&id=TH13%3AWB%3AAAAATwAAAAETHFkyGULfNCxVu5ecY-sc
+订阅链接：https://feiniaoyun.top/api/v1/client/subscribe?token=7442cbbaf3ac7072381fd4500714ef79
