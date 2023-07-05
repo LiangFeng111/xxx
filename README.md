@@ -1,2 +1,2 @@
 # xxx
-订阅链接：https://feiniaoyun.top/api/v1/client/subscribe?token=7442cbbaf3ac7072381fd4500714ef79
+订阅链接：https://feiniaoyun.life/api/v1/client/subscribe?token=1b7e9b8eb7252e5043ce8e4953d3d089
