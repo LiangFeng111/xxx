@@ -100,6 +100,11 @@
                                placeholder="输入视频链接或右下交直接点击复制，点击解析播放，支持腾讯优酷爱奇艺等平台测试"/>
                 </van-cell-group>
                 <van-button type="primary"
+                            @click="handleGetClipboardContent()"
+                            round>
+                    直接粘贴
+                </van-button>
+                <van-button type="primary"
                             @click="play()"
                             round>
                     解析播放
@@ -316,6 +321,7 @@
         data() {
             return {
                 jx_value: '',
+                clipboardContent: ""
 
             }
         },
@@ -338,6 +344,14 @@
             refreshPage() {
                 location.reload();
             },
+            async handleGetClipboardContent() {
+                try {
+                    const text = await navigator.clipboard.readText();
+                    this.jx_value = text;
+                } catch (error) {
+                    console.error('Failed to read clipboard contents: ', error);
+                }
+            }
         },
 
     });
