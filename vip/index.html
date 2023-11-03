@@ -1,11 +1,12 @@
 <!DOCTYPE html>
+<meta name="referrer" content="no-referrer" />
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>凉风影视</title>
     <style>
         body{
-            background-image: url('images/bg.jpg');
+            background-image: url("images/bg.jpg");
             background-repeat: no-repeat;
             background-attachment: fixed;
             background-position: center;
@@ -46,6 +47,7 @@
         }
 
     </style>
+    <title>凉风视频解析</title>
 </head>
 <body>
 
@@ -165,8 +167,8 @@
 <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/vant@4/lib/index.css"/>
 
 <!-- 引入 Vue 和 Vant 的 JS 文件 -->
-<script src="https://fastly.jsdelivr.net/npm/vue@3"></script>
-<script src="https://fastly.jsdelivr.net/npm/vant@4/lib/vant.min.js"></script>
+<script src="js/vue@3.js"></script>
+<script src="js/vant.min.js"></script>
 
 <script>
     // 在 #app 标签下渲染一个按钮组件
@@ -346,24 +348,23 @@
     // 可以通过下面的方式手动注册
     app.use(vant.Lazyload);
 
-    // 调用工具函数，弹出一个 Toast
-
     app.mount('#app');
     document.oncontextmenu = function (e) {
         e.preventDefault();
     };
 
-    document.onkeydown = function (e) {
-        if (e.keyCode === 123) {
-            vant.showDialog({
-                message: '检测到您想打开控制台，如要了解，请加QQ2629337569',
-                theme: 'round-button',
-            }).then(() => {
-                // on close
-            });
-            return false;
-        }
-    };
+    // document.onkeydown = function (e) {
+    //     if (e.keyCode === 123) {
+    //         vant.showDialog({
+    //             message: '检测到您想打开控制台，如要了解，请加QQ2629337569',
+    //             theme: 'round-button',
+    //         }).then(() => {
+    //             // on close
+    //         });
+    //         return false;
+    //     }
+    // };
+
 
 </script>
 
