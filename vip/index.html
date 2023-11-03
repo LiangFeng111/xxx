@@ -353,17 +353,17 @@
         e.preventDefault();
     };
 
-    // document.onkeydown = function (e) {
-    //     if (e.keyCode === 123) {
-    //         vant.showDialog({
-    //             message: '检测到您想打开控制台，如要了解，请加QQ2629337569',
-    //             theme: 'round-button',
-    //         }).then(() => {
-    //             // on close
-    //         });
-    //         return false;
-    //     }
-    // };
+    document.onkeydown = function (e) {
+        if (e.keyCode === 123) {
+            vant.showDialog({
+                message: '检测到您想打开控制台，如要了解，请加QQ2629337569',
+                theme: 'round-button',
+            }).then(() => {
+                // on close
+            });
+            return false;
+        }
+    };
 
 
 </script>
