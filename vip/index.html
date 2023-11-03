@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <title>凉风影视</title>
     <style>
+        body{
+            background-image: url('images/bg.jpg');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+            background-size: cover;
+        }
         #app {
             margin-left: 150px;
             margin-right: 150px;
@@ -24,7 +31,18 @@
             text-align: center;
             margin-top: 10px;
             font-size: 12px;
-            color: #CBC7C7;
+            color: #1c1b1b;
+        }
+        .iframe-container {
+            width: 100%;
+            height: 500px;
+            overflow: hidden;
+        }
+
+        .iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
         }
 
     </style>
@@ -32,8 +50,9 @@
 <body>
 
 <div id="app">
+
     <!--    第一部分-->
-    <div class="header" style="margin: 10px 0;color: #face20">
+    <div class="header" style="margin: 10px 0;">
         <van-space :size="15">
             <van-button type="primary"
                         @click="refreshPage()"
@@ -73,10 +92,10 @@
                 <!-- 可以使用 CellGroup 作为容器 -->
                 <van-cell-group inset
                                 round
-                                style="width: 60%;">
+                                style="width: 60%;border: 1px solid #2b3de3;border-radius: 15px;">
                     <van-field style="border: 1px solid #2b3de3;border-radius: 15px;"
                                v-model="jx_value"
-                               placeholder="输入视频链接，点击解析播放，支持腾讯优酷爱奇艺等平台测试"/>
+                               placeholder="输入视频链接或右下交直接点击复制，点击解析播放，支持腾讯优酷爱奇艺等平台测试"/>
                 </van-cell-group>
                 <van-button type="primary"
                             @click="play()"
@@ -125,7 +144,9 @@
     </div>
 <!--    第三部分-->
     <div class="copy">
-            <th>VIP视频解析说明</th>
+
+
+        <th>VIP视频解析说明</th>
             <h3>操作指南</h3>
             <p>第一步进入各大视频网站，找到想要观看的VIP视频(例如：爱奇艺、优酷、乐视、芒果、搜狐、腾讯),然后复制链接</p>
             <p>第二步将复制的链接粘贴到本站播放地址，并点击开始解析</p>
@@ -314,7 +335,7 @@
             },
             refreshPage() {
                 location.reload();
-            }
+            },
         },
 
     });
