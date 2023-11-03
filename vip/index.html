@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>凉风影视</title>
+    <style>
+        #app {
+            margin-left: 150px;
+            margin-right: 150px;
+            margin-bottom: 25px;
+        }
+
+        .notice-swipe {
+            height: 40px;
+            line-height: 40px;
+        }
+
+        .logo {
+            display: flex;
+            justify-content: center; /* 居中对齐，您也可以使用其他值如flex-start或flex-end */
+            align-items: center; /* 垂直居中对齐 */
+        }
+        .copy {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #CBC7C7;
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <!--    第一部分-->
+    <div class="header" style="margin: 10px 0;color: #face20">
+        <van-space :size="15">
+            <van-button type="primary"
+                        @click="refreshPage()"
+                        round>
+                <van-swipe
+                        vertical
+                        class="notice-swipe"
+                        :autoplay="2000"
+                        :touchable="false"
+                        :show-indicators="false"
+                >
+                    <van-swipe-item>刷新</van-swipe-item>
+                    <van-swipe-item>凉风影视解析</van-swipe-item>
+                </van-swipe>
+            </van-button>
+            <van-button type="primary"
+                        round
+                        url="https://liangfeng111.top"
+            >
+                凉风博客
+            </van-button>
+            <van-button type="warning"
+                        round
+                        url="./images/zfb.jpg">支付宝红包
+            </van-button>
+        </van-space>
+    </div>
+    <!--    第二部分-->
+    <div class="main" style="margin: 10px 0;">
+        <div class="jx">
+            <van-row >
+                <van-dropdown-menu
+                        style="width: 15%;display:block;"
+                        active-color="#ee0a24">
+                    <van-dropdown-item v-model="value" :options="option"></van-dropdown-item>
+                </van-dropdown-menu>
+                <!-- 可以使用 CellGroup 作为容器 -->
+                <van-cell-group inset
+                                round
+                                style="width: 60%;">
+                    <van-field style="border: 1px solid #2b3de3;border-radius: 15px;"
+                               v-model="jx_value"
+                               placeholder="输入视频链接，点击解析播放，支持腾讯优酷爱奇艺等平台测试"/>
+                </van-cell-group>
+                <van-button type="primary"
+                            @click="play()"
+                            round>
+                    解析播放
+                </van-button>
+            </van-row>
+        </div>
+        <div class="tvlogo">
+            <p style="margin-bottom: 10px;text-align: center; color: rgb(85, 85, 85); font-size: 16px;">支持平台</p>
+            <div class="logo">
+                <a href="https://vip.youku.com/" target="_blank" title="优酷会员中心">
+                    <div><img src="images/youku.png" >
+                    </div>
+                </a>
+                <a href="https://vip.iqiyi.com/" target="_blank" title="爱奇艺会员">
+                    <div><img src="images/iqiyi.png" >
+                    </div>
+                </a>
+                <a href="https://film.qq.com/" target="_blank" title="腾讯会员中心">
+                    <div><img src="images/vqq.png" >
+                    </div>
+                </a>
+                <a href="https://www.bilibili.com/" target="_blank" title="哔哩哔哩">
+                    <div><img src="images/bilibili.png"
+                                                                ></div>
+                </a>
+                <a href="https://www.mgtv.com/vip/" target="_blank" title="芒果会员中心">
+                    <div><img src="images/mgtv.png" >
+                    </div>
+                </a>
+                <a href="https://www.pptv.com/" target="_blank" title="PPTV聚力">
+                    <div><img src="images/pptv.png" >
+                    </div>
+                </a>
+                <a href="https://yuanxian.le.com/" target="_blank" title="乐视会员中心">
+                    <div><img src="images/le.png" >
+                    </div>
+                </a>
+                <a href="https://film.sohu.com/" target="_blank" title="搜狐视频">
+                    <div><img src="images/sohu.png" >
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+<!--    第三部分-->
+    <div class="copy">
+            <th>VIP视频解析说明</th>
+            <h3>操作指南</h3>
+            <p>第一步进入各大视频网站，找到想要观看的VIP视频(例如：爱奇艺、优酷、乐视、芒果、搜狐、腾讯),然后复制链接</p>
+            <p>第二步将复制的链接粘贴到本站播放地址，并点击开始解析</p>
+            <p>第三步等待解析完成，即可免费观看VIP视频</p>
+            <p>第四步注意事项：全网VIP电影免费看，若遇到不能播放，确保视频地址无误后，请更换播放引擎多点击几次“开始解析”</p>
+            <ul>
+                <p>本站不提供、不存储、不传播任何视频资源，一切资源来源于互联网开源接口，仅供测试和学习交流，如有违规请联系我们</p>
+                <p>想要长期享受此福利的朋友请立即收藏我们的网站!!</p>
+            </ul>
+    </div>
+</div>
+
+</div>
+
+<!-- 引入样式文件 -->
+<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/vant@4/lib/index.css"/>
+
+<!-- 引入 Vue 和 Vant 的 JS 文件 -->
+<script src="https://fastly.jsdelivr.net/npm/vue@3"></script>
+<script src="https://fastly.jsdelivr.net/npm/vant@4/lib/vant.min.js"></script>
+
+<script>
+    // 在 #app 标签下渲染一个按钮组件
+    const app = Vue.createApp({
+        setup() {
+            const option = [
+                {
+                    value: 'https://jx.jsonplayer.com/player/?url=',
+                    text: '综合/B站(推荐)'
+                }, {
+                    value: 'https://im1907.top/?jx=',
+                    text: '纯净/B站'
+                }, {
+                    value: 'https://jx.aidouer.net/?url=',
+                    text: '爱豆'
+                }, {
+                    value: 'https://jx.xmflv.com/?url=',
+                    text: '虾米(备用)'
+                }, {
+                    value: 'https://okjx.cc/?url=',
+                    text: 'OK解析(备用)'
+                }, {
+                    value: 'https://www.yemu.xyz/?url=',
+                    text: '夜幕(备用)'
+                }, {
+                    value: 'https://jx.m3u8.tv/jiexi/?url=',
+                    text: 'M3U8.TV(备用)'
+                }, {
+                    value: 'https://jx.blbo.cc:4433/?url=',
+                    text: '人人迷(备用)'
+                },
+                {
+                    value: 'https://jx.blbo.cc:4433/?url=',
+                    text: '全民(备用)'
+                },
+                {
+                    value: 'https://jx.blbo.cc:4433/?url=',
+                    text: '全民(备用)'
+                },
+                {
+                    value: 'https://jx.nnxv.cn/tv.php?url=',
+                    text: '七哥'
+                },
+                {
+                    value: 'https://api.qianqi.net/vip/?url=',
+                    text: '冰豆'
+                },
+                {
+                    value: 'https://123.1dior.cn/?url=',
+                    text: '迪奥'
+                },
+                {
+                    value: 'https://www.ckplayer.vip/jiexi/?url=',
+                    text: 'CK'
+                },
+                {
+                    value: 'https://www.ckmov.vip/api.php?url=',
+                    text: 'ckmov'
+                },
+                {
+                    value: 'https://jx.playerjy.com/?url=',
+                    text: 'playerjy/B站'
+                },
+                {
+                    value: 'https://ckmov.ccyjjd.com/ckmov/?url=',
+                    text: 'ccyjjd'
+                },
+                {
+                    value: 'https://www.ckmov.com/?url=',
+                    text: '诺诺'
+                },
+                {
+                    value: 'https://www.h8jx.com/jiexi.php?url=',
+                    text: 'H8'
+                },
+                {
+                    value: 'https://vip.bljiex.com/?v=',
+                    text: 'BL'
+                },
+                {
+                    value: 'https://api.jiexi.la/?url=',
+                    text: '解析la'
+                },
+                {
+                    value: 'https://jiexi.janan.net/jiexi/?url=',
+                    text: 'MUTV'
+                },
+                {
+                    value: 'https://www.mtosz.com/m3u8.php?url=',
+                    text: 'MAO'
+                },
+                {
+                    value: 'https://vip.laobandq.com/jiexi.php?url=',
+                    text: '老板'
+                },
+                {
+                    value: 'https://www.pangujiexi.cc/jiexi.php?url=',
+                    text: '盘古'
+                },
+                {
+                    value: 'https://www.gai4.com/?url=',
+                    text: '盖世'
+                },
+                {
+                    value: 'https://go.yh0523.cn/y.cy?url=',
+                    text: '0523'
+                },
+                {
+                    value: 'https://www.1717yun.com/jx/ty.php?url=',
+                    text: '17云'
+                },
+                {
+                    value: 'https://jx.4kdv.com/?url=',
+                    text: '4K'
+                },
+                {
+                    value: 'https://www.8090g.cn/?url=',
+                    text: '8090'
+                },
+                {
+                    value: 'https://www.nxflv.com/?url=',
+                    text: '诺讯'
+                },
+                {
+                    value: 'https://jx.dj6u.com/?url=',
+                    text: '听乐'
+                },
+                {
+                    value: 'https://jx.000180.top/jx/?url=',
+                    text: '180'
+                }
+            ];
+            vant.showDialog({
+                message: '如果不能正常播放，可以切换解析线路。部分手机线路播放视频可能自带广告，请把浏览器UA标识改成PC或者电脑版！',
+                theme: 'round-button',
+            }).then(() => {
+                // on close
+            });
+            const value = 'https://jx.jsonplayer.com/player/?url=';
+            return {
+                value,
+                option,
+            };
+        },
+        data() {
+            return {
+                jx_value: '',
+
+            }
+        },
+        methods: {
+            play() {
+                var urlv = this.jx_value
+                if (urlv === "") {
+                    vant.showDialog({
+                        title: '你干嘛！！！',
+                        message: '少爷（公主），请把需要解析的视频链接粘贴上去',
+                        theme: 'round-button',
+                    }).then(() => {
+                        // on close
+                        vant.showToast('记得粘贴上去哟！');
+                    });
+                } else {
+                    window.location.href = this.value + urlv;
+                }
+            },
+            refreshPage() {
+                location.reload();
+            }
+        },
+
+    });
+
+    app.use(vant);
+
+    // 通过 CDN 引入时不会自动注册 Lazyload 组件
+    // 可以通过下面的方式手动注册
+    app.use(vant.Lazyload);
+
+    // 调用工具函数，弹出一个 Toast
+
+    app.mount('#app');
+    document.oncontextmenu = function (e) {
+        e.preventDefault();
+    };
+
+    document.onkeydown = function (e) {
+        if (e.keyCode === 123) {
+            vant.showDialog({
+                message: '检测到您想打开控制台，如要了解，请加QQ2629337569',
+                theme: 'round-button',
+            }).then(() => {
+                // on close
+            });
+            return false;
+        }
+    };
+
+</script>
+
+
+</body>
+</html>
