@@ -15,7 +15,7 @@
         #app {
             margin-left: 150px;
             margin-right: 150px;
-            margin-bottom: 25px;
+            margin-bottom: 215px;
         }
 
         .notice-swipe {
@@ -54,7 +54,7 @@
 <div id="app">
 
     <!--    第一部分-->
-    <div class="header" style="margin: 10px 0;">
+    <div class="header" style="margin: 10px 0;display: flex">
         <van-space :size="15">
             <van-button type="primary"
                         @click="refreshPage()"
@@ -111,10 +111,10 @@
                 </van-button>
             </van-row>
         </div>
-        <div class="tvlogo">
+        <div class="tvlogo" >
             <p style="margin-bottom: 10px;text-align: center; color: rgb(85, 85, 85); font-size: 16px;">支持平台</p>
             <div class="logo">
-                <a href="https://vip.youku.com/" target="_blank" title="优酷会员中心">
+                <a href="https://vip.youku.com/"  title="优酷会员中心">
                     <div><img src="images/youku.png" >
                     </div>
                 </a>
@@ -367,17 +367,17 @@
         e.preventDefault();
     };
 
-    document.onkeydown = function (e) {
-        if (e.keyCode === 123) {
-            vant.showDialog({
-                message: '检测到您想打开控制台，如要了解，请加QQ2629337569',
-                theme: 'round-button',
-            }).then(() => {
-                // on close
-            });
-            return false;
-        }
-    };
+    // document.onkeydown = function (e) {
+    //     if (e.keyCode === 123) {
+    //         vant.showDialog({
+    //             message: '检测到您想打开控制台，如要了解，请加QQ2629337569',
+    //             theme: 'round-button',
+    //         }).then(() => {
+    //             // on close
+    //         });
+    //         return false;
+    //     }
+    // };
 
 
 </script>
