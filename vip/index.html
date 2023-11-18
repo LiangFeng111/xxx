@@ -338,6 +338,7 @@
                 location.reload();
             },
             async handleGetClipboardContent() {
+
                 try {
                     const text = await navigator.clipboard.readText();
                     this.jx_value = text;
@@ -371,6 +372,20 @@
             return false;
         }
     };
+    if (navigator.clipboard) {
+        // 尝试读取剪贴板内容
+        navigator.clipboard.readText()
+            .then(text => {
+                console.log('剪贴板内容为:', text);
+                // 在这里你可以对获取到的内容进行处理
+            })
+            .catch(err => {
+                console.error('无法读取剪贴板内容:', err);
+            });
+    } else {
+        console.error('该浏览器不支持Clipboard API');
+    }
+
 
 
 </script>
