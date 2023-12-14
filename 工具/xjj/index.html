@@ -3,75 +3,64 @@
 <html lang="zh-CN">
 <head>
     <meta charSet="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta http-equiv="Cache-Control" content="no-transform" /> 
-    <meta http-equiv="Cache-Control" content="no-siteapp" />
-    <meta name="referrer" content="never">
-    <meta name="renderer" content="webkit" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>抖音小姐姐在线随机播放</title>
     <link rel="stylesheet" href="css/style.css">
-	<style>
-	body {margin:0;}
-	
-	ul {
-	  list-style-type: none;
-	  margin: 0;
-	  padding: 0;
-	  overflow: hidden;
-	  background-color: #333;
-	  position: fixed;
-	  top: 0;
-	  width: 100%;
-	}
-	
-	li {
-	  float: left;
-	}
-	
-	li a {
-	  display: block;
-	  color: white;
-	  text-align: center;
-	  padding: 14px 16px;
-	  text-decoration: none;
-	}
-	
-	li a:hover:not(.active) {
-	  background-color: #111;
-	}
-	
-	.active {
-	  background-color: #4CAF50;
-	}
-	</style>
+    <style>
+        #player {
+            height: 93vh;
+            width: 100%;
+        }
+        #main ,#buttons{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #switch,#next{
+            background: #FFF;
+            background: linear-gradient(to bottom, #00BFFF,#00BFFF);
+            color: #AF2E08;
+            font-size: 18px;
+            font-weight: bold;
+            height: 40px;
+            margin: 2px 5px;
+            border-radius: 15px;
+            width: 100%;
+        }
+        body {
+            background: #9370DB;
+        }
+        #buttons{
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
+
     <section id="main">
-        <video id="player" src="https://jx.baimifan.com.cn/get.php" controls ></video>
-		
+        <video id="player" src="http://api.yujn.cn/api/zzxjj.php"
+               controls="" webkit-playsinline="" playsinline="" muted=""
+               preload="metadata"></video>
     </section>
     <section id="buttons">
         <button id="switch">自动切换</button>
         <button id="next">下一位</button>
-        <a href="/index.html"><button id="next">快手美女</button></a>
     </section>
     <script>
     
     (function (window, document) {
-        if (top != self) {
-            window.top.location.replace(self.location.href);
-        }
         var get = function (id) {
             return document.getElementById(id);
         }
+
         var bind = function (element, event, callback) {
             return element.addEventListener(event, callback);
         }
+
+
         var auto = true;
         var player = get('player');
         var randomm = function () {
-            player.src = 'https://jx.baimifan.com.cn/get.php';
+            player.src = 'http://api.yujn.cn/api/zzxjj.php';
 			player.load();
             player.play();
         }
