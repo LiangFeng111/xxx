@@ -1,263 +1,467 @@
-<!doctype html>
-
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1" name="viewport">
-  <title>喜淘网个人主页</title>
-  <meta name="keywords" content="css3, html5, js, background video, fullscreen video">
-  <meta name="description" content="Super easy to implement HTML5 fullscreen background video library in JavaScript.">
-  <style>
-    /*此为笔者网站较为个性化的鼠标指针样式，可结合个人需要自行修改*/
-    body {
-      cursor: url(lib/BreezeContrast/Arrow.cur), default;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>喜淘网工具箱 - 极简导航</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
+    <script src="config.js"></script>
 
-    select {
-      cursor: url(lib/BreezeContrast/Hand.cur), pointer;
-    }
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap');
+        body { background: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; min-height: 100vh; overflow-x: hidden; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .glass:hover { background: rgba(255, 255, 255, 0.08); transform: translateY(-4px); border-color: rgba(255, 255, 255, 0.2); }
+        .bg-video-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        #bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.25; }
+        .gradient-text { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        [v-cloak] { display: none; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
 
-    button,
-    a:hover {
-      cursor: url(lib/BreezeContrast/Hand2.cur), pointer;
-    }
+        .fade-enter-active, .fade-leave-active { transition: all 0.3s ease; max-height: 2000px; opacity: 1; overflow: hidden; }
+        .fade-enter-from, .fade-leave-to { max-height: 0; opacity: 0; }
 
-    input {
-      cursor: url(lib/BreezeContrast/Help.cur), text;
-    }
+        /* 递归层级缩进线 */
+        .tree-line {
+            position: absolute;
+            left: -1.5rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: rgba(99, 102, 241, 0.1);
+        }
 
-    textarea,
-    input:focus {
-      cursor: url(lib/BreezeContrast/IBeam.cur), text;
-    }
+        /* 隐藏滚动条但保留功能 */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    code {
-      cursor: url(lib/BreezeContrast/Handwriting.cur), default;
-    }
-
-    pre>code {
-      cursor: url(lib/BreezeContrast/Copy.cur), default;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-    }
-
-    html,
-    body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-    }
-
-    #container {
-      overflow: hidden;
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-    }
-
-    #background_video {
-      position: absolute;
-
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-
-      object-fit: cover;
-      height: 100%;
-      width: 100%;
-    }
-
-    #video_cover {
-      position: absolute;
-
-      width: 100%;
-      height: 100%;
-
-      background: url(https://www.loliapi.com/acg/pc/) no-repeat;
-      background-size: cover;
-      background-position: center;
-    }
-
-    #video_controls {
-      position: absolute;
-      left: 50%;
-      transform: translate(-50%, 0);
-    }
-
-    #play img {
-      width: 100px;
-    }
-
-    #pause img {
-      width: 90px;
-    }
-
-    #pause {
-      display: none;
-    }
-
-    @media (min-width: 768px) {
-      #video_controls {
-        display: none;
-      }
-    }
-
-    /* Demo page specific styles */
-
-    body {
-      text-align: center;
-      font-family: 'proxima-nova', Helvetica;
-    }
-
-    #container {
-      height: 100%;
-    }
-
-    #overlay {
-      position: absolute;
-      top: 0;
-      right: 0;
-      left: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-    }
-
-    #main_content {
-      z-index: 2;
-      position: relative;
-      display: inline-block;
-
-      /* Vertical center */
-      top: 50%;
-      transform: translateY(-50%);
-    }
-
-    #main_content h1 {
-      text-transform: uppercase;
-      font-weight: 600;
-      font-family: 'proxima-nova-condensed', Helvetica;
-      color: #fff;
-      font-size: 35px;
-    }
-
-    #main_content .sub_head {
-      color: rgba(255, 255, 255, 0.5);
-      font-size: 18px;
-    }
-
-    #main_content .info {
-      color: rgba(255, 255, 255, 0.5);
-      font-size: 12px;
-      margin-top: 10px;
-    }
-
-    .links {
-      margin-top: 50px;
-    }
-
-    .links a {
-      border: 2px solid rgba(255, 255, 255, 0.20);
-      border-radius: 61px;
-      font-size: 12px;
-      color: #FFFFFF;
-      letter-spacing: 1px;
-      text-decoration: none;
-      text-transform: uppercase;
-      padding: 10px 25px;
-      display: inline-block;
-      margin-right: 15px;
-    }
-
-    #footer {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-    }
-
-    #footer a {
-      color: rgba(255, 255, 255, 0.5);
-      text-decoration: none;
-      margin: 10px;
-      font-size: 12px;
-    }
-
-    #footer a:first-child {
-      float: left;
-    }
-
-    #footer a:last-child {
-      float: right;
-    }
-  </style>
-
-  <script>try { Typekit.load({ async: true }); } catch (e) { }</script>
-
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.2); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.5); }
+    </style>
 </head>
+<body class="p-4 md:p-8 antialiased">
+    <div id="app" v-cloak>
+        <div class="bg-video-container">
+            <video id="bg-video" autoplay loop muted playsinline>
+                <source src="https://cdn.pixabay.com/video/2020/09/24/50841-463878644_large.mp4" type="video/mp4">
+            </video>
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#0f172a]/50 to-[#0f172a]"></div>
+        </div>
 
+        <!-- Header -->
+        <header class="max-w-6xl mx-auto mb-12 flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="text-center md:text-left">
+                <h1 class="text-5xl md:text-6xl font-black gradient-text mb-3 tracking-tighter">{{ settings.site_title || '加载中...' }}</h1>
+                <p class="text-slate-400 text-lg font-medium">{{ settings.site_subtitle }}</p>
+            </div>
+            
+            <div class="relative w-full md:w-96 group">
+                <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-indigo-400 transition-colors"></i>
+                <input v-model="searchQuery" :placeholder="'搜索在线资源...'" 
+                    class="w-full pl-12 pr-4 py-4 glass rounded-2xl outline-none focus:ring-4 focus:ring-indigo-500/20 text-white placeholder-slate-500 font-bold transition-all">
+            </div>
+        </header>
 
-<body style="background-image: url(https://www.loliapi.com/acg/pc/);opacity:0.8">
+        <!-- Main Content -->
+        <main class="max-w-6xl mx-auto space-y-8 mt-8">
+            
+            <!-- 1. 常用工具展示 (原有逻辑) -->
+            <div v-if="!searchQuery && toolGroups.length > 0" class="space-y-12">
+                <div v-for="group in toolGroups" :key="group.name" class="space-y-6">
+                    <div @click="toggleFold(group.name)" class="flex items-center justify-between cursor-pointer group/title select-none">
+                        <h2 class="text-2xl font-black flex items-center gap-4">
+                            <span class="w-2 h-10 bg-indigo-500 rounded-full shadow-lg shadow-indigo-500/50"></span>
+                            {{ group.name }}
+                            <span class="text-xs text-slate-500 font-bold ml-2">({{ group.items.length }})</span>
+                        </h2>
+                        <div class="p-2 rounded-xl glass group-hover/title:bg-white/10 transition-all">
+                            <i :data-lucide="isFolded(group.name) ? 'chevron-down' : 'chevron-up'" class="w-5 h-5 text-slate-400"></i>
+                        </div>
+                    </div>
+                    <transition name="fade">
+                        <div v-show="!isFolded(group.name)" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <a v-for="link in group.items" :key="link.url" :href="link.url" target="_blank" class="glass rounded-[2rem] p-6 flex items-center gap-5 group relative overflow-hidden">
+                                <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-indigo-400 group-hover:scale-110 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-500 shadow-inner">
+                                    <i :data-lucide="link.icon || 'link'" class="w-7 h-7"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="font-black text-lg tracking-tight group-hover:text-indigo-300 transition-colors truncate">{{ link.title }}</h3>
+                                    <p class="text-xs text-slate-500 truncate mt-1 font-medium">{{ formatUrl(link.url) }}</p>
+                                </div>
+                                <i data-lucide="arrow-up-right" class="w-5 h-5 text-slate-600 opacity-0 group-hover:opacity-100 transition-all"></i>
+                            </a>
+                        </div>
+                    </transition>
+                </div>
+            </div>
 
-  <!--<audio style="display:none; height: 0" id="bg-music" preload="auto" src="xiaobai.mp3"></audio>-->
-  <div id="container">
-    <video id="background_video" loop="" muted=""></video>
-    <div id="video_cover"></div>
-    <div id="overlay"></div>
+            <!-- 2. 书签层级展示 (递归结构) -->
+            <div v-if="!searchQuery && bookmarkTree.length > 0" class="pt-12 border-t border-white/5">
+                <div @click="isBookmarksSectionFolded = !isBookmarksSectionFolded; nextTick(() => lucide.createIcons())" 
+                    class="flex items-center justify-between mb-12 cursor-pointer group/bookmark select-none">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-amber-500/20 rounded-2xl flex items-center justify-center text-amber-500 group-hover/bookmark:bg-amber-500 group-hover/bookmark:text-white transition-all">
+                            <i data-lucide="bookmark" class="w-6 h-6 fill-amber-500 group-hover/bookmark:fill-white"></i>
+                        </div>
+                        <h2 class="text-3xl font-black tracking-tighter">我的书签</h2>
+                    </div>
+                    <div class="p-2 rounded-xl glass group-hover/bookmark:bg-white/10 transition-all">
+                        <i :data-lucide="isBookmarksSectionFolded ? 'chevron-down' : 'chevron-up'" class="w-5 h-5 text-slate-400"></i>
+                    </div>
+                </div>
+                
+                <!-- 顶级分类卡片展示 -->
+                <transition name="fade">
+                    <div v-show="!isBookmarksSectionFolded" class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        <template v-for="node in bookmarkTree" :key="node.name || node.title">
+                            <!-- 如果根节点是文件夹：点击打开三层模式弹窗 -->
+                            <div v-if="node.type === 'folder'" @click="openBookmarkModal(node)" 
+                                class="glass rounded-[2rem] p-8 flex flex-col items-center justify-center gap-4 cursor-pointer group hover:bg-white/10 transition-all text-center border-indigo-500/20">
+                                <div class="w-20 h-20 rounded-[2rem] bg-indigo-500/10 flex items-center justify-center text-indigo-400 group-hover:scale-110 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-500 shadow-inner">
+                                    <i data-lucide="folder" class="w-10 h-10"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-black text-xl tracking-tighter">{{ node.name }}</h3>
+                                    <p class="text-xs text-slate-500 font-bold mt-1 uppercase tracking-widest">{{ (node.children || []).length }} 项资源</p>
+                                </div>
+                            </div>
+                            
+                            <!-- 如果根节点直接是链接 -->
+                            <a v-else-if="node.type === 'link'" :href="node.url" target="_blank" 
+                                class="glass rounded-[2rem] p-6 flex items-center gap-5 group relative overflow-hidden h-full">
+                                <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all">
+                                    <i data-lucide="link" class="w-5 h-5"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="font-black text-sm tracking-tight truncate">{{ node.title }}</h4>
+                                    <p class="text-[10px] text-slate-500 truncate mt-0.5">{{ node.url }}</p>
+                                </div>
+                            </a>
+                        </template>
+                    </div>
+                </transition>
+            </div>
 
+            <!-- 3. 搜索结果展示 -->
+            <div v-if="searchQuery" class="space-y-8">
+                <div v-if="searchResults.length === 0" class="text-center py-20 glass rounded-3xl">
+                    <i data-lucide="search-x" class="w-16 h-16 text-slate-600 mx-auto mb-4"></i>
+                    <p class="text-slate-400 text-xl font-bold">未找到相关资源</p>
+                </div>
+                <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <a v-for="link in searchResults" :key="link.url" :href="link.url" target="_blank" class="glass rounded-[2rem] p-6 flex items-center gap-5 group">
+                        <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all">
+                            <i :data-lucide="link.icon || 'link'" class="w-7 h-7"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-[10px] font-black uppercase tracking-tighter bg-white/10 px-2 py-0.5 rounded text-slate-400">{{ link.category || '书签' }}</span>
+                            </div>
+                            <h3 class="font-black text-lg tracking-tight truncate">{{ link.title }}</h3>
+                        </div>
+                    </a>
+                </div>
+            </div>
 
-    <section id="main_content">
-      <div id="head">
-        <h1>喜淘网工具箱</h1>
-      </div>
-      <div class="links">
-        <a href="http://1.92.125.81:5700/crontab">青龙面板</a>
-        <a href="https://sxx666.lanpw.com/iUGQM1lygzxg">美团抓包app</a>
-        <a href="工具/xjj">美女视频</a>
-      </div>
-      <div class="links">
-        <a href="vip/">影视vip解析</a>
-        <a href="https://gpt.liangfeng111.top/">机器人</a>
-        <!--		<a href="hz/">短信轰炸</a>-->
+        </main>
 
-        <!-- 		<a href="wlzyj/">网恋照妖镜</a> -->
-        <a href="工具/tgrj/">舔狗日记</a>
-        <!-- 		<a href="luo_pan/">罗盘时钟</a> -->
-        <a href="工具/psb/">配色表</a>
-        <a href="工具/idcard/">图片加水印</a>
-        <a href="工具/jggcf/">九宫格图拆分器</a>
-        <a href="工具/qqjsq/">亲戚关系计算器</a>
-        <a href="工具/anhao/">暗号口令在线转换</a>
-      </div>
-      <div class="links">
-        <a href="游戏/zhsl/zhsl/">召唤神龙</a>
-        <!--			<a href="cdr/">吃豆人游戏</a>-->
-      </div>
-    </section>
-  </div>
-  <div class="web_notice"
-    style="position: fixed;top: 0;left: 0;width: 100%;height: 100%;background: rgba(0,0,0,0.3);z-index: 99999;">
-    <div
-      style="position: fixed;top: 50%;left: 50%;width: 550px;background: #FFF;transform: translate(-50%, -50%);border-radius: 40px;padding: 50px 40px;">
-      <h3 style="font-weight: bold;text-align: center;font-size: 30px;">网站通知</h3>
-      <div style="font-size: 16px;margin-top: 26px;line-height: 30px;color: #999;">有问题联系QQ：2629337569</div><a
-        style="display: block;background: #98a3ff;color:#FFF;text-align: center;font-weight: bold;font-size: 19px;line-height: 60px;margin: 0 auto;margin-top: 45px;border-radius: 32px;width: 80%;"
-        onclick="javascript:document.querySelector('.web_notice').remove()">我知道了</a>
+        <footer class="max-w-6xl mx-auto mt-32 py-12 border-t border-white/5 flex justify-between items-center text-slate-500 text-sm font-bold">
+            <p>© 2026 {{ settings.site_title }} · 层级导航版</p>
+        </footer>
+
+        <!-- 3层级书签展示弹窗 -->
+        <transition name="fade">
+            <div v-if="isBookmarkModalOpen" class="fixed inset-0 z-[60] flex items-center justify-center p-4 md:p-8">
+                <!-- 背景遮罩 -->
+                <div @click="closeBookmarkModal" class="absolute inset-0 bg-slate-950/90 backdrop-blur-xl"></div>
+                
+                <!-- 弹窗主体 -->
+                <div class="glass w-full max-w-7xl h-full max-h-[90vh] md:max-h-[85vh] rounded-[2rem] md:rounded-[3rem] overflow-hidden flex flex-col relative border-indigo-500/30 animate-in fade-in zoom-in duration-300">
+                    
+                    <!-- 弹窗头部 -->
+                    <div class="p-5 md:p-8 border-b border-white/5 flex items-center justify-between shrink-0">
+                        <div class="flex items-center gap-3 md:gap-4">
+                            <div class="w-10 h-10 md:w-12 md:h-12 bg-indigo-500/20 rounded-xl md:rounded-2xl flex items-center justify-center text-indigo-400">
+                                <i data-lucide="folder-open" class="w-5 h-5 md:w-6 md:h-6"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-xl md:text-3xl font-black tracking-tighter truncate max-w-[150px] md:max-w-none">{{ selectedRootNode?.name }}</h2>
+                                <p class="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-widest">三层级浏览</p>
+                            </div>
+                        </div>
+                        <button @click="closeBookmarkModal" class="w-10 h-10 md:w-12 md:h-12 glass rounded-xl md:rounded-2xl flex items-center justify-center hover:bg-white/10 transition-all text-slate-400 hover:text-white">
+                            <i data-lucide="x" class="w-5 h-5 md:w-6 md:h-6"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+                        <!-- 第二层：侧边栏 (Level 2 Folders) - 手机端改为顶部横向滚动 -->
+                        <aside class="w-full md:w-64 border-b md:border-b-0 md:border-r border-white/5 overflow-x-auto md:overflow-y-auto p-4 md:p-6 flex md:flex-col gap-2 shrink-0 bg-white/5 no-scrollbar">
+                            <div v-for="node in level2Folders" :key="node.name" 
+                                @click="selectLevel2(node)"
+                                :class="['flex items-center gap-2 md:gap-3 px-4 py-2.5 md:py-4 rounded-xl md:rounded-2xl cursor-pointer transition-all font-bold group whitespace-nowrap md:whitespace-normal', 
+                                        selectedLevel2Node?.name === node.name ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-slate-400 hover:bg-white/5 hover:text-slate-200']">
+                                <i :data-lucide="selectedLevel2Node?.name === node.name ? 'folder-open' : 'folder'" class="w-4 h-4 md:w-5 md:h-5"></i>
+                                <span class="text-sm md:text-base">{{ node.name }}</span>
+                            </div>
+                            <div v-if="level2Folders.length === 0" class="hidden md:block text-center py-10 text-slate-600">
+                                <p class="text-[10px] font-bold uppercase">无子分类</p>
+                            </div>
+                        </aside>
+
+                        <!-- 右侧内容区 -->
+                        <main class="flex-1 flex flex-col overflow-hidden bg-slate-950/20">
+                            <!-- 第三层：顶部导航 (Level 3 Folders) -->
+                            <nav v-if="level3Folders.length > 0" class="shrink-0 p-4 md:p-6 border-b border-white/5 flex gap-2 md:gap-4 overflow-x-auto no-scrollbar">
+                                <button v-for="node in level3Folders" :key="node.name" 
+                                    @click="selectLevel3(node)"
+                                    :class="['px-4 py-2 md:px-6 md:py-3 rounded-lg md:rounded-xl whitespace-nowrap font-bold transition-all text-xs md:text-sm flex items-center gap-2', 
+                                            selectedLevel3Node?.name === node.name ? 'bg-white/10 text-indigo-400 border border-indigo-500/30' : 'text-slate-500 hover:text-slate-300 bg-white/5 border border-transparent']">
+                                    <i data-lucide="tag" class="w-3 h-3 md:w-4 md:h-4"></i>
+                                    {{ node.name }}
+                                </button>
+                            </nav>
+
+                            <!-- 最终链接列表 -->
+                            <div class="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
+                                <div v-if="currentLinks.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                                    <a v-for="link in currentLinks" :key="link.url" :href="link.url" target="_blank" 
+                                        class="glass rounded-[1.5rem] md:rounded-[2rem] p-4 md:p-6 flex items-center gap-3 md:gap-4 group hover:bg-white/10 transition-all border-white/5">
+                                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all">
+                                            <i data-lucide="link" class="w-4 h-4 md:w-5 md:h-5"></i>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <h4 class="font-black text-xs md:text-sm tracking-tight truncate group-hover:text-indigo-300">{{ link.title }}</h4>
+                                            <p class="text-[8px] md:text-[10px] text-slate-500 truncate mt-0.5">{{ link.url }}</p>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div v-else class="h-full flex flex-col items-center justify-center text-slate-500 py-10 md:py-20">
+                                    <div class="w-16 h-16 md:w-20 md:h-20 bg-white/5 rounded-2xl md:rounded-3xl flex items-center justify-center mb-4">
+                                        <i data-lucide="info" class="w-8 h-8 md:w-10 md:h-10 opacity-20"></i>
+                                    </div>
+                                    <p class="font-bold text-base md:text-lg">当前分类下暂无链接</p>
+                                    <p class="text-xs md:text-sm opacity-50">请选择子分类查看内容</p>
+                                </div>
+                            </div>
+                        </main>
+                    </div>
+                </div>
+            </div>
+        </transition>
+
+        <!-- 网站通知 -->
+        <div v-if="showNotice && settings.site_notice" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-xl">
+            <div class="glass max-w-md w-full rounded-[3rem] p-10 text-center relative border-indigo-500/30">
+                <div class="w-24 h-24 bg-indigo-500/20 rounded-[2.5rem] flex items-center justify-center mx-auto mb-8 text-indigo-400 shadow-inner">
+                    <i data-lucide="bell-ring" class="w-10 h-10 animate-bounce"></i>
+                </div>
+                <h3 class="text-3xl font-black mb-4 tracking-tighter">网站通知</h3>
+                <p class="text-slate-400 mb-10 leading-relaxed font-medium text-lg">{{ settings.site_notice }}</p>
+                <button @click="showNotice = false" class="w-full py-5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-[2rem] font-black text-xl shadow-2xl shadow-indigo-500/40 active:scale-95 transition-all">我知道了</button>
+            </div>
+        </div>
     </div>
-  </div>
-  <div id="footer">
-    <a href="#">请遵守法律，不要拿我东西去犯法，或者侵害他人</a>
 
-    <a href="#" class="twitter-share-button" data-via="_rishabhp">By：喜淘</a>
+    <script>
+        const { createApp, ref, onMounted, computed, watch, nextTick } = Vue;
 
+        createApp({
+            setup() {
+                const settings = ref({});
+                const toolLinks = ref([]);      // data.json 原始数据
+                const bookmarkTree = ref([]);   // 书签树形数据
+                const showNotice = ref(true);   // 是否显示网站公告
+                const searchQuery = ref('');    // 搜索关键词
+                const foldedSet = ref(new Set()); // 存储已折叠的常用工具分类名
+                const allBookmarksOpen = ref(false); // 书签弹窗内是否全部展开
+                const isBookmarksSectionFolded = ref(true); // 首页“我的书签”部分默认折叠
 
-    <a href="#" target="_blank">
-      欢迎提交好东西
-    </a>
-  </div>
+                // --- 书签弹窗相关状态 ---
+                const isBookmarkModalOpen = ref(false); // 弹窗开关
+                const selectedRootNode = ref(null);     // 当前点击的顶级分类节点
+                const selectedLevel2Node = ref(null);   // 弹窗内选中的二级分类
+                const selectedLevel3Node = ref(null);   // 弹窗内选中的三级分类
 
+                /**
+                 * 打开书签深度浏览弹窗
+                 * @param {Object} node 顶级分类节点数据
+                 */
+                const openBookmarkModal = (node) => {
+                    selectedRootNode.value = node;
+                    // 自动定位：默认选中该分类下的第一个子文件夹
+                    const firstLevel2 = (node.children || []).find(c => c.type === 'folder');
+                    selectLevel2(firstLevel2 || null);
+                    isBookmarkModalOpen.value = true;
+                    document.body.style.overflow = 'hidden'; // 开启弹窗时禁止背景滚动
+                    nextTick(() => lucide.createIcons());
+                };
 
+                /**
+                 * 关闭书签弹窗
+                 */
+                const closeBookmarkModal = () => {
+                    isBookmarkModalOpen.value = false;
+                    document.body.style.overflow = ''; // 恢复滚动
+                };
+
+                /**
+                 * 选中二级分类
+                 */
+                const selectLevel2 = (node) => {
+                    selectedLevel2Node.value = node;
+                    // 联动：选中二级分类后，默认选中其下的第一个三级文件夹
+                    if (node) {
+                        const firstLevel3 = (node.children || []).find(c => c.type === 'folder');
+                        selectLevel3(firstLevel3 || null);
+                    } else {
+                        selectedLevel3Node.value = null;
+                    }
+                    nextTick(() => lucide.createIcons());
+                };
+
+                /**
+                 * 选中三级分类
+                 */
+                const selectLevel3 = (node) => {
+                    selectedLevel3Node.value = node;
+                    nextTick(() => lucide.createIcons());
+                };
+
+                /**
+                 * 切换书签全局展开状态（暂用于弹窗内或扩展功能）
+                 */
+                const toggleAllBookmarks = () => {
+                    allBookmarksOpen.value = !allBookmarksOpen.value;
+                    nextTick(() => lucide.createIcons());
+                };
+
+                /**
+                 * 核心数据抓取函数
+                 */
+                const fetchData = async () => {
+                    // 1. 加载常用工具数据 (data.json)
+                    try {
+                        const res = await fetch(window.CONFIG.DATA_URL + '?t=' + Date.now());
+                        const result = await res.json();
+                        settings.value = result.settings || {};
+                        toolLinks.value = result.links || [];
+                        
+                        // 【默认折叠】初始化时将所有常用工具分类加入折叠集合
+                        const categories = [...new Set(toolLinks.value.map(l => l.category))];
+                        categories.forEach(cat => foldedSet.value.add(cat));
+                    } catch (e) { console.error('常用工具加载失败'); }
+
+                    // 2. 加载书签数据 (converted_bookmarks.json)
+                    try {
+                        const res = await fetch(window.CONFIG.BOOKMARKS_URL + '?t=' + Date.now());
+                        const result = await res.json();
+                        const rawLinks = result.links || [];
+                        
+                        // 递归归一化函数：确保每个节点都有 type (link/folder) 属性，增加系统健壮性
+                        const normalize = (nodes) => nodes.map(node => {
+                            let n = { ...node };
+                            if (!n.type) n.type = n.url ? 'link' : 'folder';
+                            if (n.children) n.children = normalize(n.children);
+                            return n;
+                        });
+
+                        // 兼容性检查：如果是旧版扁平结构（只有 category 字段），自动转换为树形
+                        const isOldFormat = rawLinks.length > 0 && rawLinks[0].category && !rawLinks[0].children;
+                        
+                        if (isOldFormat) {
+                            const groups = rawLinks.reduce((acc, l) => {
+                                const cat = l.category || '未分类';
+                                if (!acc[cat]) acc[cat] = { type: 'folder', name: cat, children: [] };
+                                acc[cat].children.push({ ...l, type: 'link' });
+                                return acc;
+                            }, {});
+                            bookmarkTree.value = Object.values(groups);
+                        } else {
+                            bookmarkTree.value = normalize(rawLinks);
+                        }
+                    } catch (e) { console.warn('书签数据加载失败'); }
+
+                    setTimeout(() => lucide.createIcons(), 0);
+                };
+
+                /**
+                 * 常用工具的分组计算属性
+                 */
+                const toolGroups = computed(() => {
+                    const groups = toolLinks.value.reduce((acc, link) => {
+                        if (!acc[link.category]) acc[link.category] = [];
+                        acc[link.category].push(link);
+                        return acc;
+                    }, {});
+                    return Object.entries(groups).map(([name, items]) => ({ name, items }));
+                });
+
+                /**
+                 * 全局搜索逻辑：将工具和书签全部“拍平”后进行模糊检索
+                 */
+                const searchResults = computed(() => {
+                    if (!searchQuery.value) return [];
+                    const flatList = [];
+                    // 扁平化工具数据
+                    toolLinks.value.forEach(l => flatList.push({ ...l, category: l.category }));
+                    // 递归扁平化书签树
+                    const flatten = (nodes) => nodes.forEach(n => {
+                        if (n.type === 'link') flatList.push({ ...n, category: '书签' });
+                        else if (n.children) flatten(n.children);
+                    });
+                    flatten(bookmarkTree.value);
+
+                    // 使用 Fuse.js 进行高性能模糊搜索
+                    const fuse = new Fuse(flatList, { keys: ['title', 'url'], threshold: 0.4 });
+                    return fuse.search(searchQuery.value).map(r => r.item);
+                });
+
+                // 工具分类折叠状态判断
+                const isFolded = (name) => foldedSet.value.has(name);
+                
+                // 切换工具分类折叠
+                const toggleFold = (name) => {
+                    if (foldedSet.value.has(name)) foldedSet.value.delete(name);
+                    else foldedSet.value.add(name);
+                    nextTick(() => lucide.createIcons());
+                };
+
+                // 格式化显示 URL（仅保留域名）
+                const formatUrl = (url) => { try { return new URL(url).hostname; } catch(e) { return url; } };
+
+                onMounted(fetchData); // 页面加载后执行数据抓取
+                watch(searchQuery, () => setTimeout(() => lucide.createIcons(), 0)); // 搜索时重绘图标
+
+                return { 
+                    settings, toolGroups, bookmarkTree, searchQuery, searchResults, showNotice, formatUrl, 
+                    isFolded, toggleFold, allBookmarksOpen, toggleAllBookmarks, isBookmarksSectionFolded,
+                    // 弹窗相关
+                    isBookmarkModalOpen, selectedRootNode, selectedLevel2Node, selectedLevel3Node, 
+                    openBookmarkModal, closeBookmarkModal, selectLevel2, selectLevel3,
+                    // 弹窗内部计算属性：动态过滤显示内容
+                    level2Folders: computed(() => (selectedRootNode.value?.children || []).filter(c => c.type === 'folder')),
+                    level3Folders: computed(() => (selectedLevel2Node.value?.children || []).filter(c => c.type === 'folder')),
+                    currentLinks: computed(() => {
+                        // 逻辑：如果选中了三级，显示三级链接；否则显示二级链接；最次显示顶级链接
+                        const rootLinks = (selectedRootNode.value?.children || []).filter(c => c.type === 'link');
+                        const level2Links = (selectedLevel2Node.value?.children || []).filter(c => c.type === 'link');
+                        const level3Links = (selectedLevel3Node.value?.children || []).filter(c => c.type === 'link');
+                        
+                        if (selectedLevel3Node.value) return level3Links;
+                        if (selectedLevel2Node.value) return level2Links;
+                        return rootLinks;
+                    })
+                };
+            }
+        }).mount('#app');
+    </script>
 </body>
+</html>
