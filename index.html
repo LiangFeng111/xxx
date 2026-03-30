@@ -46,9 +46,22 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.5); }
     </style>
 </head>
-<body class="p-4 md:p-8 antialiased">
-    <div id="app" v-cloak>
-        <div class="bg-video-container">
+<body class="antialiased">
+    <div id="app" v-cloak class="min-h-screen">
+        <!-- 移动端抽屉开关 + 当前分类显示 -->
+        <div class="md:hidden flex items-center gap-4 w-full px-4 sticky top-0 z-[80] py-4 bg-[#0f172a]/90 backdrop-blur-xl border-b border-white/10 shadow-xl">
+            <button @click="isDrawerOpen = true" class="w-12 h-12 glass rounded-xl flex items-center justify-center text-slate-400 hover:text-white shrink-0">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+            <div @click="isDrawerOpen = true" class="flex-1 glass px-6 py-3 rounded-xl flex items-center gap-3 cursor-pointer overflow-hidden border-white/10">
+                <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse shrink-0"></span>
+                <span class="font-black text-lg tracking-tight truncate">{{ activeCategory || '选择分类' }}</span>
+                <i data-lucide="chevron-down" class="w-4 h-4 text-slate-500 ml-auto shrink-0"></i>
+            </div>
+        </div>
+
+        <div class="p-4 md:p-8">
+            <div class="bg-video-container">
             <video id="bg-video" autoplay loop muted playsinline>
                 <source src="https://cdn.pixabay.com/video/2020/09/24/50841-463878644_large.mp4" type="video/mp4">
             </video>
@@ -56,7 +69,7 @@
         </div>
 
         <!-- Header -->
-        <header class="max-w-6xl mx-auto mb-12 flex flex-col md:flex-row justify-between items-center gap-8">
+        <header class="max-w-6xl mx-auto mb-12 flex flex-col md:flex-row justify-between items-center gap-8 relative mt-6 md:mt-0">
             <div class="text-center md:text-left">
                 <h1 class="text-5xl md:text-6xl font-black gradient-text mb-3 tracking-tighter">{{ settings.site_title || '加载中...' }}</h1>
                 <p class="text-slate-400 text-lg font-medium">{{ settings.site_subtitle }}</p>
@@ -69,27 +82,97 @@
             </div>
         </header>
 
-        <!-- Main Content -->
-        <main class="max-w-6xl mx-auto space-y-8 mt-8">
-            
-            <!-- 1. 常用工具展示 (原有逻辑) -->
-            <div v-if="!searchQuery && toolGroups.length > 0" class="space-y-12">
-                <div v-for="group in toolGroups" :key="group.name" class="space-y-6">
-                    <div @click="toggleFold(group.name)" class="flex items-center justify-between cursor-pointer group/title select-none">
-                        <h2 class="text-2xl font-black flex items-center gap-4">
-                            <span class="w-2 h-10 bg-indigo-500 rounded-full shadow-lg shadow-indigo-500/50"></span>
+        <!-- 移动端分类抽屉 (Drawer) -->
+        <transition name="fade">
+            <div v-if="isDrawerOpen" class="fixed inset-0 z-[100] md:hidden">
+                <!-- 背景遮罩 -->
+                <div @click="isDrawerOpen = false" class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"></div>
+                
+                <!-- 抽屉主体 -->
+                <div class="absolute left-0 top-0 bottom-0 w-72 glass border-r border-white/10 flex flex-col animate-in slide-in-from-left duration-300 shadow-2xl">
+                    <div class="p-8 border-b border-white/5 flex items-center justify-between">
+                        <div>
+                            <span class="font-black text-2xl gradient-text block">分类导航</span>
+                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">移动端视图</span>
+                        </div>
+                        <button @click="isDrawerOpen = false" class="w-10 h-10 glass rounded-xl flex items-center justify-center text-slate-500 hover:text-white">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-6 space-y-3 custom-scrollbar">
+                        <!-- 常用工具分类 -->
+                        <div class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] px-6 mb-2">常用分类</div>
+                        <div v-for="group in toolGroups" :key="group.name"
+                            @click="scrollToCategory(group.name); isDrawerOpen = false"
+                            :class="['px-6 py-4 rounded-2xl cursor-pointer transition-all font-black text-base flex items-center gap-4',
+                                    activeCategory === group.name ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/40' : 'hover:bg-white/5 text-slate-400 hover:text-white']">
+                            <span :class="['w-2 h-2 rounded-full transition-colors', activeCategory === group.name ? 'bg-white' : 'bg-slate-700']"></span>
                             {{ group.name }}
-                            <span class="text-xs text-slate-500 font-bold ml-2">({{ group.items.length }})</span>
-                        </h2>
-                        <div class="p-2 rounded-xl glass group-hover/title:bg-white/10 transition-all">
-                            <i :data-lucide="isFolded(group.name) ? 'chevron-down' : 'chevron-up'" class="w-5 h-5 text-slate-400"></i>
+                        </div>
+
+                        <!-- 我的书签分类 -->
+                        <div class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] px-6 mt-8 mb-2">我的书签</div>
+                        <div @click="scrollToCategory('我的书签'); isDrawerOpen = false"
+                            :class="['px-6 py-4 rounded-2xl cursor-pointer transition-all font-black text-base flex items-center gap-4',
+                                    activeCategory === '我的书签' ? 'bg-amber-600 text-white shadow-lg shadow-amber-500/40' : 'hover:bg-white/5 text-slate-400 hover:text-white']">
+                            <i data-lucide="bookmark" class="w-4 h-4"></i>
+                            我的书签
                         </div>
                     </div>
-                    <transition name="fade">
-                        <div v-show="!isFolded(group.name)" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                </div>
+            </div>
+        </transition>
+
+        <!-- Main Content -->
+        <main class="max-w-6xl mx-auto flex flex-col md:flex-row gap-8 mt-8">
+            
+            <!-- 桌面端侧边栏 (md+ 显示) -->
+            <aside v-if="!searchQuery && toolGroups.length > 0" 
+                class="hidden md:flex w-48 shrink-0 space-y-2 overflow-y-auto no-scrollbar flex-col sticky top-4 self-start z-10">
+                <div class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] px-4 mb-1">工具分类</div>
+                <div v-for="group in toolGroups" :key="group.name"
+                    @click="scrollToCategory(group.name)"
+                    :class="['px-4 py-3 rounded-xl cursor-pointer transition-all font-bold text-sm flex items-center gap-2',
+                            activeCategory === group.name ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'glass text-slate-400 hover:text-white']">
+                    <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+                    {{ group.name }}
+                </div>
+
+                <div class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] px-4 mt-6 mb-1">我的书签</div>
+                <div @click="scrollToCategory('我的书签')"
+                    :class="['px-4 py-3 rounded-xl cursor-pointer transition-all font-bold text-sm flex items-center gap-2',
+                            activeCategory === '我的书签' ? 'bg-amber-600 text-white shadow-lg shadow-amber-500/20' : 'glass text-slate-400 hover:text-white']">
+                    <i data-lucide="bookmark" class="w-4 h-4"></i>
+                    我的书签
+                </div>
+            </aside>
+
+            <!-- 2. 内容区域 -->
+            <div class="flex-1 space-y-12">
+                <!-- 常用工具展示 -->
+                <div v-if="!searchQuery && toolGroups.length > 0" class="space-y-12">
+                    <!-- 移除 v-show 限制，支持滚动浏览所有分类 -->
+                    <div v-for="group in toolGroups" :key="group.name" 
+                        :id="'cat-' + group.name" class="space-y-6 scroll-mt-24 md:scroll-mt-8">
+                        
+                        <!-- 分类标题 (普通显示，不随内容滚动吸顶) -->
+                        <div class="py-2">
+                            <h2 class="text-2xl font-black flex items-center gap-4">
+                                <span class="w-2 h-10 bg-indigo-500 rounded-full shadow-lg shadow-indigo-500/50"></span>
+                                {{ group.name }}
+                                <span class="text-xs text-slate-500 font-bold ml-2">({{ group.items.length }})</span>
+                            </h2>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             <a v-for="link in group.items" :key="link.url" :href="link.url" target="_blank" class="glass rounded-[2rem] p-6 flex items-center gap-5 group relative overflow-hidden">
-                                <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-indigo-400 group-hover:scale-110 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-500 shadow-inner">
-                                    <i :data-lucide="link.icon || 'link'" class="w-7 h-7"></i>
+                                <!-- 图标逻辑优化：自动抓取 Favicon -->
+                                <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-indigo-400 group-hover:scale-110 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-500 shadow-inner overflow-hidden shrink-0">
+                                    <img v-if="isImageUrl(link.icon) || (getFavicon(link.url) && !link.icon)" 
+                                        :src="link.icon || getFavicon(link.url)" 
+                                        class="w-8 h-8 object-contain"
+                                        @error="handleIconError">
+                                    <i v-else :data-lucide="link.icon || 'link'" class="w-7 h-7"></i>
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <h3 class="font-black text-lg tracking-tight group-hover:text-indigo-300 transition-colors truncate">{{ link.title }}</h3>
@@ -98,12 +181,11 @@
                                 <i data-lucide="arrow-up-right" class="w-5 h-5 text-slate-600 opacity-0 group-hover:opacity-100 transition-all"></i>
                             </a>
                         </div>
-                    </transition>
+                    </div>
                 </div>
-            </div>
 
-            <!-- 2. 书签层级展示 (递归结构) -->
-            <div v-if="!searchQuery && bookmarkTree.length > 0" class="pt-12 border-t border-white/5">
+            <!-- 3. 书签层级展示 (原有逻辑) -->
+            <div v-if="!searchQuery && bookmarkTree.length > 0" id="cat-我的书签" class="pt-12 border-t border-white/5 scroll-mt-24 md:scroll-mt-8">
                 <div @click="isBookmarksSectionFolded = !isBookmarksSectionFolded; nextTick(() => lucide.createIcons())" 
                     class="flex items-center justify-between mb-12 cursor-pointer group/bookmark select-none">
                     <div class="flex items-center gap-4">
@@ -136,8 +218,16 @@
                             <!-- 如果根节点直接是链接 -->
                             <a v-else-if="node.type === 'link'" :href="node.url" target="_blank" 
                                 class="glass rounded-[2rem] p-6 flex items-center gap-5 group relative overflow-hidden h-full">
-                                <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all">
-                                    <i data-lucide="link" class="w-5 h-5"></i>
+                                <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all overflow-hidden shrink-0">
+                                    <img v-if="node.icon && node.icon !== 'link'" 
+                                        :src="node.icon" 
+                                        class="w-6 h-6 object-contain"
+                                        @error="handleIconError">
+                                    <img v-else-if="getFavicon(node.url)" 
+                                        :src="getFavicon(node.url)" 
+                                        class="w-6 h-6 object-contain"
+                                        @error="handleIconError">
+                                    <i v-else data-lucide="link" class="w-5 h-5"></i>
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <h4 class="font-black text-sm tracking-tight truncate">{{ node.title }}</h4>
@@ -175,10 +265,11 @@
         <footer class="max-w-6xl mx-auto mt-32 py-12 border-t border-white/5 flex justify-between items-center text-slate-500 text-sm font-bold">
             <p>© 2026 {{ settings.site_title }} · 层级导航版</p>
         </footer>
+        </div>
 
         <!-- 3层级书签展示弹窗 -->
         <transition name="fade">
-            <div v-if="isBookmarkModalOpen" class="fixed inset-0 z-[60] flex items-center justify-center p-4 md:p-8">
+            <div v-if="isBookmarkModalOpen" class="fixed inset-0 z-[150] flex items-center justify-center p-4 md:p-8">
                 <!-- 背景遮罩 -->
                 <div @click="closeBookmarkModal" class="absolute inset-0 bg-slate-950/90 backdrop-blur-xl"></div>
                 
@@ -234,8 +325,16 @@
                                 <div v-if="currentLinks.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                                     <a v-for="link in currentLinks" :key="link.url" :href="link.url" target="_blank" 
                                         class="glass rounded-[1.5rem] md:rounded-[2rem] p-4 md:p-6 flex items-center gap-3 md:gap-4 group hover:bg-white/10 transition-all border-white/5">
-                                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all">
-                                            <i data-lucide="link" class="w-4 h-4 md:w-5 md:h-5"></i>
+                                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all overflow-hidden shrink-0">
+                                            <img v-if="link.icon && link.icon !== 'link'" 
+                                                :src="link.icon" 
+                                                class="w-6 h-6 md:w-8 md:h-8 object-contain"
+                                                @error="handleIconError">
+                                            <img v-else-if="getFavicon(link.url)" 
+                                                :src="getFavicon(link.url)" 
+                                                class="w-6 h-6 md:w-8 md:h-8 object-contain"
+                                                @error="handleIconError">
+                                            <i v-else data-lucide="link" class="w-4 h-4 md:w-5 md:h-5"></i>
                                         </div>
                                         <div class="flex-1 min-w-0">
                                             <h4 class="font-black text-xs md:text-sm tracking-tight truncate group-hover:text-indigo-300">{{ link.title }}</h4>
@@ -258,7 +357,7 @@
         </transition>
 
         <!-- 网站通知 -->
-        <div v-if="showNotice && settings.site_notice" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-xl">
+        <div v-if="showNotice && settings.site_notice" class="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-xl">
             <div class="glass max-w-md w-full rounded-[3rem] p-10 text-center relative border-indigo-500/30">
                 <div class="w-24 h-24 bg-indigo-500/20 rounded-[2.5rem] flex items-center justify-center mx-auto mb-8 text-indigo-400 shadow-inner">
                     <i data-lucide="bell-ring" class="w-10 h-10 animate-bounce"></i>
@@ -280,9 +379,98 @@
                 const bookmarkTree = ref([]);   // 书签树形数据
                 const showNotice = ref(true);   // 是否显示网站公告
                 const searchQuery = ref('');    // 搜索关键词
-                const foldedSet = ref(new Set()); // 存储已折叠的常用工具分类名
+                const activeCategory = ref(''); // 当前活跃分类
+                const isDrawerOpen = ref(false); // 移动端抽屉开关
+                const isMobile = ref(window.innerWidth < 768); // 是否为移动端
                 const allBookmarksOpen = ref(false); // 书签弹窗内是否全部展开
                 const isBookmarksSectionFolded = ref(true); // 首页“我的书签”部分默认折叠
+                const foldedSet = ref(new Set()); // 仅保留用于书签部分的折叠逻辑（如果需要）
+
+                onMounted(() => {
+                    window.addEventListener('resize', () => {
+                        isMobile.value = window.innerWidth < 768;
+                    });
+
+                    // 滚动监听：IntersectionObserver 自动切换 activeCategory
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                activeCategory.value = entry.target.id.replace('cat-', '');
+                            }
+                        });
+                    }, { 
+                        // 根边缘调整：顶部留出指示条的高度(约85px)，增加灵敏度
+                        rootMargin: '-85px 0px -80% 0px', 
+                        threshold: 0 
+                    });
+
+                    // 动态监听分类元素的变化 (包括书签部分)
+                    watch([toolGroups, bookmarkTree], () => {
+                        nextTick(() => {
+                            // 监听工具分类
+                            toolGroups.value.forEach(g => {
+                                const el = document.getElementById('cat-' + g.name);
+                                if (el) observer.observe(el);
+                            });
+                            // 监听书签分类
+                            const bookmarkEl = document.getElementById('cat-我的书签');
+                            if (bookmarkEl) observer.observe(bookmarkEl);
+                        });
+                    }, { immediate: true });
+                });
+
+                const scrollToCategory = (name) => {
+                    activeCategory.value = name;
+                    const el = document.getElementById('cat-' + name);
+                    if (el) {
+                        // 桌面端偏移量 (侧边栏模式不需要太多偏移)
+                        // 移动端偏移量 (由于全程置顶条高度约 80px，需要预留空间)
+                        const offset = isMobile.value ? 90 : 20;
+                        const bodyRect = document.body.getBoundingClientRect().top;
+                        const elementRect = el.getBoundingClientRect().top;
+                        const elementPosition = elementRect - bodyRect;
+                        const offsetPosition = elementPosition - offset;
+
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                };
+
+                /**
+                 * 判断是否为图片链接
+                 */
+                const isImageUrl = (url) => {
+                    if (!url) return false;
+                    return url.startsWith('http') || url.startsWith('./') || url.endsWith('.png') || url.endsWith('.jpg') || url.endsWith('.jpeg') || url.endsWith('.svg');
+                };
+
+                /**
+                 * 获取 Favicon (自动抓取链接图标)
+                 */
+                const getFavicon = (url) => {
+                    if (!url || url.startsWith('工具/') || url.startsWith('游戏/') || url.startsWith('vip/')) return null;
+                    try {
+                        // 使用 Google 官方更强大的 Favicon V2 服务，支持更多参数和更好的抓取
+                        return `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${encodeURIComponent(url)}&size=64`;
+                    } catch (e) {
+                        return null;
+                    }
+                };
+
+                /**
+                 * 图标加载失败处理
+                 */
+                const handleIconError = (e) => {
+                    e.target.style.display = 'none';
+                    const parent = e.target.parentElement;
+                    const icon = document.createElement('i');
+                    icon.setAttribute('data-lucide', 'link');
+                    icon.className = 'w-7 h-7';
+                    parent.appendChild(icon);
+                    lucide.createIcons();
+                };
 
                 // --- 书签弹窗相关状态 ---
                 const isBookmarkModalOpen = ref(false); // 弹窗开关
@@ -354,9 +542,9 @@
                         settings.value = result.settings || {};
                         toolLinks.value = result.links || [];
                         
-                        // 【默认折叠】初始化时将所有常用工具分类加入折叠集合
+                        // 常用工具数据加载后
                         const categories = [...new Set(toolLinks.value.map(l => l.category))];
-                        categories.forEach(cat => foldedSet.value.add(cat));
+                        if (categories.length > 0) activeCategory.value = categories[0];
                     } catch (e) { console.error('常用工具加载失败'); }
 
                     // 2. 加载书签数据 (converted_bookmarks.json)
@@ -401,7 +589,13 @@
                         acc[link.category].push(link);
                         return acc;
                     }, {});
-                    return Object.entries(groups).map(([name, items]) => ({ name, items }));
+                    const result = Object.entries(groups).map(([name, items]) => ({ name, items }));
+                    
+                    // 自动设置初始 activeCategory
+                    if (result.length > 0 && !activeCategory.value) {
+                        activeCategory.value = result[0].name;
+                    }
+                    return result;
                 });
 
                 /**
@@ -443,6 +637,7 @@
                 return { 
                     settings, toolGroups, bookmarkTree, searchQuery, searchResults, showNotice, formatUrl, 
                     isFolded, toggleFold, allBookmarksOpen, toggleAllBookmarks, isBookmarksSectionFolded,
+                    activeCategory, scrollToCategory, isImageUrl, getFavicon, handleIconError, isDrawerOpen,
                     // 弹窗相关
                     isBookmarkModalOpen, selectedRootNode, selectedLevel2Node, selectedLevel3Node, 
                     openBookmarkModal, closeBookmarkModal, selectLevel2, selectLevel3,

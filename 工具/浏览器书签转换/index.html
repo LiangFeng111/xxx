@@ -132,11 +132,19 @@
                         // 链接
                         const url = a.getAttribute('href');
                         if (url && !url.startsWith('chrome://')) {
+                            let iconUrl = 'link';
+                            try {
+                                // 使用 Google 官方更强大的 Favicon V2 服务，直接传入完整 URL
+                                iconUrl = `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${encodeURIComponent(url)}&size=64`;
+                            } catch (e) {
+                                console.warn('URL 解析失败:', url);
+                            }
+
                             items.push({
                                 type: 'link',
                                 title: a.textContent.trim(),
                                 url: url,
-                                icon: 'link'
+                                icon: iconUrl
                             });
                         }
                     }
