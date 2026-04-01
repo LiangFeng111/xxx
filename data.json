@@ -6,6 +6,7 @@
   },
   "links": [
     { "category": "最近使用", "title": "书签转换", "url": "工具/浏览器书签转换", "icon": "shield-check" },
+    { "category": "最近使用", "title": "huayun_clash订阅转换", "url": "工具/订阅转换", "icon": "shield-check" },
     { "category": "最近使用", "title": "凉风博客", "url": "https://liangfeng111.top", "icon": "https://liangfeng111.top/img/head.jpeg" },
     { "category": "书签转换", "title": "书签转换", "url": "工具/浏览器书签转换", "icon": "shield-check" },
     { "category": "常用工具", "title": "青龙面板", "url": "http://1.92.125.81:5700/crontab", "icon": "shield-check" },
