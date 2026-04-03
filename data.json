@@ -10,6 +10,7 @@
     { "category": "书签转换", "title": "书签转换", "url": "工具/浏览器书签转换", "icon": "shield-check" },
     { "category": "常用工具", "title": "青龙面板", "url": "http://1.92.125.81:5700/crontab", "icon": "shield-check" },
     { "category": "常用工具", "title": "美团抓包app", "url": "https://sxx666.lanpw.com/iUGQM1lygzxg", "icon": "package" },
+    { "category": "常用工具", "title": "我的图床", "url": "https://frontend.liangfeng111.top/", "icon": "package" },
     { "category": "娱乐工具", "title": "美女视频", "url": "工具/xjj", "icon": "video" },
     { "category": "常用工具", "title": "影视vip解析", "url": "vip/", "icon": "tv" },
     { "category": "智能应用", "title": "机器人", "url": "https://gpt.liangfeng111.top/", "icon": "bot" },
