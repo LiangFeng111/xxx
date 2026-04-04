@@ -7,12 +7,6 @@
   "links": [
     {
       "category": "最近使用",
-      "title": "测试后端",
-      "url": "aaa",
-      "icon": "link"
-    },
-    {
-      "category": "最近使用",
       "title": "书签转换1",
       "url": "工具/浏览器书签转换",
       "icon": "shield-check"
