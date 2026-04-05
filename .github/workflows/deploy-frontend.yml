@@ -3,7 +3,7 @@ name: Deploy Frontend to Cloudflare Pages
 on:
   push:
     branches:
-      - main
+      - master
     paths-ignore:
       - 'admin/backend/**'
       - '.github/workflows/deploy-backend.yml'
