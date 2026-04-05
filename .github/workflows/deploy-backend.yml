@@ -6,6 +6,7 @@ on:
       - master
     paths:
       - 'admin/backend/**'
+  workflow_dispatch:
 
 jobs:
   deploy:

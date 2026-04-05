@@ -6,6 +6,7 @@ on:
       - master
     paths:
       - 'admin/frontend/**'
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -21,7 +22,7 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'admin/frontend/package-lock.json'
 
-      - name: Build Admin Frontend
+      - name: Install and Build Admin Frontend
         run: |
           cd admin/frontend
           npm install
@@ -29,16 +30,16 @@ jobs:
         env:
           VITE_API_BASE: https://admin-backend.LiangFeng111.workers.dev/api
 
-      - name: Create Cloudflare Pages Project (if not exists)
-        run: npx wrangler pages project create xxx-admin-frontend-pages --production-branch master || true
+      - name: Create and Deploy to Cloudflare Pages
+        run: |
+          # 1. 强制安装最新版 wrangler 以确保 Node 20 兼容性
+          npm install -g wrangler@latest
+          
+          # 2. 尝试创建项目 (如果已存在则报错，所以捕获后继续)
+          wrangler pages project create xxx-admin-frontend-pages --production-branch master || echo "Project already exists or creation failed, proceeding to deploy..."
+          
+          # 3. 执行部署 (去掉冗余参数，直接指定目录和项目名)
+          wrangler pages deploy admin/frontend/dist --project-name=xxx-admin-frontend-pages --branch=master --commit-dirty=true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          # 直接部署编译生成的 dist 文件夹
-          command: pages deploy admin/frontend/dist --project-name=xxx-admin-frontend-pages --branch=master --commit-dirty=true
