@@ -24,10 +24,6 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: 'admin/backend'
           command: deploy --minify src/index.ts
-          vars: |
-            GH_OWNER=${{ vars.GH_OWNER }}
-            GH_REPO=${{ vars.GH_REPO }}
-            GH_BRANCH=${{ vars.GH_BRANCH }}
           secrets: |
             GH_TOKEN
         env:

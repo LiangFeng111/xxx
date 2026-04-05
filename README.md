@@ -13,18 +13,9 @@
 - `CLOUDFLARE_ACCOUNT_ID`: 您的 Cloudflare 账户 ID。
 - `GH_TOKEN`: 具有写权限的 GitHub Personal Access Token (用于后端修改文件)。
 
-### 2. 配置 GitHub Variables (仓库设置 -> Secrets and variables -> Actions -> Variables)
+### 2. 部署流程
 
-请在 GitHub 仓库中添加以下 **Variables**:
-
-- `GH_OWNER`: 您的 GitHub 用户名。
-- `GH_REPO`: 仓库名称。
-- `GH_BRANCH`: 部署分支 (默认 `main`)。
-- `VITE_API_BASE`: (可选) 后端 API 地址，例如 `https://admin-backend.xxx.workers.dev/api`。
-
-### 3. 部署流程
-
-- 推送代码到 `main` 分支后，GitHub Actions 会自动触发部署：
+- 推送代码到 `master` 分支后，GitHub Actions 会自动触发部署：
     - 后端更改触发 `Deploy to Cloudflare Workers`。
     - 前端更改触发 `Deploy Frontend to Cloudflare Pages`。
 
