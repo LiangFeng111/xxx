@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>喜淘网工具箱 - 极致简约导航</title>
-    
+
     <!-- UI Libraries -->
     <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
     <script src="resource/js/vue.global.prod.js"></script>
@@ -178,68 +178,83 @@
             margin-bottom: 0.75rem;
         }
 
-        [v-cloak] { display: none; }
+        [v-cloak] {
+            display: none;
+        }
 
         @media (max-width: 768px) {
             .app-container {
                 display: block;
             }
+
             .sidebar {
                 transform: translateX(-100%);
-                box-shadow: 20px 0 50px rgba(0,0,0,0.1);
+                box-shadow: 20px 0 50px rgba(0, 0, 0, 0.1);
             }
+
             .sidebar.is-open {
                 transform: translateX(0);
             }
+
             .sidebar-overlay {
                 display: block !important;
                 position: fixed;
                 inset: 0;
-                background: rgba(0,0,0,0.5);
+                background: rgba(0, 0, 0, 0.5);
                 backdrop-filter: blur(4px);
                 z-index: 115;
             }
+
             .main-content {
                 margin-left: 0;
                 width: 100%;
                 padding: 1rem;
                 font-size: 1.1rem;
             }
+
             .mobile-header {
                 display: flex !important;
                 height: 60px;
                 padding: 0 1rem;
             }
+
             .mobile-header .el-button {
                 font-size: 20px;
                 padding: 10px;
                 width: 44px;
                 height: 44px;
             }
+
             .mobile-header h1 {
                 font-size: 1.25rem;
                 flex: 1;
                 text-align: center;
                 margin: 0;
             }
+
             .search-bar {
                 margin-bottom: 1.5rem;
             }
+
             .tool-card {
                 padding: 1rem !important;
             }
+
             .tool-icon {
                 width: 40px;
                 height: 40px;
                 margin-right: 0.75rem;
             }
+
             .tool-icon img {
                 width: 24px;
                 height: 24px;
             }
+
             .top-welcome {
                 display: none;
             }
+
             .bookmark-dialog .el-dialog {
                 width: 95% !important;
                 margin-top: 5vh !important;
@@ -264,432 +279,490 @@
     </style>
 </head>
 <body>
-    <div id="app" v-cloak>
-        <div class="app-container">
-            <!-- Sidebar Overlay -->
-            <div class="sidebar-overlay" v-if="isSidebarOpen" @click="isSidebarOpen = false"></div>
+<div id="app" v-cloak>
+    <div class="app-container">
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" v-if="isSidebarOpen" @click="isSidebarOpen = false"></div>
 
-            <!-- Mobile Header -->
-            <div class="mobile-header">
-                <el-button @click="isSidebarOpen = !isSidebarOpen" circle>
-                    <el-icon><Operation /></el-icon>
-                </el-button>
-                <h1 class="text-xl font-bold">{{ settings.site_title }}</h1>
-                <div style="width: 44px"></div>
+        <!-- Mobile Header -->
+        <div class="mobile-header">
+            <el-button @click="isSidebarOpen = !isSidebarOpen" circle>
+                <el-icon>
+                    <Operation/>
+                </el-icon>
+            </el-button>
+            <h1 class="text-xl font-bold">{{ settings.site_title }}</h1>
+            <div style="width: 44px"></div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside :class="['sidebar', isSidebarOpen ? 'is-open' : '']">
+            <div class="p-6 border-b border-slate-100 flex items-center gap-3">
+                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white">
+                    <el-icon :size="24">
+                        <Tools/>
+                    </el-icon>
+                </div>
+                <div>
+                    <h1 class="font-black text-lg tracking-tight leading-none">{{ settings.site_title }}</h1>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">v2.0 简约版</p>
+                </div>
             </div>
 
-            <!-- Sidebar -->
-            <aside :class="['sidebar', isSidebarOpen ? 'is-open' : '']">
-                <div class="p-6 border-b border-slate-100 flex items-center gap-3">
-                    <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white">
-                        <el-icon :size="24"><Tools /></el-icon>
-                    </div>
-                    <div>
-                        <h1 class="font-black text-lg tracking-tight leading-none">{{ settings.site_title }}</h1>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">v2.0 简约版</p>
-                    </div>
+            <div class="flex-1 overflow-y-auto py-4 category-menu">
+                <el-menu :default-active="activeMenu" @select="handleMenuSelect">
+                    <el-menu-item-group title="工具分类">
+                        <el-menu-item v-for="group in toolGroups" :key="group.name" :index="'cat-' + group.name">
+                            <el-icon>
+                                <Grid/>
+                            </el-icon>
+                            <span>{{ group.name }}</span>
+                        </el-menu-item>
+                    </el-menu-item-group>
+
+                    <el-menu-item-group title="书签资源">
+                        <el-menu-item index="bookmarks">
+                            <el-icon>
+                                <CollectionTag/>
+                            </el-icon>
+                            <span>我的书签</span>
+                        </el-menu-item>
+                    </el-menu-item-group>
+
+                    <el-menu-item-group title="私密资源" v-if="!hideData">
+                        <el-menu-item index="unlock-hide">
+                            <el-icon>
+                                <Lock/>
+                            </el-icon>
+                            <span>解锁隐藏分类</span>
+                        </el-menu-item>
+                    </el-menu-item-group>
+
+                    <el-menu-item-group title="隐藏分类" v-if="hideData">
+                        <el-menu-item v-for="group in hideGroups" :key="group.name" :index="'hide-' + group.name">
+                            <el-icon>
+                                <View/>
+                            </el-icon>
+                            <span>{{ group.name }}</span>
+                        </el-menu-item>
+                    </el-menu-item-group>
+                </el-menu>
+            </div>
+
+            <div class="p-4 border-t border-slate-100 flex flex-col gap-2">
+                <el-button type="primary" plain block @click="openAdmin" icon="Setting" style="width: 100%">
+                    后台管理
+                </el-button>
+                <div class="text-[10px] text-slate-400 font-bold text-center mt-2">
+                    © 2026 {{ settings.site_title }}
                 </div>
+            </div>
+        </aside>
 
-                <div class="flex-1 overflow-y-auto py-4 category-menu">
-                    <el-menu :default-active="activeMenu" @select="handleMenuSelect">
-                        <el-menu-item-group title="工具分类">
-                            <el-menu-item v-for="group in toolGroups" :key="group.name" :index="'cat-' + group.name">
-                                <el-icon><Grid /></el-icon>
-                                <span>{{ group.name }}</span>
-                            </el-menu-item>
-                        </el-menu-item-group>
-
-                        <el-menu-item-group title="书签资源">
-                            <el-menu-item index="bookmarks">
-                                <el-icon><CollectionTag /></el-icon>
-                                <span>我的书签</span>
-                            </el-menu-item>
-                        </el-menu-item-group>
-
-                        <el-menu-item-group title="私密资源" v-if="!hideData">
-                            <el-menu-item index="unlock-hide">
-                                <el-icon><Lock /></el-icon>
-                                <span>解锁隐藏分类</span>
-                            </el-menu-item>
-                        </el-menu-item-group>
-
-                        <el-menu-item-group title="隐藏分类" v-if="hideData">
-                            <el-menu-item v-for="group in hideGroups" :key="group.name" :index="'hide-' + group.name">
-                                <el-icon><View /></el-icon>
-                                <span>{{ group.name }}</span>
-                            </el-menu-item>
-                        </el-menu-item-group>
-                    </el-menu>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <div class="flex justify-between items-center mb-8 top-welcome">
+                <div class="text-slate-400 font-medium">
+                    欢迎使用 {{ settings.site_title }}
                 </div>
+                <el-button type="primary" plain round @click="openAdmin" icon="Setting">
+                    后台管理
+                </el-button>
+            </div>
 
-                <div class="p-4 border-t border-slate-100 flex flex-col gap-2">
-                    <el-button type="primary" plain block @click="openAdmin" icon="Setting" style="width: 100%">
-                        后台管理
-                    </el-button>
-                    <div class="text-[10px] text-slate-400 font-bold text-center mt-2">
-                        © 2026 {{ settings.site_title }}
-                    </div>
-                </div>
-            </aside>
-
-            <!-- Main Content -->
-            <main class="main-content">
-                <!-- Top Header -->
-                <div class="flex justify-between items-center mb-8 top-welcome">
-                    <div class="text-slate-400 font-medium">
-                        欢迎使用 {{ settings.site_title }}
-                    </div>
-                    <el-button type="primary" plain round @click="openAdmin" icon="Setting">
-                        后台管理
-                    </el-button>
-                </div>
-
-                <!-- Search Section -->
-                <div class="search-bar">
-                    <el-input
+            <!-- Search Section -->
+            <div class="search-bar">
+                <el-input
                         v-model="searchQuery"
                         placeholder="搜索在线资源、工具或书签..."
                         class="search-input"
                         clearable
                         @input="handleSearch"
-                    >
-                        <template #prefix>
-                            <el-icon><Search /></el-icon>
-                        </template>
-                    </el-input>
+                >
+                    <template #prefix>
+                        <el-icon>
+                            <Search/>
+                        </el-icon>
+                    </template>
+                </el-input>
+            </div>
+
+            <!-- Search Results -->
+            <div v-if="searchQuery" class="space-y-8 animate-in fade-in slide-in-from-bottom-4">
+                <div class="section-header">
+                    <h2>搜索结果</h2>
+                    <span class="section-badge">{{ searchResults.length }}</span>
                 </div>
 
-                <!-- Search Results -->
-                <div v-if="searchQuery" class="space-y-8 animate-in fade-in slide-in-from-bottom-4">
-                    <div class="section-header">
-                        <h2>搜索结果</h2>
-                        <span class="section-badge">{{ searchResults.length }}</span>
-                    </div>
-                    
-                    <div v-if="searchResults.length === 0" class="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-200">
-                        <el-icon :size="48" class="text-slate-300 mb-4"><Search /></el-icon>
-                        <p class="text-slate-400 font-bold">未找到相关资源</p>
-                    </div>
+                <div v-if="searchResults.length === 0"
+                     class="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-200">
+                    <el-icon :size="48" class="text-slate-300 mb-4">
+                        <Search/>
+                    </el-icon>
+                    <p class="text-slate-400 font-bold">未找到相关资源</p>
+                </div>
 
-                    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div v-for="link in searchResults" :key="link.url" @click="openLink(link.url)" class="tool-card p-6 flex items-center">
+                <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div v-for="link in searchResults" :key="link.url" @click="openLink(link.url)"
+                         class="tool-card p-6 flex items-center">
+                        <div class="tool-icon">
+                            <img v-if="getFavicon(link.url)" loading="lazy" :src="getFavicon(link.url)" @error="handleIconError">
+                            <el-icon v-else :size="24" class="text-indigo-400">
+                                <Link/>
+                            </el-icon>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 mb-0.5">
+                                <span class="text-[10px] font-bold uppercase tracking-tighter bg-slate-100 px-1.5 py-0.5 rounded text-slate-500">{{ link.category || '书签'
+                                    }}</span>
+                            </div>
+                            <h3 class="font-bold text-base truncate">{{ link.title }}</h3>
+                        </div>
+                        <el-icon class="text-slate-300">
+                            <ArrowRight/>
+                        </el-icon>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Standard Content -->
+            <div v-else class="space-y-16">
+                <!-- Tool Groups -->
+                <div v-for="group in toolGroups" :key="group.name" :id="'cat-' + group.name" class="scroll-mt-24">
+                    <div class="section-header">
+                        <h2>{{ group.name }}</h2>
+                        <span class="section-badge">{{ group.items.length }}</span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                        <div v-for="link in group.items" :key="link.url" @click="openLink(link.url)"
+                             class="tool-card p-5 flex items-center">
                             <div class="tool-icon">
-                                <img v-if="getFavicon(link.url)" :src="getFavicon(link.url)" @error="handleIconError">
-                                <el-icon v-else :size="24" class="text-indigo-400"><Link /></el-icon>
+                                <img v-if="link.icon && isImageUrl(link.icon)" :src="link.icon"
+                                     @error="handleIconError">
+                                <img v-else-if="getFavicon(link.url)" :src="getFavicon(link.url)"
+                                     @error="handleIconError">
+                                <el-icon v-else :size="24" class="text-indigo-400">
+                                    <Link/>
+                                </el-icon>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <div class="flex items-center gap-2 mb-0.5">
-                                    <span class="text-[10px] font-bold uppercase tracking-tighter bg-slate-100 px-1.5 py-0.5 rounded text-slate-500">{{ link.category || '书签' }}</span>
-                                </div>
                                 <h3 class="font-bold text-base truncate">{{ link.title }}</h3>
-                            </div>
-                            <el-icon class="text-slate-300"><ArrowRight /></el-icon>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Standard Content -->
-                <div v-else class="space-y-16">
-                    <!-- Tool Groups -->
-                    <div v-for="group in toolGroups" :key="group.name" :id="'cat-' + group.name" class="scroll-mt-24">
-                        <div class="section-header">
-                            <h2>{{ group.name }}</h2>
-                            <span class="section-badge">{{ group.items.length }}</span>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                            <div v-for="link in group.items" :key="link.url" @click="openLink(link.url)" class="tool-card p-5 flex items-center">
-                                <div class="tool-icon">
-                                    <img v-if="link.icon && isImageUrl(link.icon)" :src="link.icon" @error="handleIconError">
-                                    <img v-else-if="getFavicon(link.url)" :src="getFavicon(link.url)" @error="handleIconError">
-                                    <el-icon v-else :size="24" class="text-indigo-400"><Link /></el-icon>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <h3 class="font-bold text-base truncate">{{ link.title }}</h3>
-                                    <p class="text-[10px] text-slate-400 truncate mt-1">{{ formatUrl(link.url) }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Bookmarks Section -->
-                    <div id="bookmarks" class="scroll-mt-24 pt-8 border-t border-slate-100">
-                        <div class="section-header">
-                            <h2>我的书签</h2>
-                            <span class="section-badge">{{ bookmarkTree.length }}</span>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-                            <template v-for="node in bookmarkTree" :key="node.name || node.title">
-                                <!-- Folder -->
-                                <div v-if="node.type === 'folder'" @click="openBookmarkModal(node)" class="bookmark-folder group">
-                                    <div class="bookmark-folder-icon group-hover:scale-110 transition-transform">
-                                        <el-icon><Folder /></el-icon>
-                                    </div>
-                                    <h3 class="font-bold text-sm truncate">{{ node.name }}</h3>
-                                    <p class="text-[10px] text-slate-400 font-bold mt-1 uppercase">{{ (node.children || []).length }} 项</p>
-                                </div>
-                                
-                                <!-- Link -->
-                                <div v-else @click="openLink(node.url)" class="tool-card p-4 flex flex-col items-center text-center">
-                                    <div class="tool-icon mr-0 mb-3">
-                                        <img v-if="getFavicon(node.url)" :src="getFavicon(node.url)" @error="handleIconError">
-                                        <el-icon v-else :size="24" class="text-indigo-400"><Link /></el-icon>
-                                    </div>
-                                    <h3 class="font-bold text-xs truncate w-full">{{ node.title }}</h3>
-                                </div>
-                            </template>
-                        </div>
-                    </div>
-
-                    <!-- Hidden Groups -->
-                    <div v-if="hideData" v-for="group in hideGroups" :key="group.name" :id="'hide-' + group.name" class="scroll-mt-24 pt-8 border-t border-slate-100">
-                        <div class="section-header">
-                            <h2>{{ group.name }}</h2>
-                            <span class="section-badge">{{ group.items.length }}</span>
-                            <el-icon class="text-indigo-500"><Lock /></el-icon>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                            <div v-for="link in group.items" :key="link.url" @click="openLink(link.url)" class="tool-card p-5 flex items-center border-indigo-100 bg-indigo-50/10">
-                                <div class="tool-icon bg-indigo-50">
-                                    <img v-if="link.icon && isImageUrl(link.icon)" :src="link.icon" @error="handleIconError">
-                                    <img v-else-if="getFavicon(link.url)" :src="getFavicon(link.url)" @error="handleIconError">
-                                    <el-icon v-else :size="24" class="text-indigo-400"><Link /></el-icon>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <h3 class="font-bold text-base truncate">{{ link.title }}</h3>
-                                    <p class="text-[10px] text-slate-400 truncate mt-1">{{ formatUrl(link.url) }}</p>
-                                </div>
+                                <p class="text-[10px] text-slate-400 truncate mt-1">{{ formatUrl(link.url) }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
-            </main>
-        </div>
 
-        <!-- Bookmark Explorer Modal -->
-        <el-dialog
+                <!-- Bookmarks Section -->
+                <div id="bookmarks" class="scroll-mt-24 pt-8 border-t border-slate-100">
+                    <div class="section-header">
+                        <h2>我的书签</h2>
+                        <span class="section-badge">{{ bookmarkTree.length }}</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+                        <template v-for="node in bookmarkTree" :key="node.name || node.title">
+                            <!-- Folder -->
+                            <div v-if="node.type === 'folder'" @click="openBookmarkModal(node)"
+                                 class="bookmark-folder group">
+                                <div class="bookmark-folder-icon group-hover:scale-110 transition-transform">
+                                    <el-icon>
+                                        <Folder/>
+                                    </el-icon>
+                                </div>
+                                <h3 class="font-bold text-sm truncate">{{ node.name }}</h3>
+                                <p class="text-[10px] text-slate-400 font-bold mt-1 uppercase">
+                                    {{ (node.children || []).length }} 项</p>
+                            </div>
+
+                            <!-- Link -->
+                            <div v-else @click="openLink(node.url)"
+                                 class="tool-card p-4 flex flex-col items-center text-center">
+                                <div class="tool-icon mr-0 mb-3">
+                                    <img v-if="getFavicon(node.url)" :src="getFavicon(node.url)"
+                                         @error="handleIconError">
+                                    <el-icon v-else :size="24" class="text-indigo-400">
+                                        <Link/>
+                                    </el-icon>
+                                </div>
+                                <h3 class="font-bold text-xs truncate w-full">{{ node.title }}</h3>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Hidden Groups -->
+                <div v-if="hideData" v-for="group in hideGroups" :key="group.name" :id="'hide-' + group.name"
+                     class="scroll-mt-24 pt-8 border-t border-slate-100">
+                    <div class="section-header">
+                        <h2>{{ group.name }}</h2>
+                        <span class="section-badge">{{ group.items.length }}</span>
+                        <el-icon class="text-indigo-500">
+                            <Lock/>
+                        </el-icon>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                        <div v-for="link in group.items" :key="link.url" @click="openLink(link.url)"
+                             class="tool-card p-5 flex items-center border-indigo-100 bg-indigo-50/10">
+                            <div class="tool-icon bg-indigo-50">
+                                <img v-if="link.icon && isImageUrl(link.icon)" :src="link.icon"
+                                     @error="handleIconError">
+                                <img v-else-if="getFavicon(link.url)" :src="getFavicon(link.url)"
+                                     @error="handleIconError">
+                                <el-icon v-else :size="24" class="text-indigo-400">
+                                    <Link/>
+                                </el-icon>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="font-bold text-base truncate">{{ link.title }}</h3>
+                                <p class="text-[10px] text-slate-400 truncate mt-1">{{ formatUrl(link.url) }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Bookmark Explorer Modal -->
+    <el-dialog
             v-model="isModalOpen"
             :title="selectedFolder?.name || '书签浏览'"
             width="80%"
             class="bookmark-dialog"
             destroy-on-close
-        >
-            <div class="flex flex-col md:flex-row gap-6 min-h-[400px]">
-                <!-- Left: Folder Tree -->
-                <div class="w-full md:w-64 border-r border-slate-100 pr-4">
-                    <el-tree
+    >
+        <div class="flex flex-col md:flex-row gap-6 min-h-[400px]">
+            <!-- Left: Folder Tree -->
+            <div class="w-full md:w-64 border-r border-slate-100 pr-4">
+                <el-tree
                         :data="selectedFolder?.children"
                         :props="treeProps"
                         @node-click="handleTreeNodeClick"
                         highlight-current
-                    >
-                        <template #default="{ node, data }">
+                >
+                    <template #default="{ node, data }">
                             <span class="flex items-center gap-2 text-sm overflow-hidden">
-                                <el-icon v-if="data.type === 'folder'" class="text-amber-500"><Folder /></el-icon>
+                                <el-icon v-if="data.type === 'folder'" class="text-amber-500"><Folder/></el-icon>
                                 <template v-else>
-                                    <img v-if="getFavicon(data.url)" :src="getFavicon(data.url)" class="w-4 h-4 object-contain" @error="handleIconError">
-                                    <el-icon v-else class="text-indigo-400"><Link /></el-icon>
+                                    <img v-if="getFavicon(data.url)" :src="getFavicon(data.url)"
+                                         class="w-4 h-4 object-contain" @error="handleIconError">
+                                    <el-icon v-else class="text-indigo-400"><Link/></el-icon>
                                 </template>
                                 <span class="truncate">{{ data.name || data.title }}</span>
                             </span>
-                        </template>
-                    </el-tree>
-                </div>
+                    </template>
+                </el-tree>
+            </div>
 
-                <!-- Right: Content -->
-                <div class="flex-1">
-                    <div v-if="currentLinks.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div v-for="link in currentLinks" :key="link.url" @click="openLink(link.url)" class="tool-card p-4 flex items-center">
-                            <div class="tool-icon w-10 h-10">
-                                <img v-if="getFavicon(link.url)" :src="getFavicon(link.url)" @error="handleIconError">
-                                <el-icon v-else :size="18" class="text-indigo-400"><Link /></el-icon>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <h4 class="font-bold text-sm truncate">{{ link.title }}</h4>
-                                <p class="text-[10px] text-slate-400 truncate">{{ link.url }}</p>
-                            </div>
+            <!-- Right: Content -->
+            <div class="flex-1">
+                <div v-if="currentLinks.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div v-for="link in currentLinks" :key="link.url" @click="openLink(link.url)"
+                         class="tool-card p-4 flex items-center">
+                        <div class="tool-icon w-10 h-10">
+                            <img v-if="getFavicon(link.url)" loading="lazy" :src="getFavicon(link.url)" @error="handleIconError">
+                            <el-icon v-else :size="18" class="text-indigo-400">
+                                <Link/>
+                            </el-icon>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-bold text-sm truncate">{{ link.title }}</h4>
+                            <p class="text-[10px] text-slate-400 truncate">{{ link.url }}</p>
                         </div>
                     </div>
-                    <div v-else class="h-full flex flex-col items-center justify-center text-slate-300 py-12">
-                        <el-icon :size="48"><InfoFilled /></el-icon>
-                        <p class="mt-4 font-bold">请选择左侧分类查看内容</p>
-                    </div>
+                </div>
+                <div v-else class="h-full flex flex-col items-center justify-center text-slate-300 py-12">
+                    <el-icon :size="48">
+                        <InfoFilled/>
+                    </el-icon>
+                    <p class="mt-4 font-bold">请选择左侧分类查看内容</p>
                 </div>
             </div>
-        </el-dialog>
+        </div>
+    </el-dialog>
 
-        <!-- Notice Dialog -->
-        <el-dialog
+    <!-- Notice Dialog -->
+    <el-dialog
             v-model="showNotice"
             title="网站通知"
             width="400px"
             center
             :show-close="false"
             :close-on-click-modal="false"
-        >
-            <div class="text-center py-4">
-                <el-icon :size="48" class="text-indigo-500 mb-4 animate-bounce"><Bell /></el-icon>
-                <p class="text-slate-600 leading-relaxed font-medium">{{ settings.site_notice }}</p>
-            </div>
-            <template #footer>
-                <el-button type="primary" size="large" @click="showNotice = false" round block style="width: 100%">
-                    我知道了
-                </el-button>
-            </template>
-        </el-dialog>
-    </div>
+    >
+        <div class="text-center py-4">
+            <el-icon :size="48" class="text-indigo-500 mb-4 animate-bounce">
+                <Bell/>
+            </el-icon>
+            <p class="text-slate-600 leading-relaxed font-medium">{{ settings.site_notice }}</p>
+        </div>
+        <template #footer>
+            <el-button type="primary" size="large" @click="showNotice = false" round block style="width: 100%">
+                我知道了
+            </el-button>
+        </template>
+    </el-dialog>
+</div>
 
-    <script>
-        const { createApp, ref, onMounted, computed, watch, nextTick } = Vue;
+<script>
+    const {createApp, ref, onMounted, computed, watch, nextTick} = Vue;
 
-        const app = createApp({
-            setup() {
-                const settings = ref({});
-                const toolLinks = ref([]);
-                const bookmarkTree = ref([]);
-                const hideData = ref(null);
-                const searchQuery = ref('');
-                const activeMenu = ref('');
-                const isSidebarOpen = ref(false);
-                const showNotice = ref(true);
-                const isModalOpen = ref(false);
-                const selectedFolder = ref(null);
-                const currentLinks = ref([]);
+    const app = createApp({
+        setup() {
+            const settings = ref({});
+            const toolLinks = ref([]);
+            const bookmarkTree = ref([]);
+            const hideData = ref(null);
+            const searchQuery = ref('');
+            const activeMenu = ref('');
+            const isSidebarOpen = ref(false);
+            const showNotice = ref(true);
+            const isModalOpen = ref(false);
+            const selectedFolder = ref(null);
+            const currentLinks = ref([]);
 
-                const treeProps = {
-                    label: (data) => data.name || data.title,
-                    children: 'children'
-                };
+            const treeProps = {
+                label: (data) => data.name || data.title,
+                children: 'children'
+            };
 
-                onMounted(async () => {
-                    await fetchData();
-                    await fetchBookmarks();
-                    
-                    // Initialize scroll spy
-                    const observer = new IntersectionObserver((entries) => {
-                        entries.forEach(entry => {
-                            if (entry.isIntersecting) {
-                                activeMenu.value = entry.target.id;
-                            }
-                        });
-                    }, { rootMargin: '-10% 0px -80% 0px' });
+            onMounted(async () => {
+                await fetchData();
+                await fetchBookmarks();
 
-                    nextTick(() => {
-                        toolGroups.value.forEach(g => {
-                            const el = document.getElementById('cat-' + g.name);
-                            if (el) observer.observe(el);
-                        });
-                        const bookmarkEl = document.getElementById('bookmarks');
-                        if (bookmarkEl) observer.observe(bookmarkEl);
+                // Initialize scroll spy
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            activeMenu.value = entry.target.id;
+                        }
                     });
-                });
+                }, {rootMargin: '-10% 0px -80% 0px'});
 
-                const fetchData = async () => {
-                    try {
-                        const res = await fetch(window.CONFIG.DATA_URL);
-                        const data = await res.json();
-                        settings.value = data.settings;
-                        toolLinks.value = data.links;
-                    } catch (e) { console.error('Data error:', e); }
-                };
-
-                const fetchBookmarks = async () => {
-                    try {
-                        const res = await fetch(window.CONFIG.BOOKMARKS_URL);
-                        const data = await res.json();
-                        bookmarkTree.value = data.links;
-                    } catch (e) { console.error('Bookmarks error:', e); }
-                };
-
-                const toolGroups = computed(() => {
-                    const groups = {};
-                    toolLinks.value.forEach(link => {
-                        if (!groups[link.category]) groups[link.category] = [];
-                        groups[link.category].push(link);
+                nextTick(() => {
+                    toolGroups.value.forEach(g => {
+                        const el = document.getElementById('cat-' + g.name);
+                        if (el) observer.observe(el);
                     });
-                    return Object.keys(groups).map(name => ({ name, items: groups[name] }));
+                    const bookmarkEl = document.getElementById('bookmarks');
+                    if (bookmarkEl) observer.observe(bookmarkEl);
                 });
+            });
 
-                const hideGroups = computed(() => {
-                    if (!hideData.value) return [];
-                    const groups = {};
-                    hideData.value.links.forEach(link => {
-                        if (!groups[link.category]) groups[link.category] = [];
-                        groups[link.category].push(link);
-                    });
-                    return Object.keys(groups).map(name => ({ name, items: groups[name] }));
+            const fetchData = async () => {
+                try {
+                    const res = await fetch(window.CONFIG.DATA_URL);
+                    const data = await res.json();
+                    settings.value = data.settings;
+                    toolLinks.value = data.links;
+                } catch (e) {
+                    console.error('Data error:', e);
+                }
+            };
+
+            const fetchBookmarks = async () => {
+                try {
+                    const res = await fetch(window.CONFIG.BOOKMARKS_URL);
+                    const data = await res.json();
+                    bookmarkTree.value = data.links;
+                } catch (e) {
+                    console.error('Bookmarks error:', e);
+                }
+            };
+
+            const toolGroups = computed(() => {
+                const groups = {};
+                toolLinks.value.forEach(link => {
+                    if (!groups[link.category]) groups[link.category] = [];
+                    groups[link.category].push(link);
                 });
+                return Object.keys(groups).map(name => ({name, items: groups[name]}));
+            });
 
-                const handleMenuSelect = (index) => {
-                    if (index === 'unlock-hide') {
-                        unlockHideData();
-                        return;
-                    }
-                    activeMenu.value = index;
-                    const el = document.getElementById(index);
-                    if (el) {
-                        el.scrollIntoView({ behavior: 'smooth' });
-                        if (window.innerWidth < 768) isSidebarOpen.value = false;
-                    }
-                };
+            const hideGroups = computed(() => {
+                if (!hideData.value) return [];
+                const groups = {};
+                hideData.value.links.forEach(link => {
+                    if (!groups[link.category]) groups[link.category] = [];
+                    groups[link.category].push(link);
+                });
+                return Object.keys(groups).map(name => ({name, items: groups[name]}));
+            });
 
-                const openLink = (url) => {
-                    window.open(url, '_blank');
-                };
+            const handleMenuSelect = (index) => {
+                if (index === 'unlock-hide') {
+                    unlockHideData();
+                    return;
+                }
+                activeMenu.value = index;
+                const el = document.getElementById(index);
+                if (el) {
+                    el.scrollIntoView({behavior: 'smooth'});
+                    if (window.innerWidth < 768) isSidebarOpen.value = false;
+                }
+            };
 
-                const openAdmin = () => {
-                    window.open(window.CONFIG.ADMIN_URL, '_blank');
-                };
+            const openLink = (url) => {
+                window.open(url, '_blank');
+            };
 
-                const formatUrl = (url) => {
-                    try {
-                        const u = new URL(url);
-                        return u.hostname;
-                    } catch (e) { return url; }
-                };
+            const openAdmin = () => {
+                window.open(window.CONFIG.ADMIN_URL, '_blank');
+            };
 
-                const isImageUrl = (url) => {
-                    return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(url) || url.startsWith('http');
-                };
+            const formatUrl = (url) => {
+                try {
+                    const u = new URL(url);
+                    return u.hostname;
+                } catch (e) {
+                    return url;
+                }
+            };
 
-                const getFavicon = (url) => {
-                    if (!url || url.includes('工具/') || url.includes('游戏/') || url.includes('vip/')) return null;
-                    return `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${encodeURIComponent(url)}&size=64`;
-                };
+            const isImageUrl = (url) => {
+                return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(url) || url.startsWith('http');
+            };
 
-                const handleIconError = (e) => {
-                    e.target.style.display = 'none';
-                };
+            const getFavicon = (url) => {
+                if (!url || url.includes('工具/') || url.includes('游戏/') || url.includes('vip/')) return null;
+                return `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${encodeURIComponent(url)}&size=64`;
+            };
 
-                const openBookmarkModal = (folder) => {
-                    selectedFolder.value = folder;
-                    currentLinks.value = (folder.children || []).filter(c => c.type === 'link');
-                    isModalOpen.value = true;
-                };
+            const handleIconError = (e) => {
+                e.target.style.display = 'none';
+            };
 
-                const handleTreeNodeClick = (data) => {
-                    if (data.type === 'folder') {
-                        currentLinks.value = (data.children || []).filter(c => c.type === 'link');
-                    } else if (data.type === 'link') {
-                        openLink(data.url);
-                    }
-                };
+            const openBookmarkModal = (folder) => {
+                selectedFolder.value = folder;
+                currentLinks.value = (folder.children || []).filter(c => c.type === 'link');
+                isModalOpen.value = true;
+            };
 
-                const unlockHideData = () => {
-                    ElementPlus.ElMessageBox.prompt('请输入解锁密码', '私密资源', {
-                        confirmButtonText: '解锁',
-                        cancelButtonText: '取消',
-                        inputType: 'password',
-                    }).then(({ value }) => {
-                        const API_BASE = window.CONFIG.API_URL
-                        // Handle potential relative path or absolute path
-                        const absoluteApiBase = API_BASE.startsWith('http') ? API_BASE : window.location.origin + '/' + API_BASE;
-                        
-                        fetch(`${absoluteApiBase}/public/hidedata`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ password: value })
-                        })
+            const handleTreeNodeClick = (data) => {
+                if (data.type === 'folder') {
+                    currentLinks.value = (data.children || []).filter(c => c.type === 'link');
+                } else if (data.type === 'link') {
+                    openLink(data.url);
+                }
+            };
+
+            const unlockHideData = () => {
+                ElementPlus.ElMessageBox.prompt('请输入解锁密码', '私密资源', {
+                    confirmButtonText: '解锁',
+                    cancelButtonText: '取消',
+                    inputType: 'password',
+                }).then(({value}) => {
+                    const API_BASE = window.CONFIG.API_URL
+                    // Handle potential relative path or absolute path
+                    const absoluteApiBase = API_BASE.startsWith('http') ? API_BASE : window.location.origin + '/' + API_BASE;
+
+                    fetch(`${absoluteApiBase}/public/hidedata`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({password: value})
+                    })
                         .then(res => res.json())
                         .then(data => {
                             if (data.error) {
@@ -705,7 +778,7 @@
                                                 activeMenu.value = entry.target.id;
                                             }
                                         });
-                                    }, { rootMargin: '-10% 0px -80% 0px' });
+                                    }, {rootMargin: '-10% 0px -80% 0px'});
                                     hideGroups.value.forEach(g => {
                                         const el = document.getElementById('hide-' + g.name);
                                         if (el) observer.observe(el);
@@ -716,57 +789,57 @@
                         .catch(err => {
                             ElementPlus.ElMessage.error('解锁失败，请检查网络或配置');
                         });
-                    });
-                };
+                });
+            };
 
-                // Search logic with Fuse.js
-                const searchResults = ref([]);
-                let fuseTools = null;
-                let fuseBookmarks = null;
+            // Search logic with Fuse.js
+            const searchResults = ref([]);
+            let fuseTools = null;
+            let fuseBookmarks = null;
 
-                const handleSearch = () => {
-                    if (!searchQuery.value) {
-                        searchResults.value = [];
-                        return;
-                    }
+            const handleSearch = () => {
+                if (!searchQuery.value) {
+                    searchResults.value = [];
+                    return;
+                }
 
-                    if (!fuseTools) {
-                        fuseTools = new Fuse(toolLinks.value, { keys: ['title', 'category', 'url'], threshold: 0.3 });
-                        
-                        // Flatten bookmarks for searching
-                        const flatBookmarks = [];
-                        const flatten = (nodes, path = []) => {
-                            nodes.forEach(n => {
-                                if (n.type === 'link') flatBookmarks.push({ ...n, category: '书签', path: path.join('/') });
-                                else if (n.children) flatten(n.children, [...path, n.name]);
-                            });
-                        };
-                        flatten(bookmarkTree.value);
-                        fuseBookmarks = new Fuse(flatBookmarks, { keys: ['title', 'url', 'path'], threshold: 0.3 });
-                    }
+                if (!fuseTools) {
+                    fuseTools = new Fuse(toolLinks.value, {keys: ['title', 'category', 'url'], threshold: 0.3});
 
-                    const tools = fuseTools.search(searchQuery.value).map(r => r.item);
-                    const bookmarks = fuseBookmarks.search(searchQuery.value).map(r => r.item);
-                    searchResults.value = [...tools, ...bookmarks];
-                };
+                    // Flatten bookmarks for searching
+                    const flatBookmarks = [];
+                    const flatten = (nodes, path = []) => {
+                        nodes.forEach(n => {
+                            if (n.type === 'link') flatBookmarks.push({...n, category: '书签', path: path.join('/')});
+                            else if (n.children) flatten(n.children, [...path, n.name]);
+                        });
+                    };
+                    flatten(bookmarkTree.value);
+                    fuseBookmarks = new Fuse(flatBookmarks, {keys: ['title', 'url', 'path'], threshold: 0.3});
+                }
 
-                return {
-                    settings, toolGroups, bookmarkTree, hideData, hideGroups, searchQuery, searchResults,
-                    activeMenu, isSidebarOpen, showNotice, isModalOpen, selectedFolder,
-                    currentLinks, treeProps, handleMenuSelect, openLink, openAdmin, formatUrl,
-                    isImageUrl, getFavicon, handleIconError, openBookmarkModal,
-                    handleTreeNodeClick, handleSearch, unlockHideData
-                };
-            }
-        });
+                const tools = fuseTools.search(searchQuery.value).map(r => r.item);
+                const bookmarks = fuseBookmarks.search(searchQuery.value).map(r => r.item);
+                searchResults.value = [...tools, ...bookmarks];
+            };
 
-        // Register icons
-        for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-            app.component(key, component);
+            return {
+                settings, toolGroups, bookmarkTree, hideData, hideGroups, searchQuery, searchResults,
+                activeMenu, isSidebarOpen, showNotice, isModalOpen, selectedFolder,
+                currentLinks, treeProps, handleMenuSelect, openLink, openAdmin, formatUrl,
+                isImageUrl, getFavicon, handleIconError, openBookmarkModal,
+                handleTreeNodeClick, handleSearch, unlockHideData
+            };
         }
+    });
 
-        app.use(ElementPlus);
-        app.mount('#app');
-    </script>
+    // Register icons
+    for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+        app.component(key, component);
+    }
+
+    app.use(ElementPlus);
+    app.mount('#app');
+</script>
 </body>
 </html>
