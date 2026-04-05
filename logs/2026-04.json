@@ -1,1 +1,8 @@
-[]
+[
+  {
+    "timestamp": "2026/4/6 00:16:41",
+    "action": "修改隐藏数据",
+    "details": "更新了隐藏数据列表",
+    "ip": "Cloudflare-Worker"
+  }
+]
