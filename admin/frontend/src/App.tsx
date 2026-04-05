@@ -48,73 +48,89 @@ dayjs.locale('zh-cn')
 const { Header, Sider, Content } = Layout
 const { Title, Text } = Typography
 
-// --- Types ---
+// --- 类型定义 ---
 
+/**
+ * 首页链接数据结构
+ */
 type Link = {
-  category: string
-  title: string
-  url: string
-  icon: string
+  category: string // 分类名称
+  title: string    // 链接标题
+  url: string      // 链接地址
+  icon: string     // 图标标识 (如 lucide 图标名)
 }
 
+/**
+ * 站点基础设置
+ */
 type SettingsData = {
-  site_title: string
-  site_subtitle: string
-  site_notice: string
+  site_title: string    // 站点标题
+  site_subtitle: string // 站点副标题
+  site_notice: string   // 站点公告
 }
 
+/**
+ * data.json 的完整结构
+ */
 type DataFile = {
   settings: SettingsData
   links: Link[]
 }
 
+/**
+ * 书签节点结构 (支持无限层级)
+ */
 type BookmarkNode = {
   type: 'folder' | 'link'
-  name?: string
-  title?: string
-  url?: string
-  icon?: string
-  children?: BookmarkNode[]
+  name?: string       // 文件夹名称
+  title?: string      // 书签标题
+  url?: string        // 书签链接
+  icon?: string       // 书签图标
+  children?: BookmarkNode[] // 子节点 (仅文件夹有)
 }
 
+/**
+ * 用于表格展示的扁平化书签结构
+ */
 type FlattenedBookmark = {
   id: string
   title: string
   url: string
   icon: string
-  path: string
+  path: string // 层级路径，如 "工具 / 开发 / 前端"
 }
 
+// 基础 API 地址，优先使用 config.js 或环境变量
 const API_BASE = window.CONFIG?.API_URL || import.meta.env.VITE_API_BASE || 'http://localhost:8787/api'
 
-// --- Main App Component ---
+// --- 后台管理主组件 ---
 
 const AdminApp: React.FC = () => {
-  const [activeKey, setActiveKey] = useState('data')
+  const [activeKey, setActiveKey] = useState('data') // 当前选中的菜单项
   const { message, modal, notification } = AntdApp.useApp()
   const { token } = theme.useToken()
 
-  // Data.json states
+  // --- Data.json (站点设置) 状态 ---
   const [data, setData] = useState<DataFile | null>(null)
-  const [dataSha, setDataSha] = useState('')
-  const [isDataDirty, setIsDataDirty] = useState(false)
-  const [selectedDataLinks, setSelectedDataLinks] = useState<React.Key[]>([])
-  const [isDataModalOpen, setIsDataModalOpen] = useState(false)
+  const [dataSha, setDataSha] = useState('') // GitHub 文件的 SHA 值
+  const [isDataDirty, setIsDataDirty] = useState(false) // 是否有未保存的修改
+  const [selectedDataLinks, setSelectedDataLinks] = useState<React.Key[]>([]) // 批量选择的链接
+  const [isDataModalOpen, setIsDataModalOpen] = useState(false) // 编辑弹窗状态
   const [dataPageSize, setDataPageSize] = useState(10)
   const [dataLinkForm] = Form.useForm()
   const [editingDataLink, setEditingDataLink] = useState<Link | null>(null)
   const [editingDataIndex, setEditingDataIndex] = useState<number | -1>(-1)
 
-  // Bookmarks states
+  // --- Bookmarks (书签) 状态 ---
   const [bookmarks, setBookmarks] = useState<{ links: BookmarkNode[] } | null>(null)
   const [bookmarksSha, setBookmarksSha] = useState('')
   const [isBookmarksDirty, setIsBookmarksDirty] = useState(false)
   const [selectedBookmarks, setSelectedBookmarks] = useState<React.Key[]>([])
-  const [bookmarkSearch, setBookmarkSearch] = useState('')
+  const [bookmarkSearch, setBookmarkSearch] = useState('') // 书签搜索关键词
   const [bookmarkPageSize, setBookmarkPageSize] = useState(15)
-  const [bookmarkFolderFilter, setBookmarkFolderFilter] = useState<string | null>(null)
+  const [bookmarkFolderFilter, setBookmarkFolderFilter] = useState<string | null>(null) // 文件夹筛选
 
-  // Hide Data states
+  // --- Hide Data (隐藏数据) 状态 ---
   const [hideData, setHideData] = useState<{ links: Link[] } | null>(null)
   const [hideDataSha, setHideDataSha] = useState('')
   const [isHideDataDirty, setIsHideDataDirty] = useState(false)
@@ -125,12 +141,12 @@ const AdminApp: React.FC = () => {
   const [editingHideLink, setEditingHideLink] = useState<Link | null>(null)
   const [editingHideIndex, setEditingHideIndex] = useState<number | -1>(-1)
 
-  // Logs states
+  // --- 日志状态 ---
   const [logs, setLogs] = useState<any[]>([])
   const [logMonth, setLogMonth] = useState(`${new Date().getFullYear()}-${(new Date().getMonth() + 1).toString().padStart(2, '0')}`)
   const [logPageSize, setLogPageSize] = useState(20)
 
-  // Config states
+  // --- 配置与登录状态 ---
   const [config, setConfig] = useState<{ hasPassword: boolean } | null>(null)
   const [configSha, setConfigSha] = useState('')
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -138,19 +154,19 @@ const AdminApp: React.FC = () => {
   const [loginForm] = Form.useForm()
   const [passwordForm] = Form.useForm()
 
-  const [isSiderCollapsed, setIsSiderCollapsed] = useState(false)
-
-  // Modal states
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isSiderCollapsed, setIsSiderCollapsed] = useState(false) // 侧边栏折叠状态
+  const [isModalOpen, setIsModalOpen] = useState(false) // 通用弹窗状态
   const [editingBookmark, setEditingBookmark] = useState<FlattenedBookmark | null>(null)
   const [form] = Form.useForm()
-
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false) // 加载状态
 
   useEffect(() => {
     fetchConfig()
   }, [])
 
+  /**
+   * 获取管理员配置，判断是否需要登录
+   */
   const fetchConfig = async () => {
     try {
       const res = await fetch(`${API_BASE}/config`)
@@ -179,6 +195,9 @@ const AdminApp: React.FC = () => {
     }
   }
 
+  /**
+   * 处理登录逻辑
+   */
   const handleLogin = async (values: any) => {
     setLoading(true)
     try {
@@ -206,6 +225,9 @@ const AdminApp: React.FC = () => {
     }
   }
 
+  /**
+   * 设置/修改管理员密码
+   */
   const handleSetPassword = async (values: any) => {
     setLoading(true)
     try {
@@ -222,7 +244,6 @@ const AdminApp: React.FC = () => {
       
       setConfigSha(json.content.sha)
       setConfig({ hasPassword: true })
-      // If we're setting the password for the first time, we should log in with it
       if (!isLoggedIn) {
         handleLogin({ password: values.password })
       }
@@ -241,17 +262,18 @@ const AdminApp: React.FC = () => {
     setLoginModalOpen(true)
   }
 
+  // 获取请求头 (包含身份验证 Token)
   const getAuthHeader = (): Record<string, string> => {
     const token = localStorage.getItem('admin_token')
     return token ? { 'Authorization': token } : {}
   }
 
+  // --- 数据获取方法 ---
+
   const fetchData = async () => {
     setLoading(true)
     try {
-      const res = await fetch(`${API_BASE}/data`, {
-        headers: getAuthHeader()
-      })
+      const res = await fetch(`${API_BASE}/data`, { headers: getAuthHeader() })
       const json = await res.json()
       if (json.error) throw new Error(json.error)
       setData(json.content)
@@ -267,9 +289,7 @@ const AdminApp: React.FC = () => {
   const fetchBookmarks = async () => {
     setLoading(true)
     try {
-      const res = await fetch(`${API_BASE}/bookmarks`, {
-        headers: getAuthHeader()
-      })
+      const res = await fetch(`${API_BASE}/bookmarks`, { headers: getAuthHeader() })
       const json = await res.json()
       if (json.error) throw new Error(json.error)
       setBookmarks(json.content)
@@ -285,9 +305,7 @@ const AdminApp: React.FC = () => {
   const fetchHideData = async () => {
     setLoading(true)
     try {
-      const res = await fetch(`${API_BASE}/hidedata`, {
-        headers: getAuthHeader()
-      })
+      const res = await fetch(`${API_BASE}/hidedata`, { headers: getAuthHeader() })
       const json = await res.json()
       if (json.error) throw new Error(json.error)
       setHideData(json.content)
@@ -302,21 +320,17 @@ const AdminApp: React.FC = () => {
 
   const handleMenuClick = (e: any) => {
     setActiveKey(e.key)
-    if (e.key === 'logs') {
-      fetchLogs()
-    }
+    if (e.key === 'logs') fetchLogs()
   }
 
   const fetchLogs = async (month?: string) => {
     setLoading(true)
     try {
       const targetMonth = month || logMonth
-      const res = await fetch(`${API_BASE}/logs?month=${targetMonth}`, {
-        headers: getAuthHeader()
-      })
+      const res = await fetch(`${API_BASE}/logs?month=${targetMonth}`, { headers: getAuthHeader() })
       const json = await res.json()
       if (json.error) throw new Error(json.error)
-      setLogs(json.reverse()) // Show latest first
+      setLogs(json.reverse()) // 最新日志排在前面
     } catch (err: any) {
       notification.error({ message: '日志加载失败', description: err.message })
     } finally {
@@ -324,33 +338,7 @@ const AdminApp: React.FC = () => {
     }
   }
 
-  const openHideModal = (link?: Link, index?: number) => {
-    if (link !== undefined && index !== undefined) {
-      setEditingHideLink(link)
-      setEditingHideIndex(index)
-      hideForm.setFieldsValue(link)
-    } else {
-      setEditingHideLink(null)
-      setEditingHideIndex(-1)
-      hideForm.setFieldsValue({ category: '隐藏分类', title: '', url: 'https://', icon: 'link' })
-    }
-    setIsHideModalOpen(true)
-  }
-
-  const handleHideModalSubmit = () => {
-    hideForm.validateFields().then(values => {
-      if (!hideData) return
-      const newLinks = [...hideData.links]
-      if (editingHideIndex !== -1) {
-        newLinks[editingHideIndex] = values
-      } else {
-        newLinks.unshift(values)
-      }
-      setHideData({ ...hideData, links: newLinks })
-      setIsHideDataDirty(true)
-      setIsHideModalOpen(false)
-    })
-  }
+  // --- 数据同步方法 (保存到 GitHub) ---
 
   const handleSaveData = async () => {
     if (!data) return
@@ -358,10 +346,7 @@ const AdminApp: React.FC = () => {
     try {
       const res = await fetch(`${API_BASE}/data`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          ...getAuthHeader()
-        } as HeadersInit,
+        headers: { 'Content-Type': 'application/json', ...getAuthHeader() } as HeadersInit,
         body: JSON.stringify({ content: data, sha: dataSha })
       })
       const json = await res.json()
@@ -382,10 +367,7 @@ const AdminApp: React.FC = () => {
     try {
       const res = await fetch(`${API_BASE}/bookmarks`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          ...getAuthHeader()
-        } as HeadersInit,
+        headers: { 'Content-Type': 'application/json', ...getAuthHeader() } as HeadersInit,
         body: JSON.stringify({ content: bookmarks, sha: bookmarksSha })
       })
       const json = await res.json()
@@ -406,10 +388,7 @@ const AdminApp: React.FC = () => {
     try {
       const res = await fetch(`${API_BASE}/hidedata`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          ...getAuthHeader()
-        } as HeadersInit,
+        headers: { 'Content-Type': 'application/json', ...getAuthHeader() } as HeadersInit,
         body: JSON.stringify({ content: hideData, sha: hideDataSha })
       })
       const json = await res.json()
@@ -424,7 +403,11 @@ const AdminApp: React.FC = () => {
     }
   }
 
-  // Flattened bookmarks for Table
+  // --- 书签处理逻辑 ---
+
+  /**
+   * 将嵌套的书签树扁平化，方便在 Table 中展示和搜索
+   */
   const flattenedBookmarks = useMemo(() => {
     if (!bookmarks) return []
     const result: FlattenedBookmark[] = []
@@ -448,6 +431,9 @@ const AdminApp: React.FC = () => {
     return result
   }, [bookmarks])
 
+  /**
+   * 提取所有不重复的文件夹路径，用于下拉筛选
+   */
   const uniqueFolders = useMemo(() => {
     const folders = new Set<string>()
     flattenedBookmarks.forEach(b => {
@@ -456,20 +442,37 @@ const AdminApp: React.FC = () => {
     return Array.from(folders).sort()
   }, [flattenedBookmarks])
 
+  /**
+   * 递归清理空的文件夹
+   * @param nodes 书签节点数组
+   */
+  const pruneEmptyFolders = (nodes: BookmarkNode[]) => {
+    for (let i = nodes.length - 1; i >= 0; i--) {
+      const node = nodes[i]
+      if (node.type === 'folder' && node.children) {
+        pruneEmptyFolders(node.children)
+        if (node.children.length === 0) {
+          nodes.splice(i, 1)
+        }
+      }
+    }
+  }
+
+  /**
+   * 根据搜索关键词和文件夹筛选书签
+   */
   const filteredBookmarks = useMemo(() => {
     const search = bookmarkSearch.toLowerCase()
     return flattenedBookmarks.filter(b => {
       const matchSearch = b.title.toLowerCase().includes(search) ||
         b.url.toLowerCase().includes(search) ||
         b.path.toLowerCase().includes(search)
-      
       const matchFolder = !bookmarkFolderFilter || b.path === bookmarkFolderFilter
-      
       return matchSearch && matchFolder
     })
   }, [flattenedBookmarks, bookmarkSearch, bookmarkFolderFilter])
 
-  // --- Actions ---
+  // --- 操作处理器 ---
 
   const openDataModal = (link?: Link, index?: number) => {
     if (link !== undefined && index !== undefined) {
@@ -506,21 +509,6 @@ const AdminApp: React.FC = () => {
     setIsDataDirty(true)
   }
 
-  const handleBulkDeleteDataLinks = () => {
-    if (!data || selectedDataLinks.length === 0) return
-    modal.confirm({
-      title: '批量删除确认',
-      icon: <ExclamationCircleOutlined />,
-      content: `确定删除选中的 ${selectedDataLinks.length} 个链接吗？此操作仅在本地生效，需点击保存同步。`,
-      onOk() {
-        const newLinks = data.links.filter((_, i) => !selectedDataLinks.includes(i))
-        setData({ ...data, links: newLinks })
-        setSelectedDataLinks([])
-        setIsDataDirty(true)
-      }
-    })
-  }
-
   const openBookmarkModal = (bookmark?: FlattenedBookmark) => {
     if (bookmark) {
       setEditingBookmark(bookmark)
@@ -532,12 +520,16 @@ const AdminApp: React.FC = () => {
     setIsModalOpen(true)
   }
 
+  /**
+   * 处理书签的新增或修改保存 (本地)
+   */
   const handleBookmarkModalSubmit = () => {
     form.validateFields().then(values => {
       if (!bookmarks) return
       const newBookmarks = JSON.parse(JSON.stringify(bookmarks))
       const pathParts = values.path.split('/').map((p: string) => p.trim()).filter(Boolean)
       
+      // 辅助函数：按路径查找或创建文件夹节点
       const getFolder = (nodes: BookmarkNode[], path: string[]) => {
         let currentNodes = nodes
         for (const part of path) {
@@ -551,6 +543,7 @@ const AdminApp: React.FC = () => {
         return currentNodes
       }
 
+      // 如果是编辑操作，先从原位置移除
       if (editingBookmark) {
         const removeFromTree = (nodes: BookmarkNode[]) => {
           for (let i = 0; i < nodes.length; i++) {
@@ -565,8 +558,10 @@ const AdminApp: React.FC = () => {
           return false
         }
         removeFromTree(newBookmarks.links)
+        pruneEmptyFolders(newBookmarks.links) // 清理可能产生的空文件夹
       }
 
+      // 插入到新位置
       const targetFolder = getFolder(newBookmarks.links, pathParts)
       targetFolder.push({
         type: 'link',
@@ -581,6 +576,9 @@ const AdminApp: React.FC = () => {
     })
   }
 
+  /**
+   * 删除单个书签
+   */
   const handleDeleteBookmark = (record: FlattenedBookmark) => {
     if (!bookmarks) return
     const newBookmarks = JSON.parse(JSON.stringify(bookmarks))
@@ -597,10 +595,14 @@ const AdminApp: React.FC = () => {
       return false
     }
     removeFromTree(newBookmarks.links)
+    pruneEmptyFolders(newBookmarks.links) // 删除后清理空文件夹
     setBookmarks(newBookmarks)
     setIsBookmarksDirty(true)
   }
 
+  /**
+   * 批量删除选中的书签
+   */
   const handleBulkDeleteBookmarks = () => {
     if (!bookmarks || selectedBookmarks.length === 0) return
     modal.confirm({
@@ -623,6 +625,7 @@ const AdminApp: React.FC = () => {
           }
         }
         removeFromTree(newBookmarks.links)
+        pruneEmptyFolders(newBookmarks.links) // 清理空文件夹
         setBookmarks(newBookmarks)
         setSelectedBookmarks([])
         setIsBookmarksDirty(true)
@@ -630,46 +633,21 @@ const AdminApp: React.FC = () => {
     })
   }
 
-  // --- Render Sections ---
+  // --- 界面渲染部分 ---
 
+  // 1. 站点配置 (data.json)
   const renderDataSection = () => {
     if (!data) return <Empty description="加载中..." />
-
     const columns = [
+      { title: '分类', dataIndex: 'category', key: 'category', render: (text: string) => <Tag color="blue">{text}</Tag> },
+      { title: '标题', dataIndex: 'title', key: 'title', render: (text: string) => <Text strong>{text}</Text> },
+      { title: 'URL', dataIndex: 'url', key: 'url', ellipsis: true, render: (text: string) => <Typography.Link href={text} target="_blank">{text}</Typography.Link> },
+      { title: '图标', dataIndex: 'icon', key: 'icon', width: 100 },
       {
-        title: '分类',
-        dataIndex: 'category',
-        key: 'category',
-        render: (text: string) => <Tag color="blue">{text}</Tag>
-      },
-      {
-        title: '标题',
-        dataIndex: 'title',
-        key: 'title',
-        render: (text: string) => <Text strong>{text}</Text>
-      },
-      {
-        title: 'URL',
-        dataIndex: 'url',
-        key: 'url',
-        ellipsis: true,
-        render: (text: string) => <Typography.Link href={text} target="_blank">{text}</Typography.Link>
-      },
-      {
-        title: '图标',
-        dataIndex: 'icon',
-        key: 'icon',
-        width: 100
-      },
-      {
-        title: '操作',
-        key: 'action',
-        width: 120,
+        title: '操作', key: 'action', width: 120,
         render: (_: any, record: any, index: number) => (
           <Space>
-            <Tooltip title="编辑">
-              <Button type="text" icon={<EditOutlined />} onClick={() => openDataModal(record, index)} />
-            </Tooltip>
+            <Button type="text" icon={<EditOutlined />} onClick={() => openDataModal(record, index)} />
             <Popconfirm title="确定删除该链接吗？" onConfirm={() => handleDeleteDataLink(index)}>
               <Button type="text" danger icon={<DeleteOutlined />} />
             </Popconfirm>
@@ -677,161 +655,43 @@ const AdminApp: React.FC = () => {
         )
       }
     ]
-
     return (
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
-        <Card title={
-          <Space>
-            <SettingOutlined />
-            <span>站点设置</span>
-            {isDataDirty && <Badge status="warning" text="未保存" />}
-          </Space>
-        } extra={
-          <Button 
-            type="primary" 
-            icon={<SaveOutlined />} 
-            onClick={handleSaveData} 
-            loading={loading}
-            disabled={!isDataDirty}
-          >
-            保存更改
-          </Button>
-        }>
+        <Card title={<span><SettingOutlined /> 站点设置 {isDataDirty && <Badge status="warning" text="未保存" />}</span>} 
+              extra={<Button type="primary" icon={<SaveOutlined />} onClick={handleSaveData} loading={loading} disabled={!isDataDirty}>保存更改</Button>}>
           <Row gutter={[24, 24]}>
-            <Col xs={24} md={8}>
-              <Text type="secondary">站点标题</Text>
-              <Input 
-                value={data.settings.site_title} 
-                onChange={e => {
-                  setData({ ...data, settings: { ...data.settings, site_title: e.target.value } })
-                  setIsDataDirty(true)
-                }}
-                style={{ marginTop: 8 }}
-              />
-            </Col>
-            <Col xs={24} md={8}>
-              <Text type="secondary">站点副标题</Text>
-              <Input 
-                value={data.settings.site_subtitle} 
-                onChange={e => {
-                  setData({ ...data, settings: { ...data.settings, site_subtitle: e.target.value } })
-                  setIsDataDirty(true)
-                }}
-                style={{ marginTop: 8 }}
-              />
-            </Col>
-            <Col xs={24} md={8}>
-              <Text type="secondary">站点公告</Text>
-              <Input 
-                value={data.settings.site_notice} 
-                onChange={e => {
-                  setData({ ...data, settings: { ...data.settings, site_notice: e.target.value } })
-                  setIsDataDirty(true)
-                }}
-                style={{ marginTop: 8 }}
-              />
-            </Col>
+            <Col xs={24} md={8}><Text type="secondary">站点标题</Text><Input value={data.settings.site_title} onChange={e => { setData({ ...data, settings: { ...data.settings, site_title: e.target.value } }); setIsDataDirty(true) }} style={{ marginTop: 8 }}/></Col>
+            <Col xs={24} md={8}><Text type="secondary">站点副标题</Text><Input value={data.settings.site_subtitle} onChange={e => { setData({ ...data, settings: { ...data.settings, site_subtitle: e.target.value } }); setIsDataDirty(true) }} style={{ marginTop: 8 }}/></Col>
+            <Col xs={24} md={8}><Text type="secondary">站点公告</Text><Input value={data.settings.site_notice} onChange={e => { setData({ ...data, settings: { ...data.settings, site_notice: e.target.value } }); setIsDataDirty(true) }} style={{ marginTop: 8 }}/></Col>
           </Row>
         </Card>
-
-        <Card title={
-          <Space>
-            <LinkOutlined />
-            <span>首页链接管理</span>
-            {selectedDataLinks.length > 0 && (
-              <Button danger size="small" icon={<DeleteOutlined />} onClick={handleBulkDeleteDataLinks}>
-                批量删除 ({selectedDataLinks.length})
-              </Button>
-            )}
-          </Space>
-        } extra={
-          <Button type="dashed" icon={<PlusOutlined />} onClick={() => openDataModal()}>
-            添加链接
-          </Button>
-        }>
-          <Table 
-            dataSource={data.links.map((l, i) => ({ ...l, key: i }))} 
-            columns={columns} 
-            pagination={{ 
-              pageSize: dataPageSize,
-              showSizeChanger: true,
-              onShowSizeChange: (_, size) => setDataPageSize(size)
-            }}
-            rowSelection={{
-              selectedRowKeys: selectedDataLinks,
-              onChange: keys => setSelectedDataLinks(keys)
-            }}
-          />
+        <Card title={<span><LinkOutlined /> 首页链接管理</span>} extra={<Button type="dashed" icon={<PlusOutlined />} onClick={() => openDataModal()}>添加链接</Button>}>
+          <Table dataSource={data.links.map((l, i) => ({ ...l, key: i }))} columns={columns} pagination={{ pageSize: dataPageSize, showSizeChanger: true, onShowSizeChange: (_, size) => setDataPageSize(size) }} />
         </Card>
-
-        <Modal
-          title={editingDataLink ? '编辑链接' : '添加新链接'}
-          open={isDataModalOpen}
-          onOk={handleDataModalSubmit}
-          onCancel={() => setIsDataModalOpen(false)}
-          okText="确定"
-          cancelText="取消"
-          destroyOnClose
-        >
-          <Form form={dataLinkForm} layout="vertical" style={{ marginTop: 24 }}>
-            <Form.Item name="category" label="分类" rules={[{ required: true, message: '请输入分类' }]}>
-              <Input placeholder="常用工具 / 开发 / 娱乐" />
-            </Form.Item>
-            <Form.Item name="title" label="标题" rules={[{ required: true, message: '请输入标题' }]}>
-              <Input placeholder="链接标题" />
-            </Form.Item>
-            <Form.Item name="url" label="URL" rules={[{ required: true, message: '请输入 URL' }, { type: 'url', message: '请输入合法的 URL' }]}>
-              <Input placeholder="https://..." />
-            </Form.Item>
-            <Form.Item name="icon" label="图标标识">
-              <Input placeholder="link" />
-            </Form.Item>
-          </Form>
-        </Modal>
       </Space>
     )
   }
 
+  // 2. 书签管理 (converted_bookmarks.json)
   const renderBookmarksSection = () => {
     const columns = [
+      { title: '标题', dataIndex: 'title', key: 'title', ellipsis: true, render: (text: string) => <Text strong>{text}</Text> },
       {
-        title: '标题',
-        dataIndex: 'title',
-        key: 'title',
-        ellipsis: true,
-        render: (text: string) => <Text strong>{text}</Text>
-      },
-      {
-        title: '所属文件夹',
-        dataIndex: 'path',
-        key: 'path',
+        title: '所属文件夹', dataIndex: 'path', key: 'path',
         render: (text: string) => (
           <Space size={[0, 4]} wrap>
             {text.split(' / ').map((p, i) => (
-              <React.Fragment key={i}>
-                <Tag color="blue">{p}</Tag>
-                {i < text.split(' / ').length - 1 && <ArrowRightOutlined style={{ fontSize: 10, color: '#ccc' }} />}
-              </React.Fragment>
+              <React.Fragment key={i}><Tag color="blue">{p}</Tag>{i < text.split(' / ').length - 1 && <ArrowRightOutlined style={{ fontSize: 10, color: '#ccc' }} />}</React.Fragment>
             ))}
           </Space>
         )
       },
+      { title: 'URL', dataIndex: 'url', key: 'url', ellipsis: true, render: (text: string) => <Typography.Link href={text} target="_blank">{text}</Typography.Link> },
       {
-        title: 'URL',
-        dataIndex: 'url',
-        key: 'url',
-        ellipsis: true,
-        render: (text: string) => <Typography.Link href={text} target="_blank">{text}</Typography.Link>
-      },
-      {
-        title: '操作',
-        key: 'action',
-        width: 120,
+        title: '操作', key: 'action', width: 120,
         render: (_: any, record: FlattenedBookmark) => (
           <Space>
-            <Tooltip title="编辑">
-              <Button type="text" icon={<EditOutlined />} onClick={() => openBookmarkModal(record)} />
-            </Tooltip>
+            <Button type="text" icon={<EditOutlined />} onClick={() => openBookmarkModal(record)} />
             <Popconfirm title="确定删除该书签吗？" onConfirm={() => handleDeleteBookmark(record)}>
               <Button type="text" danger icon={<DeleteOutlined />} />
             </Popconfirm>
@@ -839,298 +699,82 @@ const AdminApp: React.FC = () => {
         )
       }
     ]
-
     return (
-      <Card title={
-        <Space size="middle">
-          <BookOutlined />
-          <span>书签数据管理</span>
-          {isBookmarksDirty && <Badge status="warning" text="未保存" />}
-          {selectedBookmarks.length > 0 && (
-            <Button danger size="small" icon={<DeleteOutlined />} onClick={handleBulkDeleteBookmarks}>
-              批量删除 ({selectedBookmarks.length})
-            </Button>
-          )}
-        </Space>
-      } extra={
-        <Space wrap>
-          <Select
-            placeholder="按文件夹筛选"
-            style={{ width: 200 }}
-            allowClear
-            options={uniqueFolders.map(f => ({ label: f, value: f }))}
-            onChange={value => setBookmarkFolderFilter(value)}
-            value={bookmarkFolderFilter}
-          />
-          <Input 
-            placeholder="搜索书签内容..." 
-            prefix={<SearchOutlined />} 
-            value={bookmarkSearch} 
-            onChange={e => setBookmarkSearch(e.target.value)}
-            style={{ width: 250 }}
-            allowClear
-          />
-          <Button 
-            type="primary" 
-            icon={<SaveOutlined />} 
-            onClick={handleSaveBookmarks} 
-            loading={loading}
-            disabled={!isBookmarksDirty}
-          >
-            保存更改
-          </Button>
-          <Button icon={<PlusOutlined />} onClick={() => openBookmarkModal()}>
-            添加书签
-          </Button>
-        </Space>
-      }>
-        <Table 
-          dataSource={filteredBookmarks.map(b => ({ ...b, key: b.id }))} 
-          columns={columns} 
-          pagination={{ 
-            pageSize: bookmarkPageSize, 
-            showSizeChanger: true,
-            onShowSizeChange: (_, size) => setBookmarkPageSize(size),
-            onChange: (page, size) => setBookmarkPageSize(size)
-          }}
-          rowSelection={{
-            selectedRowKeys: selectedBookmarks,
-            onChange: keys => setSelectedBookmarks(keys)
-          }}
-        />
+      <Card title={<span><BookOutlined /> 书签数据管理 {isBookmarksDirty && <Badge status="warning" text="未保存" />}</span>}
+            extra={<Space wrap>
+              <Select placeholder="按文件夹筛选" style={{ width: 200 }} allowClear options={uniqueFolders.map(f => ({ label: f, value: f }))} onChange={value => setBookmarkFolderFilter(value)} value={bookmarkFolderFilter} />
+              <Input placeholder="搜索书签内容..." prefix={<SearchOutlined />} value={bookmarkSearch} onChange={e => setBookmarkSearch(e.target.value)} style={{ width: 250 }} allowClear />
+              <Button type="primary" icon={<SaveOutlined />} onClick={handleSaveBookmarks} loading={loading} disabled={!isBookmarksDirty}>保存更改</Button>
+              <Button icon={<PlusOutlined />} onClick={() => openBookmarkModal()}>添加书签</Button>
+            </Space>}>
+        <Table dataSource={filteredBookmarks.map(b => ({ ...b, key: b.id }))} columns={columns} pagination={{ pageSize: bookmarkPageSize, showSizeChanger: true, onShowSizeChange: (_, size) => setBookmarkPageSize(size) }}
+               rowSelection={{ selectedRowKeys: selectedBookmarks, onChange: keys => setSelectedBookmarks(keys) }} />
       </Card>
     )
   }
 
+  // 3. 隐藏数据管理 (hide_data.json)
   const renderHideDataSection = () => {
     if (!hideData) return <Empty description="加载中..." />
-
     const columns = [
+      { title: '分类', dataIndex: 'category', key: 'category', render: (text: string) => <Tag color="purple">{text}</Tag> },
+      { title: '标题', dataIndex: 'title', key: 'title', render: (text: string) => <Text strong>{text}</Text> },
+      { title: 'URL', dataIndex: 'url', key: 'url', ellipsis: true, render: (text: string) => <Typography.Link href={text} target="_blank">{text}</Typography.Link> },
+      { title: '图标', dataIndex: 'icon', key: 'icon', width: 100 },
       {
-        title: '分类',
-        dataIndex: 'category',
-        key: 'category',
-        render: (text: string) => <Tag color="purple">{text}</Tag>
-      },
-      {
-        title: '标题',
-        dataIndex: 'title',
-        key: 'title',
-        render: (text: string) => <Text strong>{text}</Text>
-      },
-      {
-        title: 'URL',
-        dataIndex: 'url',
-        key: 'url',
-        ellipsis: true,
-        render: (text: string) => <Typography.Link href={text} target="_blank">{text}</Typography.Link>
-      },
-      {
-        title: '图标',
-        dataIndex: 'icon',
-        key: 'icon',
-        width: 100
-      },
-      {
-        title: '操作',
-        key: 'action',
-        width: 120,
+        title: '操作', key: 'action', width: 120,
         render: (_: any, record: any, index: number) => (
           <Space>
-            <Tooltip title="编辑">
-              <Button type="text" icon={<EditOutlined />} onClick={() => openHideModal(record, index)} />
-            </Tooltip>
-            <Popconfirm title="确定删除该链接吗？" onConfirm={() => {
-              const newLinks = [...hideData.links]
-              newLinks.splice(index, 1)
-              setHideData({ ...hideData, links: newLinks })
-              setIsHideDataDirty(true)
-            }}>
+            <Button type="text" icon={<EditOutlined />} onClick={() => { setEditingHideLink(record); setEditingHideIndex(index); hideForm.setFieldsValue(record); setIsHideModalOpen(true); }} />
+            <Popconfirm title="确定删除该链接吗？" onConfirm={() => { const newLinks = [...hideData.links]; newLinks.splice(index, 1); setHideData({ ...hideData, links: newLinks }); setIsHideDataDirty(true); }}>
               <Button type="text" danger icon={<DeleteOutlined />} />
             </Popconfirm>
           </Space>
         )
       }
     ]
-
     return (
-      <Space direction="vertical" size="large" style={{ width: '100%' }}>
-        <Card title={
-          <Space>
-            <LockOutlined />
-            <span>隐藏数据管理</span>
-            {isHideDataDirty && <Badge status="warning" text="未保存" />}
-          </Space>
-        } extra={
-          <Space>
-            <Button 
-              type="primary" 
-              icon={<SaveOutlined />} 
-              onClick={handleSaveHideData} 
-              loading={loading}
-              disabled={!isHideDataDirty}
-            >
-              保存更改
-            </Button>
-            <Button type="dashed" icon={<PlusOutlined />} onClick={() => openHideModal()}>
-              添加隐藏链接
-            </Button>
-          </Space>
-        }>
-          <Text type="secondary" style={{ marginBottom: 16, display: 'block' }}>
-            提示：此处管理的数据将存储在 `hide_data.json` 中。在首页输入管理员密码后即可加载显示。
-          </Text>
-          <Table 
-            dataSource={hideData.links.map((l, i) => ({ ...l, key: i }))} 
-            columns={columns} 
-            pagination={{ 
-              pageSize: hidePageSize,
-              showSizeChanger: true,
-              onShowSizeChange: (_, size) => setHidePageSize(size)
-            }}
-            rowSelection={{
-              selectedRowKeys: selectedHideLinks,
-              onChange: keys => setSelectedHideLinks(keys)
-            }}
-          />
-        </Card>
-
-        <Modal
-          title={editingHideLink ? '编辑隐藏链接' : '添加新隐藏链接'}
-          open={isHideModalOpen}
-          onOk={handleHideModalSubmit}
-          onCancel={() => setIsHideModalOpen(false)}
-          okText="确定"
-          cancelText="取消"
-          destroyOnClose
-        >
-          <Form form={hideForm} layout="vertical" style={{ marginTop: 24 }}>
-            <Form.Item name="category" label="分类" rules={[{ required: true, message: '请输入分类' }]}>
-              <Input placeholder="私密 / 常用 / 其他" />
-            </Form.Item>
-            <Form.Item name="title" label="标题" rules={[{ required: true, message: '请输入标题' }]}>
-              <Input placeholder="链接标题" />
-            </Form.Item>
-            <Form.Item name="url" label="URL" rules={[{ required: true, message: '请输入 URL' }, { type: 'url', message: '请输入合法的 URL' }]}>
-              <Input placeholder="https://..." />
-            </Form.Item>
-            <Form.Item name="icon" label="图标标识">
-              <Input placeholder="link" />
-            </Form.Item>
-          </Form>
-        </Modal>
-      </Space>
+      <Card title={<span><LockOutlined /> 隐藏数据管理 {isHideDataDirty && <Badge status="warning" text="未保存" />}</span>}
+            extra={<Space><Button type="primary" icon={<SaveOutlined />} onClick={handleSaveHideData} loading={loading} disabled={!isHideDataDirty}>保存更改</Button><Button type="dashed" icon={<PlusOutlined />} onClick={() => { setEditingHideLink(null); setEditingHideIndex(-1); hideForm.setFieldsValue({ category: '私密', title: '', url: 'https://', icon: 'link' }); setIsHideModalOpen(true); }}>添加隐藏链接</Button></Space>}>
+        <Text type="secondary" style={{ marginBottom: 16, display: 'block' }}>提示：此处管理的数据存储在 `hide_data.json` 中，在首页输入管理员密码后可见。</Text>
+        <Table dataSource={hideData.links.map((l, i) => ({ ...l, key: i }))} columns={columns} pagination={{ pageSize: hidePageSize, showSizeChanger: true }} />
+      </Card>
     )
   }
 
+  // 4. 日志展示
   const renderLogsSection = () => {
     const columns = [
-      {
-        title: '时间',
-        dataIndex: 'timestamp',
-        key: 'timestamp',
-        width: 200,
-        sorter: (a: any, b: any) => a.timestamp.localeCompare(b.timestamp)
-      },
-      {
-        title: '操作类型',
-        dataIndex: 'action',
-        key: 'action',
-        width: 150,
-        render: (text: string) => {
-          let color = 'blue'
-          if (text.includes('失败')) color = 'red'
-          if (text.includes('成功')) color = 'green'
-          if (text.includes('修改')) color = 'orange'
-          return <Tag color={color}>{text}</Tag>
-        }
-      },
-      {
-        title: '详情',
-        dataIndex: 'details',
-        key: 'details'
-      },
-      {
-        title: '来源',
-        dataIndex: 'ip',
-        key: 'ip',
-        width: 150
-      }
+      { title: '时间', dataIndex: 'timestamp', key: 'timestamp', width: 200 },
+      { title: '操作类型', dataIndex: 'action', key: 'action', width: 150, render: (text: string) => <Tag color={text.includes('失败') ? 'red' : text.includes('成功') ? 'green' : 'blue'}>{text}</Tag> },
+      { title: '详情', dataIndex: 'details', key: 'details' },
+      { title: '来源', dataIndex: 'ip', key: 'ip', width: 150 }
     ]
-
     return (
-      <Card title={
-        <Space>
-          <HistoryOutlined />
-          <span>系统操作日志</span>
-        </Space>
-      } extra={
-        <Space>
-          <DatePicker 
-            picker="month" 
-            placeholder="选择月份" 
-            format="YYYY-MM"
-            onChange={(_, dateString) => {
-              if (typeof dateString === 'string') {
-                setLogMonth(dateString)
-                fetchLogs(dateString)
-              }
-            }}
-          />
-          <Button icon={<ReloadOutlined />} onClick={() => fetchLogs()}>刷新</Button>
-        </Space>
-      }>
-        <Table 
-          dataSource={logs.map((l, i) => ({ ...l, key: i }))} 
-          columns={columns} 
-          pagination={{ 
-            pageSize: logPageSize,
-            showSizeChanger: true,
-            onShowSizeChange: (_, size) => setLogPageSize(size)
-          }}
-          loading={loading}
-        />
+      <Card title={<span><HistoryOutlined /> 系统操作日志</span>} extra={<Space><DatePicker picker="month" placeholder="选择月份" format="YYYY-MM" onChange={(_, dateString) => { if (typeof dateString === 'string') { setLogMonth(dateString); fetchLogs(dateString); } }} /><Button icon={<ReloadOutlined />} onClick={() => fetchLogs()}>刷新</Button></Space>}>
+        <Table dataSource={logs.map((l, i) => ({ ...l, key: i }))} columns={columns} pagination={{ pageSize: logPageSize }} loading={loading} />
       </Card>
     )
   }
 
-  const renderSecuritySection = () => {
-    return (
-      <Card title="安全设置" extra={<Badge status={config?.hasPassword ? 'success' : 'warning'} text={config?.hasPassword ? '已设置访问密码' : '未设置访问密码'} />}>
-        <Row gutter={24}>
-          <Col span={12}>
-            <Title level={5}>修改访问密码</Title>
-            <Text type="secondary">设置或修改后台管理系统的访问密码。密码将加密存储在 GitHub 配置文件中。</Text>
-            <Form form={passwordForm} onFinish={handleSetPassword} layout="vertical" style={{ marginTop: 24 }}>
-              <Form.Item name="password" label="新密码" rules={[{ required: true, message: '请输入新密码' }, { min: 6, message: '密码长度至少 6 位' }]}>
-                <Input.Password placeholder="请输入新密码" />
-              </Form.Item>
-              <Form.Item name="confirm" label="确认新密码" dependencies={['password']} rules={[
-                { required: true, message: '请确认新密码' },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue('password') === value) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(new Error('两次输入的密码不一致'));
-                  },
-                }),
-              ]}>
-                <Input.Password placeholder="请再次输入新密码" />
-              </Form.Item>
-              <Form.Item>
-                <Button type="primary" htmlType="submit" loading={loading} icon={<SaveOutlined />}>
-                  更新密码
-                </Button>
-              </Form.Item>
-            </Form>
-          </Col>
-        </Row>
-      </Card>
-    )
-  }
+  // 5. 安全设置 (修改密码)
+  const renderSecuritySection = () => (
+    <Card title="安全设置" extra={<Badge status={config?.hasPassword ? 'success' : 'warning'} text={config?.hasPassword ? '已设置访问密码' : '未设置访问密码'} />}>
+      <Row gutter={24}>
+        <Col span={12}>
+          <Title level={5}>修改访问密码</Title>
+          <Text type="secondary">设置或修改后台管理系统的访问密码。密码将 SHA-256 加密后存储在 GitHub 的 `admin_config.json` 中。</Text>
+          <Form form={passwordForm} onFinish={handleSetPassword} layout="vertical" style={{ marginTop: 24 }}>
+            <Form.Item name="password" label="新密码" rules={[{ required: true, message: '请输入新密码' }, { min: 6, message: '密码长度至少 6 位' }]}><Input.Password placeholder="请输入新密码" /></Form.Item>
+            <Form.Item name="confirm" label="确认新密码" dependencies={['password']} rules={[{ required: true, message: '请确认新密码' }, ({ getFieldValue }) => ({ validator(_, value) { if (!value || getFieldValue('password') === value) return Promise.resolve(); return Promise.reject(new Error('两次输入的密码不一致')); } })]}><Input.Password placeholder="请再次输入新密码" /></Form.Item>
+            <Form.Item><Button type="primary" htmlType="submit" loading={loading} icon={<SaveOutlined />}>更新密码并同步</Button></Form.Item>
+          </Form>
+        </Col>
+      </Row>
+    </Card>
+  )
 
-  const items = [
+  const menuItems = [
     { key: 'data', icon: <SettingOutlined />, label: '站点配置' },
     { key: 'bookmarks', icon: <BookOutlined />, label: '书签管理' },
     { key: 'hidedata', icon: <LockOutlined />, label: '隐藏数据' },
@@ -1138,63 +782,33 @@ const AdminApp: React.FC = () => {
     { key: 'security', icon: <SettingOutlined />, label: '安全设置' }
   ]
 
+  // 未登录时的登录界面
   if (!isLoggedIn) {
     return (
       <div style={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#f0f2f5' }}>
         <Card title="管理员登录" style={{ width: 400 }}>
           <Form form={loginForm} onFinish={handleLogin} layout="vertical">
-            <Form.Item name="password" label="访问密码" rules={[{ required: true, message: '请输入访问密码' }]}>
-              <Input.Password prefix={<SettingOutlined />} placeholder="请输入访问密码" />
-            </Form.Item>
-            <Form.Item>
-              <Button type="primary" htmlType="submit" block loading={loading}>
-                登录
-              </Button>
-            </Form.Item>
-            {!config?.hasPassword && (
-              <Text type="secondary">初次使用？请在登录后设置密码。</Text>
-            )}
+            <Form.Item name="password" label="访问密码" rules={[{ required: true, message: '请输入访问密码' }]}><Input.Password prefix={<SettingOutlined />} placeholder="请输入访问密码" /></Form.Item>
+            <Form.Item><Button type="primary" htmlType="submit" block loading={loading}>登录</Button></Form.Item>
+            {!config?.hasPassword && <Text type="secondary">初次使用？登录后请立即前往安全设置设定密码。</Text>}
           </Form>
         </Card>
       </div>
     )
   }
 
+  // 已登录后的主布局
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Sider
-        theme="light"
-        breakpoint="lg"
-        collapsedWidth="0"
-        onCollapse={(collapsed) => setIsSiderCollapsed(collapsed)}
-        style={{
-          boxShadow: '2px 0 8px 0 rgba(29,33,41,.05)',
-          zIndex: 10,
-          position: 'fixed',
-          height: '100vh',
-          left: 0
-        }}
-      >
-        <div style={{ height: 64, display: 'flex', alignItems: 'center', padding: '0 24px', borderBottom: `1px solid ${token.colorBorderSecondary}` }}>
-          <Title level={4} style={{ margin: 0, color: token.colorPrimary }}>Admin</Title>
-        </div>
-        <Menu
-              mode="inline"
-              selectedKeys={[activeKey]}
-              onClick={handleMenuClick}
-              items={items}
-              style={{ borderRight: 0, marginTop: 16 }}
-            />
-        <div style={{ position: 'absolute', bottom: 16, width: '100%', padding: '0 16px' }}>
-          <Button danger block onClick={handleLogout}>退出登录</Button>
-        </div>
+      <Sider theme="light" breakpoint="lg" collapsedWidth="0" onCollapse={(collapsed) => setIsSiderCollapsed(collapsed)} 
+             style={{ boxShadow: '2px 0 8px 0 rgba(29,33,41,.05)', zIndex: 10, position: 'fixed', height: '100vh', left: 0 }}>
+        <div style={{ height: 64, display: 'flex', alignItems: 'center', padding: '0 24px', borderBottom: `1px solid ${token.colorBorderSecondary}` }}><Title level={4} style={{ margin: 0, color: token.colorPrimary }}>Admin</Title></div>
+        <Menu mode="inline" selectedKeys={[activeKey]} onClick={handleMenuClick} items={menuItems} style={{ borderRight: 0, marginTop: 16 }} />
+        <div style={{ position: 'absolute', bottom: 16, width: '100%', padding: '0 16px' }}><Button danger block onClick={handleLogout}>退出登录</Button></div>
       </Sider>
       <Layout style={{ transition: 'all 0.2s', paddingLeft: isSiderCollapsed ? 0 : 200 }}>
         <Header style={{ background: '#fff', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', boxShadow: '0 1px 4px rgba(0,21,41,.08)', zIndex: 1 }}>
-          <Space>
-            <GlobalOutlined />
-            <Text strong>管理员</Text>
-          </Space>
+          <Space><GlobalOutlined /><Text strong>管理员系统</Text></Space>
         </Header>
         <Content style={{ margin: '24px', minHeight: 280 }}>
           {activeKey === 'data' && renderDataSection()}
@@ -1205,28 +819,13 @@ const AdminApp: React.FC = () => {
         </Content>
       </Layout>
 
-      <Modal
-        title={editingBookmark ? '编辑书签' : '添加新书签'}
-        open={isModalOpen}
-        onOk={handleBookmarkModalSubmit}
-        onCancel={() => setIsModalOpen(false)}
-        okText="确认保存 (本地)"
-        cancelText="取消"
-        destroyOnClose
-      >
+      {/* 书签新增/编辑弹窗 */}
+      <Modal title={editingBookmark ? '编辑书签' : '添加新书签'} open={isModalOpen} onOk={handleBookmarkModalSubmit} onCancel={() => setIsModalOpen(false)} okText="确认保存 (本地)" cancelText="取消" destroyOnClose>
         <Form form={form} layout="vertical" style={{ marginTop: 24 }}>
-          <Form.Item name="title" label="标题" rules={[{ required: true, message: '请输入标题' }]}>
-            <Input placeholder="书签标题" />
-          </Form.Item>
-          <Form.Item name="url" label="URL" rules={[{ required: true, message: '请输入 URL' }, { type: 'url', message: '请输入合法的 URL' }]}>
-            <Input placeholder="https://..." />
-          </Form.Item>
-          <Form.Item name="path" label="文件夹路径 (使用 / 分隔)" rules={[{ required: true, message: '请输入路径' }]}>
-            <Input placeholder="例如: 常用 / 工具 / 开发" />
-          </Form.Item>
-          <Form.Item name="icon" label="图标标识">
-            <Input placeholder="link" />
-          </Form.Item>
+          <Form.Item name="title" label="标题" rules={[{ required: true, message: '请输入标题' }]}><Input placeholder="书签标题" /></Form.Item>
+          <Form.Item name="url" label="URL" rules={[{ required: true, message: '请输入 URL' }, { type: 'url', message: '请输入合法的 URL' }]}><Input placeholder="https://..." /></Form.Item>
+          <Form.Item name="path" label="文件夹路径 (使用 / 分隔)" rules={[{ required: true, message: '请输入路径' }]}><Input placeholder="例如: 常用 / 工具 / 开发" /></Form.Item>
+          <Form.Item name="icon" label="图标标识"><Input placeholder="link" /></Form.Item>
         </Form>
       </Modal>
     </Layout>
@@ -1234,15 +833,8 @@ const AdminApp: React.FC = () => {
 }
 
 const App: React.FC = () => (
-  <ConfigProvider locale={zhCN} theme={{
-    token: {
-      colorPrimary: '#1677ff',
-      borderRadius: 8,
-    },
-  }}>
-    <AntdApp>
-      <AdminApp />
-    </AntdApp>
+  <ConfigProvider locale={zhCN} theme={{ token: { colorPrimary: '#1677ff', borderRadius: 8 } }}>
+    <AntdApp><AdminApp /></AntdApp>
   </ConfigProvider>
 )
 

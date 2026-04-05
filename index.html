@@ -5,17 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>喜淘网工具箱 - 极致简约导航</title>
 
-    <!-- UI Libraries -->
+    <!-- 引入外部 UI 库和资源 -->
     <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
     <script src="resource/js/vue.global.prod.js"></script>
     <script src="https://unpkg.com/element-plus"></script>
     <script src="https://unpkg.com/@element-plus/icons-vue"></script>
     <script src="resource/js/tailwindcss.js"></script>
     <script src="resource/js/fuse.js@6.6.2.js"></script>
+    <!-- 引入全局配置文件 -->
     <script src="config.js"></script>
 
     <style>
         :root {
+            /* Element Plus 主题颜色覆盖 */
             --el-color-primary: #4f46e5;
             --el-color-primary-light-3: #818cf8;
             --el-color-primary-light-5: #a5b4fc;
@@ -35,6 +37,7 @@
             font-size: 18px;
         }
 
+        /* 布局相关样式 */
         .app-container {
             display: flex;
             min-height: 100vh;
@@ -62,6 +65,7 @@
             width: calc(100% - 260px);
         }
 
+        /* 侧边栏菜单样式 */
         .category-menu .el-menu {
             border-right: none;
         }
@@ -79,6 +83,7 @@
             color: var(--el-color-primary);
         }
 
+        /* 工具卡片样式 */
         .tool-card {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: 1px solid #f1f5f9;
@@ -98,157 +103,138 @@
         .tool-icon {
             width: 48px;
             height: 48px;
+            background: #f8fafc;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #f8fafc;
             margin-right: 1rem;
             flex-shrink: 0;
-            overflow: hidden;
         }
 
         .tool-icon img {
-            width: 32px;
-            height: 32px;
+            width: 24px;
+            height: 24px;
             object-fit: contain;
         }
 
+        /* 搜索框样式 */
         .search-bar {
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto 3rem;
+            position: sticky;
+            top: 1rem;
+            z-index: 100;
         }
 
         .search-input .el-input__wrapper {
-            border-radius: 100px;
             padding: 12px 24px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            font-size: 1.1rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            background: #fff;
         }
 
+        .search-input .el-input__wrapper.is-focus {
+            border-color: var(--el-color-primary);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 分类标题样式 */
         .section-header {
-            margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-        }
-
-        .tool-card p {
-            font-size: 13px;
-        }
-
-        .tool-card h3 {
-            font-size: 1.1rem;
+            gap: 1rem;
+            margin-bottom: 2rem;
         }
 
         .section-header h2 {
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             font-weight: 800;
             color: #0f172a;
-            margin: 0;
+            letter-spacing: -0.025em;
         }
 
         .section-badge {
-            background: var(--el-color-primary-light-9);
-            color: var(--el-color-primary);
+            background: #f1f5f9;
+            color: #64748b;
             padding: 2px 10px;
-            border-radius: 20px;
+            border-radius: 999px;
             font-size: 0.75rem;
             font-weight: 700;
         }
 
+        /* 书签文件夹卡片样式 */
         .bookmark-folder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             background: #fff;
             border: 1px solid #f1f5f9;
-            border-radius: 16px;
+            border-radius: 20px;
             padding: 1.5rem;
-            text-align: center;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
         }
 
         .bookmark-folder:hover {
-            background: #f8fafc;
-            border-color: var(--el-color-primary-light-5);
+            background: #fefce8;
+            border-color: #fde047;
+            transform: scale(1.02);
         }
 
         .bookmark-folder-icon {
-            font-size: 2.5rem;
-            color: #fbbf24;
-            margin-bottom: 0.75rem;
+            font-size: 40px;
+            color: #eab308;
+            margin-bottom: 0.5rem;
         }
 
-        [v-cloak] {
-            display: none;
-        }
-
+        /* 移动端适配 */
         @media (max-width: 768px) {
-            .app-container {
-                display: block;
-            }
-
             .sidebar {
                 transform: translateX(-100%);
-                box-shadow: 20px 0 50px rgba(0, 0, 0, 0.1);
             }
 
             .sidebar.is-open {
                 transform: translateX(0);
             }
 
-            .sidebar-overlay {
-                display: block !important;
-                position: fixed;
-                inset: 0;
-                background: rgba(0, 0, 0, 0.5);
-                backdrop-filter: blur(4px);
-                z-index: 115;
-            }
-
             .main-content {
                 margin-left: 0;
                 width: 100%;
                 padding: 1rem;
-                font-size: 1.1rem;
             }
 
             .mobile-header {
                 display: flex !important;
-                height: 60px;
-                padding: 0 1rem;
             }
 
-            .mobile-header .el-button {
-                font-size: 20px;
-                padding: 10px;
-                width: 44px;
-                height: 44px;
-            }
-
-            .mobile-header h1 {
-                font-size: 1.25rem;
-                flex: 1;
-                text-align: center;
-                margin: 0;
+            .sidebar-overlay {
+                display: block;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 115;
             }
 
             .search-bar {
-                margin-bottom: 1.5rem;
+                margin-bottom: 2rem;
             }
 
-            .tool-card {
-                padding: 1rem !important;
+            .search-input .el-input__wrapper {
+                padding: 8px 16px;
             }
 
             .tool-icon {
                 width: 40px;
                 height: 40px;
-                margin-right: 0.75rem;
             }
 
             .tool-icon img {
-                width: 24px;
-                height: 24px;
+                width: 20px;
+                height: 20px;
             }
 
             .top-welcome {
@@ -276,32 +262,30 @@
             align-items: center;
             justify-content: space-between;
         }
+
+        [v-cloak] { display: none; }
     </style>
 </head>
 <body>
 <div id="app" v-cloak>
     <div class="app-container">
-        <!-- Sidebar Overlay -->
+        <!-- 移动端侧边栏遮罩层 -->
         <div class="sidebar-overlay" v-if="isSidebarOpen" @click="isSidebarOpen = false"></div>
 
-        <!-- Mobile Header -->
+        <!-- 移动端顶部栏 -->
         <div class="mobile-header">
             <el-button @click="isSidebarOpen = !isSidebarOpen" circle>
-                <el-icon>
-                    <Operation/>
-                </el-icon>
+                <el-icon><Operation/></el-icon>
             </el-button>
             <h1 class="text-xl font-bold">{{ settings.site_title }}</h1>
             <div style="width: 44px"></div>
         </div>
 
-        <!-- Sidebar -->
+        <!-- 侧边栏导航 -->
         <aside :class="['sidebar', isSidebarOpen ? 'is-open' : '']">
             <div class="p-6 border-b border-slate-100 flex items-center gap-3">
                 <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white">
-                    <el-icon :size="24">
-                        <Tools/>
-                    </el-icon>
+                    <el-icon :size="24"><Tools/></el-icon>
                 </div>
                 <div>
                     <h1 class="font-black text-lg tracking-tight leading-none">{{ settings.site_title }}</h1>
@@ -311,38 +295,34 @@
 
             <div class="flex-1 overflow-y-auto py-4 category-menu">
                 <el-menu :default-active="activeMenu" @select="handleMenuSelect">
+                    <!-- 工具分类菜单 -->
                     <el-menu-item-group title="工具分类">
                         <el-menu-item v-for="group in toolGroups" :key="group.name" :index="'cat-' + group.name">
-                            <el-icon>
-                                <Grid/>
-                            </el-icon>
+                            <el-icon><Grid/></el-icon>
                             <span>{{ group.name }}</span>
                         </el-menu-item>
                     </el-menu-item-group>
 
+                    <!-- 书签入口 -->
                     <el-menu-item-group title="书签资源">
                         <el-menu-item index="bookmarks">
-                            <el-icon>
-                                <CollectionTag/>
-                            </el-icon>
+                            <el-icon><CollectionTag/></el-icon>
                             <span>我的书签</span>
                         </el-menu-item>
                     </el-menu-item-group>
 
+                    <!-- 隐藏资源解锁入口 -->
                     <el-menu-item-group title="私密资源" v-if="!hideData">
                         <el-menu-item index="unlock-hide">
-                            <el-icon>
-                                <Lock/>
-                            </el-icon>
+                            <el-icon><Lock/></el-icon>
                             <span>解锁隐藏分类</span>
                         </el-menu-item>
                     </el-menu-item-group>
 
+                    <!-- 已解锁的隐藏分类 -->
                     <el-menu-item-group title="隐藏分类" v-if="hideData">
                         <el-menu-item v-for="group in hideGroups" :key="group.name" :index="'hide-' + group.name">
-                            <el-icon>
-                                <View/>
-                            </el-icon>
+                            <el-icon><View/></el-icon>
                             <span>{{ group.name }}</span>
                         </el-menu-item>
                     </el-menu-item-group>
@@ -350,101 +330,71 @@
             </div>
 
             <div class="p-4 border-t border-slate-100 flex flex-col gap-2">
-                <el-button type="primary" plain block @click="openAdmin" icon="Setting" style="width: 100%">
-                    后台管理
-                </el-button>
-                <div class="text-[10px] text-slate-400 font-bold text-center mt-2">
-                    © 2026 {{ settings.site_title }}
-                </div>
+                <el-button type="primary" plain block @click="openAdmin" icon="Setting" style="width: 100%">后台管理</el-button>
+                <div class="text-[10px] text-slate-400 font-bold text-center mt-2">© 2026 {{ settings.site_title }}</div>
             </div>
         </aside>
 
-        <!-- Main Content -->
+        <!-- 主内容区域 -->
         <main class="main-content">
-            <!-- Top Header -->
+            <!-- 桌面端顶部栏 -->
             <div class="flex justify-between items-center mb-8 top-welcome">
-                <div class="text-slate-400 font-medium">
-                    欢迎使用 {{ settings.site_title }}
-                </div>
-                <el-button type="primary" plain round @click="openAdmin" icon="Setting">
-                    后台管理
-                </el-button>
+                <div class="text-slate-400 font-medium">欢迎使用 {{ settings.site_title }}</div>
+                <el-button type="primary" plain round @click="openAdmin" icon="Setting">后台管理</el-button>
             </div>
 
-            <!-- Search Section -->
+            <!-- 全局搜索框 -->
             <div class="search-bar">
-                <el-input
-                        v-model="searchQuery"
-                        placeholder="搜索在线资源、工具或书签..."
-                        class="search-input"
-                        clearable
-                        @input="handleSearch"
-                >
-                    <template #prefix>
-                        <el-icon>
-                            <Search/>
-                        </el-icon>
-                    </template>
+                <el-input v-model="searchQuery" placeholder="搜索在线资源、工具或书签..." class="search-input" clearable @input="handleSearch">
+                    <template #prefix><el-icon><Search/></el-icon></template>
                 </el-input>
             </div>
 
-            <!-- Search Results -->
+            <!-- 搜索结果展示 -->
             <div v-if="searchQuery" class="space-y-8 animate-in fade-in slide-in-from-bottom-4">
                 <div class="section-header">
                     <h2>搜索结果</h2>
                     <span class="section-badge">{{ searchResults.length }}</span>
                 </div>
 
-                <div v-if="searchResults.length === 0"
-                     class="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-200">
-                    <el-icon :size="48" class="text-slate-300 mb-4">
-                        <Search/>
-                    </el-icon>
+                <!-- 无结果提示 -->
+                <div v-if="searchResults.length === 0" class="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-200">
+                    <el-icon :size="48" class="text-slate-300 mb-4"><Search/></el-icon>
                     <p class="text-slate-400 font-bold">未找到相关资源</p>
                 </div>
 
+                <!-- 结果列表 -->
                 <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div v-for="link in searchResults" :key="link.url" @click="openLink(link.url)"
-                         class="tool-card p-6 flex items-center">
+                    <div v-for="link in searchResults" :key="link.url" @click="openLink(link.url)" class="tool-card p-6 flex items-center">
                         <div class="tool-icon">
                             <img v-if="getFavicon(link.url)" loading="lazy" :src="getFavicon(link.url)" @error="handleIconError">
-                            <el-icon v-else :size="24" class="text-indigo-400">
-                                <Link/>
-                            </el-icon>
+                            <el-icon v-else :size="24" class="text-indigo-400"><Link/></el-icon>
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2 mb-0.5">
-                                <span class="text-[10px] font-bold uppercase tracking-tighter bg-slate-100 px-1.5 py-0.5 rounded text-slate-500">{{ link.category || '书签'
-                                    }}</span>
+                                <span class="text-[10px] font-bold uppercase tracking-tighter bg-slate-100 px-1.5 py-0.5 rounded text-slate-500">{{ link.category || '书签' }}</span>
                             </div>
                             <h3 class="font-bold text-base truncate">{{ link.title }}</h3>
                         </div>
-                        <el-icon class="text-slate-300">
-                            <ArrowRight/>
-                        </el-icon>
+                        <el-icon class="text-slate-300"><ArrowRight/></el-icon>
                     </div>
                 </div>
             </div>
 
-            <!-- Standard Content -->
+            <!-- 默认展示内容 (工具和书签) -->
             <div v-else class="space-y-16">
-                <!-- Tool Groups -->
+                <!-- 工具分类渲染 -->
                 <div v-for="group in toolGroups" :key="group.name" :id="'cat-' + group.name" class="scroll-mt-24">
                     <div class="section-header">
                         <h2>{{ group.name }}</h2>
                         <span class="section-badge">{{ group.items.length }}</span>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                        <div v-for="link in group.items" :key="link.url" @click="openLink(link.url)"
-                             class="tool-card p-5 flex items-center">
+                        <div v-for="link in group.items" :key="link.url" @click="openLink(link.url)" class="tool-card p-5 flex items-center">
                             <div class="tool-icon">
-                                <img v-if="link.icon && isImageUrl(link.icon)" :src="link.icon"
-                                     @error="handleIconError">
-                                <img v-else-if="getFavicon(link.url)" :src="getFavicon(link.url)"
-                                     @error="handleIconError">
-                                <el-icon v-else :size="24" class="text-indigo-400">
-                                    <Link/>
-                                </el-icon>
+                                <img v-if="link.icon && isImageUrl(link.icon)" :src="link.icon" @error="handleIconError">
+                                <img v-else-if="getFavicon(link.url)" :src="getFavicon(link.url)" @error="handleIconError">
+                                <el-icon v-else :size="24" class="text-indigo-400"><Link/></el-icon>
                             </div>
                             <div class="flex-1 min-w-0">
                                 <h3 class="font-bold text-base truncate">{{ link.title }}</h3>
@@ -454,7 +404,7 @@
                     </div>
                 </div>
 
-                <!-- Bookmarks Section -->
+                <!-- 我的书签部分 -->
                 <div id="bookmarks" class="scroll-mt-24 pt-8 border-t border-slate-100">
                     <div class="section-header">
                         <h2>我的书签</h2>
@@ -463,28 +413,18 @@
 
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
                         <template v-for="node in bookmarkTree" :key="node.name || node.title">
-                            <!-- Folder -->
-                            <div v-if="node.type === 'folder'" @click="openBookmarkModal(node)"
-                                 class="bookmark-folder group">
-                                <div class="bookmark-folder-icon group-hover:scale-110 transition-transform">
-                                    <el-icon>
-                                        <Folder/>
-                                    </el-icon>
-                                </div>
+                            <!-- 文件夹展示 -->
+                            <div v-if="node.type === 'folder'" @click="openBookmarkModal(node)" class="bookmark-folder group">
+                                <div class="bookmark-folder-icon group-hover:scale-110 transition-transform"><el-icon><Folder/></el-icon></div>
                                 <h3 class="font-bold text-sm truncate">{{ node.name }}</h3>
-                                <p class="text-[10px] text-slate-400 font-bold mt-1 uppercase">
-                                    {{ (node.children || []).length }} 项</p>
+                                <p class="text-[10px] text-slate-400 font-bold mt-1 uppercase">{{ (node.children || []).length }} 项</p>
                             </div>
 
-                            <!-- Link -->
-                            <div v-else @click="openLink(node.url)"
-                                 class="tool-card p-4 flex flex-col items-center text-center">
+                            <!-- 单个书签展示 -->
+                            <div v-else @click="openLink(node.url)" class="tool-card p-4 flex flex-col items-center text-center">
                                 <div class="tool-icon mr-0 mb-3">
-                                    <img v-if="getFavicon(node.url)" :src="getFavicon(node.url)"
-                                         @error="handleIconError">
-                                    <el-icon v-else :size="24" class="text-indigo-400">
-                                        <Link/>
-                                    </el-icon>
+                                    <img v-if="getFavicon(node.url)" :src="getFavicon(node.url)" @error="handleIconError">
+                                    <el-icon v-else :size="24" class="text-indigo-400"><Link/></el-icon>
                                 </div>
                                 <h3 class="font-bold text-xs truncate w-full">{{ node.title }}</h3>
                             </div>
@@ -492,27 +432,19 @@
                     </div>
                 </div>
 
-                <!-- Hidden Groups -->
-                <div v-if="hideData" v-for="group in hideGroups" :key="group.name" :id="'hide-' + group.name"
-                     class="scroll-mt-24 pt-8 border-t border-slate-100">
+                <!-- 解锁后的隐藏资源分类 -->
+                <div v-if="hideData" v-for="group in hideGroups" :key="group.name" :id="'hide-' + group.name" class="scroll-mt-24 pt-8 border-t border-slate-100">
                     <div class="section-header">
                         <h2>{{ group.name }}</h2>
                         <span class="section-badge">{{ group.items.length }}</span>
-                        <el-icon class="text-indigo-500">
-                            <Lock/>
-                        </el-icon>
+                        <el-icon class="text-indigo-500"><Lock/></el-icon>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                        <div v-for="link in group.items" :key="link.url" @click="openLink(link.url)"
-                             class="tool-card p-5 flex items-center border-indigo-100 bg-indigo-50/10">
+                        <div v-for="link in group.items" :key="link.url" @click="openLink(link.url)" class="tool-card p-5 flex items-center border-indigo-100 bg-indigo-50/10">
                             <div class="tool-icon bg-indigo-50">
-                                <img v-if="link.icon && isImageUrl(link.icon)" :src="link.icon"
-                                     @error="handleIconError">
-                                <img v-else-if="getFavicon(link.url)" :src="getFavicon(link.url)"
-                                     @error="handleIconError">
-                                <el-icon v-else :size="24" class="text-indigo-400">
-                                    <Link/>
-                                </el-icon>
+                                <img v-if="link.icon && isImageUrl(link.icon)" :src="link.icon" @error="handleIconError">
+                                <img v-else-if="getFavicon(link.url)" :src="getFavicon(link.url)" @error="handleIconError">
+                                <el-icon v-else :size="24" class="text-indigo-400"><Link/></el-icon>
                             </div>
                             <div class="flex-1 min-w-0">
                                 <h3 class="font-bold text-base truncate">{{ link.title }}</h3>
@@ -525,29 +457,17 @@
         </main>
     </div>
 
-    <!-- Bookmark Explorer Modal -->
-    <el-dialog
-            v-model="isModalOpen"
-            :title="selectedFolder?.name || '书签浏览'"
-            width="80%"
-            class="bookmark-dialog"
-            destroy-on-close
-    >
+    <!-- 书签浏览器弹窗 -->
+    <el-dialog v-model="isModalOpen" :title="selectedFolder?.name || '书签浏览'" width="80%" class="bookmark-dialog" destroy-on-close>
         <div class="flex flex-col md:flex-row gap-6 min-h-[400px]">
-            <!-- Left: Folder Tree -->
+            <!-- 左侧：文件夹树 -->
             <div class="w-full md:w-64 border-r border-slate-100 pr-4">
-                <el-tree
-                        :data="selectedFolder?.children"
-                        :props="treeProps"
-                        @node-click="handleTreeNodeClick"
-                        highlight-current
-                >
+                <el-tree :data="selectedFolder?.children" :props="treeProps" @node-click="handleTreeNodeClick" highlight-current>
                     <template #default="{ node, data }">
                             <span class="flex items-center gap-2 text-sm overflow-hidden">
                                 <el-icon v-if="data.type === 'folder'" class="text-amber-500"><Folder/></el-icon>
                                 <template v-else>
-                                    <img v-if="getFavicon(data.url)" :src="getFavicon(data.url)"
-                                         class="w-4 h-4 object-contain" @error="handleIconError">
+                                    <img v-if="getFavicon(data.url)" :src="getFavicon(data.url)" class="w-4 h-4 object-contain" @error="handleIconError">
                                     <el-icon v-else class="text-indigo-400"><Link/></el-icon>
                                 </template>
                                 <span class="truncate">{{ data.name || data.title }}</span>
@@ -556,16 +476,13 @@
                 </el-tree>
             </div>
 
-            <!-- Right: Content -->
+            <!-- 右侧：书签内容 -->
             <div class="flex-1">
                 <div v-if="currentLinks.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div v-for="link in currentLinks" :key="link.url" @click="openLink(link.url)"
-                         class="tool-card p-4 flex items-center">
+                    <div v-for="link in currentLinks" :key="link.url" @click="openLink(link.url)" class="tool-card p-4 flex items-center">
                         <div class="tool-icon w-10 h-10">
                             <img v-if="getFavicon(link.url)" loading="lazy" :src="getFavicon(link.url)" @error="handleIconError">
-                            <el-icon v-else :size="18" class="text-indigo-400">
-                                <Link/>
-                            </el-icon>
+                            <el-icon v-else :size="18" class="text-indigo-400"><Link/></el-icon>
                         </div>
                         <div class="flex-1 min-w-0">
                             <h4 class="font-bold text-sm truncate">{{ link.title }}</h4>
@@ -574,34 +491,21 @@
                     </div>
                 </div>
                 <div v-else class="h-full flex flex-col items-center justify-center text-slate-300 py-12">
-                    <el-icon :size="48">
-                        <InfoFilled/>
-                    </el-icon>
+                    <el-icon :size="48"><InfoFilled/></el-icon>
                     <p class="mt-4 font-bold">请选择左侧分类查看内容</p>
                 </div>
             </div>
         </div>
     </el-dialog>
 
-    <!-- Notice Dialog -->
-    <el-dialog
-            v-model="showNotice"
-            title="网站通知"
-            width="400px"
-            center
-            :show-close="false"
-            :close-on-click-modal="false"
-    >
+    <!-- 站点公告弹窗 -->
+    <el-dialog v-model="showNotice" title="网站通知" width="400px" center :show-close="false" :close-on-click-modal="false">
         <div class="text-center py-4">
-            <el-icon :size="48" class="text-indigo-500 mb-4 animate-bounce">
-                <Bell/>
-            </el-icon>
+            <el-icon :size="48" class="text-indigo-500 mb-4 animate-bounce"><Bell/></el-icon>
             <p class="text-slate-600 leading-relaxed font-medium">{{ settings.site_notice }}</p>
         </div>
         <template #footer>
-            <el-button type="primary" size="large" @click="showNotice = false" round block style="width: 100%">
-                我知道了
-            </el-button>
+            <el-button type="primary" size="large" @click="showNotice = false" round block style="width: 100%">我知道了</el-button>
         </template>
     </el-dialog>
 </div>
@@ -611,17 +515,18 @@
 
     const app = createApp({
         setup() {
-            const settings = ref({});
-            const toolLinks = ref([]);
-            const bookmarkTree = ref([]);
-            const hideData = ref(null);
-            const searchQuery = ref('');
-            const activeMenu = ref('');
-            const isSidebarOpen = ref(false);
-            const showNotice = ref(true);
-            const isModalOpen = ref(false);
-            const selectedFolder = ref(null);
-            const currentLinks = ref([]);
+            // 状态定义
+            const settings = ref({});        // 站点设置
+            const toolLinks = ref([]);      // data.json 中的普通链接
+            const bookmarkTree = ref([]);    // 书签树
+            const hideData = ref(null);      // 解锁后的隐藏数据
+            const searchQuery = ref('');     // 搜索关键词
+            const activeMenu = ref('');      // 当前选中的侧边栏 ID
+            const isSidebarOpen = ref(false);// 移动端侧边栏是否开启
+            const showNotice = ref(true);    // 是否显示公告
+            const isModalOpen = ref(false);  // 书签浏览器弹窗是否开启
+            const selectedFolder = ref(null);// 书签弹窗中当前选中的根文件夹
+            const currentLinks = ref([]);    // 书签弹窗中当前展示的链接列表
 
             const treeProps = {
                 label: (data) => data.name || data.title,
@@ -632,7 +537,7 @@
                 await fetchData();
                 await fetchBookmarks();
 
-                // Initialize scroll spy
+                // 初始化 Scroll Spy (滚动自动切换侧边栏选中)
                 const observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
@@ -651,6 +556,7 @@
                 });
             });
 
+            // 获取 data.json 数据
             const fetchData = async () => {
                 try {
                     const res = await fetch(window.CONFIG.DATA_URL);
@@ -662,6 +568,7 @@
                 }
             };
 
+            // 获取书签数据
             const fetchBookmarks = async () => {
                 try {
                     const res = await fetch(window.CONFIG.BOOKMARKS_URL);
@@ -672,6 +579,7 @@
                 }
             };
 
+            // 将工具链接按分类分组 (Computed)
             const toolGroups = computed(() => {
                 const groups = {};
                 toolLinks.value.forEach(link => {
@@ -681,6 +589,7 @@
                 return Object.keys(groups).map(name => ({name, items: groups[name]}));
             });
 
+            // 将隐藏链接按分类分组 (Computed)
             const hideGroups = computed(() => {
                 if (!hideData.value) return [];
                 const groups = {};
@@ -691,6 +600,7 @@
                 return Object.keys(groups).map(name => ({name, items: groups[name]}));
             });
 
+            // 处理菜单项点击，滚动到对应锚点
             const handleMenuSelect = (index) => {
                 if (index === 'unlock-hide') {
                     unlockHideData();
@@ -725,6 +635,7 @@
                 return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(url) || url.startsWith('http');
             };
 
+            // 获取 Favicon 图标，使用 Google 的 Favicon 服务
             const getFavicon = (url) => {
                 if (!url || url.includes('工具/') || url.includes('游戏/') || url.includes('vip/')) return null;
                 return `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${encodeURIComponent(url)}&size=64`;
@@ -740,6 +651,7 @@
                 isModalOpen.value = true;
             };
 
+            // 书签弹窗左侧树点击处理
             const handleTreeNodeClick = (data) => {
                 if (data.type === 'folder') {
                     currentLinks.value = (data.children || []).filter(c => c.type === 'link');
@@ -748,6 +660,7 @@
                 }
             };
 
+            // 解锁隐藏资源逻辑
             const unlockHideData = () => {
                 ElementPlus.ElMessageBox.prompt('请输入解锁密码', '私密资源', {
                     confirmButtonText: '解锁',
@@ -755,7 +668,7 @@
                     inputType: 'password',
                 }).then(({value}) => {
                     const API_BASE = window.CONFIG.API_URL
-                    // Handle potential relative path or absolute path
+                    // 处理相对路径或绝对路径
                     const absoluteApiBase = API_BASE.startsWith('http') ? API_BASE : window.location.origin + '/' + API_BASE;
 
                     fetch(`${absoluteApiBase}/public/hidedata`, {
@@ -771,7 +684,7 @@
                                 hideData.value = data;
                                 ElementPlus.ElMessage.success('解锁成功');
                                 nextTick(() => {
-                                    // Watch for new groups
+                                    // 动态添加对隐藏分类的滚动观察
                                     const observer = new IntersectionObserver((entries) => {
                                         entries.forEach(entry => {
                                             if (entry.isIntersecting) {
@@ -792,7 +705,7 @@
                 });
             };
 
-            // Search logic with Fuse.js
+            // 搜索逻辑 (使用 Fuse.js 进行模糊匹配)
             const searchResults = ref([]);
             let fuseTools = null;
             let fuseBookmarks = null;
@@ -803,10 +716,11 @@
                     return;
                 }
 
+                // 初始化 Fuse 实例 (仅在第一次搜索时)
                 if (!fuseTools) {
                     fuseTools = new Fuse(toolLinks.value, {keys: ['title', 'category', 'url'], threshold: 0.3});
 
-                    // Flatten bookmarks for searching
+                    // 扁平化书签用于搜索
                     const flatBookmarks = [];
                     const flatten = (nodes, path = []) => {
                         nodes.forEach(n => {
@@ -833,7 +747,7 @@
         }
     });
 
-    // Register icons
+    // 注册 Element Plus 图标
     for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
         app.component(key, component);
     }
