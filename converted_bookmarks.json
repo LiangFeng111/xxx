@@ -76,12 +76,6 @@
           "children": [
             {
               "type": "link",
-              "title": "妖火网 - 脚本-破解软件获取",
-              "url": "https://www.yaohuo.me/",
-              "icon": "link"
-            },
-            {
-              "type": "link",
               "title": "吾爱破解 - LCG - LSG|安卓破解|病毒分析|www.52pojie.cn",
               "url": "https://www.52pojie.cn/",
               "icon": "link"
@@ -156,6 +150,12 @@
               "type": "link",
               "title": "福利吧 - 福利吧",
               "url": "https://fuliba2023.net/fuli",
+              "icon": "link"
+            },
+            {
+              "type": "link",
+              "title": "妖火网 - 脚本-破解软件",
+              "url": "https://www.yaohuo.me/",
               "icon": "link"
             }
           ]
