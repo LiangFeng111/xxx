@@ -47,6 +47,8 @@ GH_BRANCH=master
     - `CLOUDFLARE_ACCOUNT_ID`: Cloudflare 账户 ID。
     - `GH_TOKEN`: 具有写权限的 GitHub Token。
 
+> **提示**: GitHub Actions 现在会自动尝试在 Cloudflare Pages 中创建项目。如果部署仍提示“Project not found”，请检查您的 Cloudflare API Token 权限是否包含 `Cloudflare Pages: Edit`。
+
 后端和前端的其它非敏感配置（如 `GH_OWNER`、`GH_REPO` 等）在项目wrangler配置文件中设置。
 
 ## 🚀 快速开始

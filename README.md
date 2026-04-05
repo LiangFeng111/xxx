@@ -13,6 +13,8 @@
 - `CLOUDFLARE_ACCOUNT_ID`: 您的 Cloudflare 账户 ID。
 - `GH_TOKEN`: 具有写权限的 GitHub Personal Access Token (用于后端修改文件)。
 
+> **提示**: 部署脚本现在会自动尝试在 Cloudflare 中创建 `admin-frontend-pages` 项目。如果自动创建失败，请确保您的 `CLOUDFLARE_API_TOKEN` 拥有 `Cloudflare Pages: Edit` 权限。
+
 ### 2. 部署流程
 
 - 推送代码到 `master` 分支后，GitHub Actions 会自动触发部署：

@@ -9,5 +9,5 @@ window.CONFIG = {
   BOOKMARKS_URL: 'converted_bookmarks.json',
 
   // 3. 后台管理地址
-  ADMIN_URL: 'admin/frontend/index.html'
+  ADMIN_URL: 'https://admin-frontend-pages.pages.dev'
 };

@@ -1,17 +1,16 @@
-name: Deploy Frontend to Cloudflare Pages
+name: Deploy Admin Frontend
 
 on:
   push:
     branches:
       - master
-    paths-ignore:
-      - 'admin/backend/**'
-      - '.github/workflows/deploy-backend.yml'
+    paths:
+      - 'admin/frontend/**'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    name: Build and Deploy Frontend
+    name: Build and Deploy
     steps:
       - uses: actions/checkout@v4
 
@@ -30,19 +29,16 @@ jobs:
         env:
           VITE_API_BASE: https://admin-backend.LiangFeng111.workers.dev/api
 
-      - name: Prepare Deployment Directory
-        run: |
-          mkdir deploy_site
-          # Copy root files (exclude admin folder and git-related stuff)
-          rsync -av --exclude='admin' --exclude='.git' --exclude='.github' --exclude='.idea' --exclude='node_modules' --exclude='deploy_site' ./ deploy_site/
-          # Copy resources, tools, games (already in root, so they were copied by rsync)
-          # Now copy the built admin frontend to the right place
-          mkdir -p deploy_site/admin/frontend
-          cp -r admin/frontend/dist/* deploy_site/admin/frontend/
+      - name: Create Cloudflare Pages Project (if not exists)
+        run: npx wrangler pages project create admin-frontend-pages --production-branch master || true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy deploy_site --project-name=admin-frontend-pages
+          # 直接部署编译生成的 dist 文件夹
+          command: pages deploy admin/frontend/dist --project-name=xxx-admin-frontend-pages --branch=master --commit-dirty=true

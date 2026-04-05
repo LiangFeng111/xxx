@@ -1,4 +1,3 @@
 /admin/backend/node_modules/
 /admin/frontend/node_modules/
 /.idea
-/admin/backend/.wrangler
