@@ -241,7 +241,7 @@ const AdminApp: React.FC = () => {
     setLoginModalOpen(true)
   }
 
-  const getAuthHeader = () => {
+  const getAuthHeader = (): Record<string, string> => {
     const token = localStorage.getItem('admin_token')
     return token ? { 'Authorization': token } : {}
   }
@@ -358,7 +358,10 @@ const AdminApp: React.FC = () => {
     try {
       const res = await fetch(`${API_BASE}/data`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeader()
+        } as HeadersInit,
         body: JSON.stringify({ content: data, sha: dataSha })
       })
       const json = await res.json()
@@ -379,7 +382,10 @@ const AdminApp: React.FC = () => {
     try {
       const res = await fetch(`${API_BASE}/bookmarks`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeader()
+        } as HeadersInit,
         body: JSON.stringify({ content: bookmarks, sha: bookmarksSha })
       })
       const json = await res.json()
@@ -400,7 +406,10 @@ const AdminApp: React.FC = () => {
     try {
       const res = await fetch(`${API_BASE}/hidedata`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeader()
+        } as HeadersInit,
         body: JSON.stringify({ content: hideData, sha: hideDataSha })
       })
       const json = await res.json()
