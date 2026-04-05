@@ -9,5 +9,8 @@ window.CONFIG = {
   BOOKMARKS_URL: 'converted_bookmarks.json',
 
   // 3. 后台管理地址
-  ADMIN_URL: 'https://xxx-admin-api.liangfeng111.top'
+  ADMIN_URL: 'https://xxx-admin.liangfeng111.top',
+
+  // 4. 后端 API 地址
+  API_URL: 'https://xxx-admin-api.liangfeng111.top/api'
 };

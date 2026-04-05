@@ -85,7 +85,7 @@ type FlattenedBookmark = {
   path: string
 }
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8787/api'
+const API_BASE = window.CONFIG?.API_URL || import.meta.env.VITE_API_BASE || 'http://localhost:8787/api'
 
 // --- Main App Component ---
 

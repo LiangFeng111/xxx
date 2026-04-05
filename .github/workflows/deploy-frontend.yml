@@ -27,6 +27,8 @@ jobs:
           cd admin/frontend
           npm install
           npm run build
+          # 将根目录的 config.js 复制到构建产物中，实现统一配置
+          cp ../../config.js dist/
         env:
           VITE_API_BASE: https://admin-backend.LiangFeng111.workers.dev/api
 
