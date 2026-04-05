@@ -16,5 +16,11 @@
     "action": "修改配置",
     "details": "更新了 data.json 站点设置",
     "ip": "Cloudflare-Worker"
+  },
+  {
+    "timestamp": "2026/4/5 21:49:30",
+    "action": "修改书签",
+    "details": "更新了书签列表",
+    "ip": "Cloudflare-Worker"
   }
 ]
