@@ -2,77 +2,6 @@
   "links": [
     {
       "type": "folder",
-      "name": "Chrome页面",
-      "children": [{
-              "type": "link",
-              "title": "吾爱破解 - LCG - LSG|安卓破解|病毒分析|www.52pojie.cn",
-              "url": "https://www.52pojie.cn/",
-              "icon": "link"
-            }]
-    },
-    {
-      "type": "folder",
-      "name": "RC Chrome",
-      "children": []
-    },
-    {
-      "type": "folder",
-      "name": "小书签栏",
-      "children": [
-        {
-          "type": "folder",
-          "name": "小书签",
-          "children": []
-        },
-        {
-          "type": "folder",
-          "name": "工具",
-          "children": []
-        },
-        {
-          "type": "folder",
-          "name": "阅读",
-          "children": []
-        },
-        {
-          "type": "folder",
-          "name": "搜索",
-          "children": []
-        },
-        {
-          "type": "folder",
-          "name": "翻译",
-          "children": []
-        },
-        {
-          "type": "folder",
-          "name": "图像",
-          "children": []
-        },
-        {
-          "type": "folder",
-          "name": "链接",
-          "children": []
-        },
-        {
-          "type": "folder",
-          "name": "开发",
-          "children": []
-        },
-        {
-          "type": "folder",
-          "name": "站长",
-          "children": []
-        },
-        {
-          "type": "folder",
-          "name": "分享",
-          "children": []
-        }
-      ]
-    },
-    {
-      "type": "folder",
       "name": "资源网",
       "children": [
         {
@@ -707,11 +636,6 @@
               "type": "folder",
               "name": "云数据库",
               "children": [
-                {
-                  "type": "folder",
-                  "name": "新建文件夹",
-                  "children": []
-                },
                 {
                   "type": "link",
                   "title": "Aiven免费",
@@ -2640,11 +2564,6 @@
           "type": "folder",
           "name": "html拖拽生成",
           "children": [
-            {
-              "type": "folder",
-              "name": "新建文件夹",
-              "children": []
-            },
             {
               "type": "link",
               "title": "HTML 网页构建器 v3 - htmlpage.cn",
