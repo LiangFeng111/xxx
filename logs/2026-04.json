@@ -28,5 +28,11 @@
     "action": "修改隐藏数据",
     "details": "更新了隐藏数据列表",
     "ip": "Cloudflare-Worker"
+  },
+  {
+    "timestamp": "2026/4/5 23:29:46",
+    "action": "登录成功",
+    "details": "管理员登录成功",
+    "ip": "Cloudflare-Worker"
   }
 ]
