@@ -22,5 +22,11 @@
     "action": "修改书签",
     "details": "更新了书签列表",
     "ip": "Cloudflare-Worker"
+  },
+  {
+    "timestamp": "2026/4/5 21:50:39",
+    "action": "修改隐藏数据",
+    "details": "更新了隐藏数据列表",
+    "ip": "Cloudflare-Worker"
   }
 ]
