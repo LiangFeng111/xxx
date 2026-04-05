@@ -363,10 +363,26 @@ app.get('/api/logs', async (c) => {
     const fileName = `logs/${month}.json`
     try {
       const data = await getFileFromGitHub(c.env, fileName)
-      return c.json(data.content)
+      return c.json({
+        sha: data.sha,
+        content: data.content
+      })
     } catch (e) {
-      return c.json([])
+      return c.json({ sha: '', content: [] })
     }
+  } catch (err: any) {
+    return c.json({ error: err.message }, 500)
+  }
+})
+
+// 更新操作日志 (通常不建议手动修改，但管理系统需要清理或补录功能)
+app.put('/api/logs', async (c) => {
+  try {
+    const { content, sha, month } = await c.req.json()
+    const targetMonth = month || `${new Date().getFullYear()}-${(new Date().getMonth() + 1).toString().padStart(2, '0')}`
+    const fileName = `logs/${targetMonth}.json`
+    const result = await updateFileOnGitHub(c.env, fileName, content, sha, `Update logs for ${targetMonth} via Admin`)
+    return c.json(result)
   } catch (err: any) {
     return c.json({ error: err.message }, 500)
   }

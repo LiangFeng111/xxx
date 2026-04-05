@@ -115,6 +115,7 @@ const AdminApp: React.FC = () => {
   const [dataSha, setDataSha] = useState('') // GitHub 文件的 SHA 值
   const [isDataDirty, setIsDataDirty] = useState(false) // 是否有未保存的修改
   const [selectedDataLinks, setSelectedDataLinks] = useState<React.Key[]>([]) // 批量选择的链接
+  const [dataSearch, setDataSearch] = useState('') // 站点链接搜索关键词
   const [isDataModalOpen, setIsDataModalOpen] = useState(false) // 编辑弹窗状态
   const [dataPageSize, setDataPageSize] = useState(10)
   const [dataLinkForm] = Form.useForm()
@@ -135,6 +136,7 @@ const AdminApp: React.FC = () => {
   const [hideDataSha, setHideDataSha] = useState('')
   const [isHideDataDirty, setIsHideDataDirty] = useState(false)
   const [selectedHideLinks, setSelectedHideLinks] = useState<React.Key[]>([])
+  const [hideSearch, setHideSearch] = useState('') // 隐藏数据搜索关键词
   const [isHideModalOpen, setIsHideModalOpen] = useState(false)
   const [hidePageSize, setHidePageSize] = useState(10)
   const [hideForm] = Form.useForm()
@@ -145,6 +147,14 @@ const AdminApp: React.FC = () => {
   const [logs, setLogs] = useState<any[]>([])
   const [logMonth, setLogMonth] = useState(`${new Date().getFullYear()}-${(new Date().getMonth() + 1).toString().padStart(2, '0')}`)
   const [logPageSize, setLogPageSize] = useState(20)
+  const [logSearch, setLogSearch] = useState('') // 日志搜索关键词
+  const [selectedLogs, setSelectedLogs] = useState<React.Key[]>([]) // 批量选择的日志
+  const [isLogModalOpen, setIsLogModalOpen] = useState(false) // 日志编辑弹窗状态
+  const [editingLog, setEditingLog] = useState<any | null>(null)
+  const [editingLogIndex, setEditingLogIndex] = useState<number | -1>(-1)
+  const [logForm] = Form.useForm()
+  const [isLogsDirty, setIsLogsDirty] = useState(false) // 日志是否有未保存的修改
+  const [logsSha, setLogsSha] = useState('') // 日志文件的 SHA 值
 
   // --- 配置与登录状态 ---
   const [config, setConfig] = useState<{ hasPassword: boolean } | null>(null)
@@ -156,8 +166,10 @@ const AdminApp: React.FC = () => {
 
   const [isSiderCollapsed, setIsSiderCollapsed] = useState(false) // 侧边栏折叠状态
   const [isModalOpen, setIsModalOpen] = useState(false) // 通用弹窗状态
+  const [isBulkMoveModalOpen, setIsBulkMoveModalOpen] = useState(false) // 批量移动弹窗状态
   const [editingBookmark, setEditingBookmark] = useState<FlattenedBookmark | null>(null)
   const [form] = Form.useForm()
+  const [bulkMoveForm] = Form.useForm()
   const [loading, setLoading] = useState(false) // 加载状态
 
   useEffect(() => {
@@ -330,13 +342,51 @@ const AdminApp: React.FC = () => {
       const res = await fetch(`${API_BASE}/logs?month=${targetMonth}`, { headers: getAuthHeader() })
       const json = await res.json()
       if (json.error) throw new Error(json.error)
-      setLogs(json.reverse()) // 最新日志排在前面
+      // fetchLogs typically returns {sha, content} or just content
+      if (json.sha) {
+        setLogsSha(json.sha)
+        setLogs(json.content.reverse())
+      } else {
+        setLogs(json.reverse()) // 最新日志排在前面
+      }
+      setIsLogsDirty(false)
     } catch (err: any) {
       notification.error({ message: '日志加载失败', description: err.message })
     } finally {
       setLoading(false)
     }
   }
+
+  // --- 数据搜索逻辑 ---
+
+  const filteredDataLinks = useMemo(() => {
+    if (!data) return []
+    const search = dataSearch.toLowerCase()
+    return data.links.filter(l => 
+      l.title.toLowerCase().includes(search) || 
+      l.category.toLowerCase().includes(search) || 
+      l.url.toLowerCase().includes(search)
+    )
+  }, [data, dataSearch])
+
+  const filteredHideLinks = useMemo(() => {
+    if (!hideData) return []
+    const search = hideSearch.toLowerCase()
+    return hideData.links.filter(l => 
+      l.title.toLowerCase().includes(search) || 
+      l.category.toLowerCase().includes(search) || 
+      l.url.toLowerCase().includes(search)
+    )
+  }, [hideData, hideSearch])
+
+  const filteredLogs = useMemo(() => {
+    const search = logSearch.toLowerCase()
+    return logs.filter(l => 
+      l.action.toLowerCase().includes(search) || 
+      l.details.toLowerCase().includes(search) || 
+      l.timestamp.toLowerCase().includes(search)
+    )
+  }, [logs, logSearch])
 
   // --- 数据同步方法 (保存到 GitHub) ---
 
@@ -401,6 +451,108 @@ const AdminApp: React.FC = () => {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleSaveLogs = async () => {
+    if (!logs) return
+    setLoading(true)
+    try {
+      const res = await fetch(`${API_BASE}/logs`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', ...getAuthHeader() } as HeadersInit,
+        body: JSON.stringify({ content: logs.reverse(), sha: logsSha, month: logMonth })
+      })
+      const json = await res.json()
+      if (json.error) throw new Error(json.error)
+      setLogsSha(json.content.sha)
+      setIsLogsDirty(false)
+      message.success('日志已同步到 GitHub')
+    } catch (err: any) {
+      message.error(`保存失败: ${err.message}`)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // --- 批量删除逻辑 ---
+
+  const handleBulkDeleteDataLinks = () => {
+    if (!data || selectedDataLinks.length === 0) return
+    modal.confirm({
+      title: '批量删除确认',
+      icon: <ExclamationCircleOutlined />,
+      content: `确定删除选中的 ${selectedDataLinks.length} 个链接吗？`,
+      onOk() {
+        const newLinks = data.links.filter((_, i) => !selectedDataLinks.includes(i))
+        setData({ ...data, links: newLinks })
+        setSelectedDataLinks([])
+        setIsDataDirty(true)
+      }
+    })
+  }
+
+  const handleBulkDeleteHideLinks = () => {
+    if (!hideData || selectedHideLinks.length === 0) return
+    modal.confirm({
+      title: '批量删除确认',
+      icon: <ExclamationCircleOutlined />,
+      content: `确定删除选中的 ${selectedHideLinks.length} 个隐藏链接吗？`,
+      onOk() {
+        const newLinks = hideData.links.filter((_, i) => !selectedHideLinks.includes(i))
+        setHideData({ ...hideData, links: newLinks })
+        setSelectedHideLinks([])
+        setIsHideDataDirty(true)
+      }
+    })
+  }
+
+  const handleBulkDeleteLogs = () => {
+    if (selectedLogs.length === 0) return
+    modal.confirm({
+      title: '批量删除确认',
+      icon: <ExclamationCircleOutlined />,
+      content: `确定删除选中的 ${selectedLogs.length} 条日志吗？`,
+      onOk() {
+        const newLogs = logs.filter((_, i) => !selectedLogs.includes(i))
+        setLogs(newLogs)
+        setSelectedLogs([])
+        setIsLogsDirty(true)
+      }
+    })
+  }
+
+  // --- 日志编辑/新增逻辑 ---
+
+  const openLogModal = (log?: any, index?: number) => {
+    if (log && index !== undefined) {
+      setEditingLog(log)
+      setEditingLogIndex(index)
+      logForm.setFieldsValue(log)
+    } else {
+      setEditingLog(null)
+      setEditingLogIndex(-1)
+      logForm.setFieldsValue({ 
+        timestamp: dayjs().format('YYYY/M/D HH:mm:ss'), 
+        action: '手动记录', 
+        details: '', 
+        ip: 'Admin' 
+      })
+    }
+    setIsLogModalOpen(true)
+  }
+
+  const handleLogModalSubmit = () => {
+    logForm.validateFields().then(values => {
+      const newLogs = [...logs]
+      if (editingLogIndex !== -1) {
+        newLogs[editingLogIndex] = values
+      } else {
+        newLogs.unshift(values)
+      }
+      setLogs(newLogs)
+      setIsLogsDirty(true)
+      setIsLogModalOpen(false)
+    })
   }
 
   // --- 书签处理逻辑 ---
@@ -633,6 +785,63 @@ const AdminApp: React.FC = () => {
     })
   }
 
+  /**
+   * 批量修改所属文件夹
+   */
+  const handleBulkMoveBookmarks = (values: { path: string }) => {
+    if (!bookmarks || selectedBookmarks.length === 0) return
+    const newBookmarks = JSON.parse(JSON.stringify(bookmarks))
+    const selectedItems = flattenedBookmarks.filter(b => selectedBookmarks.includes(b.id))
+    const pathParts = values.path.split('/').map((p: string) => p.trim()).filter(Boolean)
+
+    // 1. 从树中移除选中的项
+    const removeFromTree = (nodes: BookmarkNode[]) => {
+      for (let i = nodes.length - 1; i >= 0; i--) {
+        const node = nodes[i]
+        if (node.type === 'folder' && node.children) {
+          removeFromTree(node.children)
+        } else if (node.type === 'link') {
+          if (selectedItems.some(s => s.title === node.title && s.url === node.url)) {
+            nodes.splice(i, 1)
+          }
+        }
+      }
+    }
+    removeFromTree(newBookmarks.links)
+    pruneEmptyFolders(newBookmarks.links) // 清理可能产生的空文件夹
+
+    // 2. 将选中的项添加到新路径
+    const getFolder = (nodes: BookmarkNode[], path: string[]) => {
+      let currentNodes = nodes
+      for (const part of path) {
+        let folder = currentNodes.find(n => n.type === 'folder' && n.name === part)
+        if (!folder) {
+          folder = { type: 'folder', name: part, children: [] }
+          currentNodes.push(folder)
+        }
+        currentNodes = folder.children!
+      }
+      return currentNodes
+    }
+
+    const targetFolder = getFolder(newBookmarks.links, pathParts)
+    selectedItems.forEach(item => {
+      targetFolder.push({
+        type: 'link',
+        title: item.title,
+        url: item.url,
+        icon: item.icon
+      })
+    })
+
+    setBookmarks(newBookmarks)
+    setSelectedBookmarks([])
+    setIsBookmarksDirty(true)
+    setIsBulkMoveModalOpen(false)
+    bulkMoveForm.resetFields()
+    message.success(`成功移动 ${selectedItems.length} 个书签`)
+  }
+
   // --- 界面渲染部分 ---
 
   // 1. 站点配置 (data.json)
@@ -658,15 +867,48 @@ const AdminApp: React.FC = () => {
     return (
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         <Card title={<span><SettingOutlined /> 站点设置 {isDataDirty && <Badge status="warning" text="未保存" />}</span>} 
-              extra={<Button type="primary" icon={<SaveOutlined />} onClick={handleSaveData} loading={loading} disabled={!isDataDirty}>保存更改</Button>}>
+              extra={
+                <Space>
+                  <Input 
+                    placeholder="搜索站点链接..." 
+                    prefix={<SearchOutlined />} 
+                    value={dataSearch} 
+                    onChange={e => setDataSearch(e.target.value)}
+                    style={{ width: 250 }}
+                    allowClear
+                  />
+                  <Button type="primary" icon={<SaveOutlined />} onClick={handleSaveData} loading={loading} disabled={!isDataDirty}>保存更改</Button>
+                </Space>
+              }>
           <Row gutter={[24, 24]}>
             <Col xs={24} md={8}><Text type="secondary">站点标题</Text><Input value={data.settings.site_title} onChange={e => { setData({ ...data, settings: { ...data.settings, site_title: e.target.value } }); setIsDataDirty(true) }} style={{ marginTop: 8 }}/></Col>
             <Col xs={24} md={8}><Text type="secondary">站点副标题</Text><Input value={data.settings.site_subtitle} onChange={e => { setData({ ...data, settings: { ...data.settings, site_subtitle: e.target.value } }); setIsDataDirty(true) }} style={{ marginTop: 8 }}/></Col>
             <Col xs={24} md={8}><Text type="secondary">站点公告</Text><Input value={data.settings.site_notice} onChange={e => { setData({ ...data, settings: { ...data.settings, site_notice: e.target.value } }); setIsDataDirty(true) }} style={{ marginTop: 8 }}/></Col>
           </Row>
         </Card>
-        <Card title={<span><LinkOutlined /> 首页链接管理</span>} extra={<Button type="dashed" icon={<PlusOutlined />} onClick={() => openDataModal()}>添加链接</Button>}>
-          <Table dataSource={data.links.map((l, i) => ({ ...l, key: i }))} columns={columns} pagination={{ pageSize: dataPageSize, showSizeChanger: true, onShowSizeChange: (_, size) => setDataPageSize(size) }} />
+        <Card 
+          title={
+            <Space>
+              <LinkOutlined /> 
+              <span>首页链接管理</span>
+              {selectedDataLinks.length > 0 && (
+                <Button danger size="small" icon={<DeleteOutlined />} onClick={handleBulkDeleteDataLinks}>
+                  批量删除 ({selectedDataLinks.length})
+                </Button>
+              )}
+            </Space>
+          } 
+          extra={<Button type="dashed" icon={<PlusOutlined />} onClick={() => openDataModal()}>添加链接</Button>}
+        >
+          <Table 
+            dataSource={filteredDataLinks.map((l, i) => ({ ...l, key: i }))} 
+            columns={columns} 
+            pagination={{ pageSize: dataPageSize, showSizeChanger: true, onShowSizeChange: (_, size) => setDataPageSize(size) }} 
+            rowSelection={{
+              selectedRowKeys: selectedDataLinks,
+              onChange: keys => setSelectedDataLinks(keys)
+            }}
+          />
         </Card>
       </Space>
     )
@@ -702,6 +944,16 @@ const AdminApp: React.FC = () => {
     return (
       <Card title={<span><BookOutlined /> 书签数据管理 {isBookmarksDirty && <Badge status="warning" text="未保存" />}</span>}
             extra={<Space wrap>
+              {selectedBookmarks.length > 0 && (
+                <Space>
+                  <Button danger icon={<DeleteOutlined />} onClick={handleBulkDeleteBookmarks}>
+                    批量删除 ({selectedBookmarks.length})
+                  </Button>
+                  <Button type="primary" ghost icon={<EditOutlined />} onClick={() => setIsBulkMoveModalOpen(true)}>
+                    批量修改文件夹 ({selectedBookmarks.length})
+                  </Button>
+                </Space>
+              )}
               <Select placeholder="按文件夹筛选" style={{ width: 200 }} allowClear options={uniqueFolders.map(f => ({ label: f, value: f }))} onChange={value => setBookmarkFolderFilter(value)} value={bookmarkFolderFilter} />
               <Input placeholder="搜索书签内容..." prefix={<SearchOutlined />} value={bookmarkSearch} onChange={e => setBookmarkSearch(e.target.value)} style={{ width: 250 }} allowClear />
               <Button type="primary" icon={<SaveOutlined />} onClick={handleSaveBookmarks} loading={loading} disabled={!isBookmarksDirty}>保存更改</Button>
@@ -734,10 +986,41 @@ const AdminApp: React.FC = () => {
       }
     ]
     return (
-      <Card title={<span><LockOutlined /> 隐藏数据管理 {isHideDataDirty && <Badge status="warning" text="未保存" />}</span>}
-            extra={<Space><Button type="primary" icon={<SaveOutlined />} onClick={handleSaveHideData} loading={loading} disabled={!isHideDataDirty}>保存更改</Button><Button type="dashed" icon={<PlusOutlined />} onClick={() => { setEditingHideLink(null); setEditingHideIndex(-1); hideForm.setFieldsValue({ category: '私密', title: '', url: 'https://', icon: 'link' }); setIsHideModalOpen(true); }}>添加隐藏链接</Button></Space>}>
+      <Card title={
+              <Space>
+                <LockOutlined /> 
+                <span>隐藏数据管理 {isHideDataDirty && <Badge status="warning" text="未保存" />}</span>
+                {selectedHideLinks.length > 0 && (
+                  <Button danger size="small" icon={<DeleteOutlined />} onClick={handleBulkDeleteHideLinks}>
+                    批量删除 ({selectedHideLinks.length})
+                  </Button>
+                )}
+              </Space>
+            }
+            extra={
+              <Space>
+                <Input 
+                  placeholder="搜索隐藏链接..." 
+                  prefix={<SearchOutlined />} 
+                  value={hideSearch} 
+                  onChange={e => setHideSearch(e.target.value)}
+                  style={{ width: 250 }}
+                  allowClear
+                />
+                <Button type="primary" icon={<SaveOutlined />} onClick={handleSaveHideData} loading={loading} disabled={!isHideDataDirty}>保存更改</Button>
+                <Button type="dashed" icon={<PlusOutlined />} onClick={() => { setEditingHideLink(null); setEditingHideIndex(-1); hideForm.setFieldsValue({ category: '私密', title: '', url: 'https://', icon: 'link' }); setIsHideModalOpen(true); }}>添加隐藏链接</Button>
+              </Space>
+            }>
         <Text type="secondary" style={{ marginBottom: 16, display: 'block' }}>提示：此处管理的数据存储在 `hide_data.json` 中，在首页输入管理员密码后可见。</Text>
-        <Table dataSource={hideData.links.map((l, i) => ({ ...l, key: i }))} columns={columns} pagination={{ pageSize: hidePageSize, showSizeChanger: true }} />
+        <Table 
+          dataSource={filteredHideLinks.map((l, i) => ({ ...l, key: i }))} 
+          columns={columns} 
+          pagination={{ pageSize: hidePageSize, showSizeChanger: true }} 
+          rowSelection={{
+            selectedRowKeys: selectedHideLinks,
+            onChange: keys => setSelectedHideLinks(keys)
+          }}
+        />
       </Card>
     )
   }
@@ -748,11 +1031,62 @@ const AdminApp: React.FC = () => {
       { title: '时间', dataIndex: 'timestamp', key: 'timestamp', width: 200 },
       { title: '操作类型', dataIndex: 'action', key: 'action', width: 150, render: (text: string) => <Tag color={text.includes('失败') ? 'red' : text.includes('成功') ? 'green' : 'blue'}>{text}</Tag> },
       { title: '详情', dataIndex: 'details', key: 'details' },
-      { title: '来源', dataIndex: 'ip', key: 'ip', width: 150 }
+      { title: '来源', dataIndex: 'ip', key: 'ip', width: 150 },
+      {
+        title: '操作', key: 'action_btns', width: 120,
+        render: (_: any, record: any, index: number) => (
+          <Space>
+            <Button type="text" icon={<EditOutlined />} onClick={() => openLogModal(record, index)} />
+            <Popconfirm title="确定删除这条日志吗？" onConfirm={() => {
+              const newLogs = [...logs]
+              newLogs.splice(index, 1)
+              setLogs(newLogs)
+              setIsLogsDirty(true)
+            }}>
+              <Button type="text" danger icon={<DeleteOutlined />} />
+            </Popconfirm>
+          </Space>
+        )
+      }
     ]
     return (
-      <Card title={<span><HistoryOutlined /> 系统操作日志</span>} extra={<Space><DatePicker picker="month" placeholder="选择月份" format="YYYY-MM" onChange={(_, dateString) => { if (typeof dateString === 'string') { setLogMonth(dateString); fetchLogs(dateString); } }} /><Button icon={<ReloadOutlined />} onClick={() => fetchLogs()}>刷新</Button></Space>}>
-        <Table dataSource={logs.map((l, i) => ({ ...l, key: i }))} columns={columns} pagination={{ pageSize: logPageSize }} loading={loading} />
+      <Card title={
+              <Space>
+                <HistoryOutlined /> 
+                <span>系统操作日志 {isLogsDirty && <Badge status="warning" text="未保存" />}</span>
+                {selectedLogs.length > 0 && (
+                  <Button danger size="small" icon={<DeleteOutlined />} onClick={handleBulkDeleteLogs}>
+                    批量删除 ({selectedLogs.length})
+                  </Button>
+                )}
+              </Space>
+            } 
+            extra={
+              <Space>
+                <Input 
+                  placeholder="搜索日志内容..." 
+                  prefix={<SearchOutlined />} 
+                  value={logSearch} 
+                  onChange={e => setLogSearch(e.target.value)}
+                  style={{ width: 250 }}
+                  allowClear
+                />
+                <DatePicker picker="month" placeholder="选择月份" format="YYYY-MM" onChange={(_, dateString) => { if (typeof dateString === 'string') { setLogMonth(dateString); fetchLogs(dateString); } }} />
+                <Button type="primary" icon={<SaveOutlined />} onClick={handleSaveLogs} loading={loading} disabled={!isLogsDirty}>保存更改</Button>
+                <Button icon={<PlusOutlined />} onClick={() => openLogModal()}>添加记录</Button>
+                <Button icon={<ReloadOutlined />} onClick={() => fetchLogs()}>刷新</Button>
+              </Space>
+            }>
+        <Table 
+          dataSource={filteredLogs.map((l, i) => ({ ...l, key: i }))} 
+          columns={columns} 
+          pagination={{ pageSize: logPageSize }} 
+          loading={loading} 
+          rowSelection={{
+            selectedRowKeys: selectedLogs,
+            onChange: keys => setSelectedLogs(keys)
+          }}
+        />
       </Card>
     )
   }
@@ -826,6 +1160,50 @@ const AdminApp: React.FC = () => {
           <Form.Item name="url" label="URL" rules={[{ required: true, message: '请输入 URL' }, { type: 'url', message: '请输入合法的 URL' }]}><Input placeholder="https://..." /></Form.Item>
           <Form.Item name="path" label="文件夹路径 (使用 / 分隔)" rules={[{ required: true, message: '请输入路径' }]}><Input placeholder="例如: 常用 / 工具 / 开发" /></Form.Item>
           <Form.Item name="icon" label="图标标识"><Input placeholder="link" /></Form.Item>
+        </Form>
+      </Modal>
+
+      {/* 批量移动弹窗 */}
+      <Modal 
+        title={`批量修改所属文件夹 (${selectedBookmarks.length} 个书签)`} 
+        open={isBulkMoveModalOpen} 
+        onOk={() => bulkMoveForm.submit()} 
+        onCancel={() => setIsBulkMoveModalOpen(false)} 
+        okText="确认移动" 
+        cancelText="取消" 
+        destroyOnClose
+      >
+        <Form form={bulkMoveForm} onFinish={handleBulkMoveBookmarks} layout="vertical" style={{ marginTop: 24 }}>
+          <Form.Item name="path" label="目标文件夹路径 (使用 / 分隔)" rules={[{ required: true, message: '请输入目标路径' }]}>
+            <Input placeholder="例如: 常用 / 工具 / 开发" />
+          </Form.Item>
+          <Text type="secondary">提示：移动后，原文件夹如果变为空，将被自动删除。</Text>
+        </Form>
+      </Modal>
+
+      {/* 日志新增/编辑弹窗 */}
+      <Modal 
+        title={editingLog ? '编辑日志记录' : '添加手动记录'} 
+        open={isLogModalOpen} 
+        onOk={handleLogModalSubmit} 
+        onCancel={() => setIsLogModalOpen(false)} 
+        okText="确定 (本地)" 
+        cancelText="取消" 
+        destroyOnClose
+      >
+        <Form form={logForm} layout="vertical" style={{ marginTop: 24 }}>
+          <Form.Item name="timestamp" label="时间" rules={[{ required: true }]}>
+            <Input placeholder="YYYY/M/D HH:mm:ss" />
+          </Form.Item>
+          <Form.Item name="action" label="操作类型" rules={[{ required: true }]}>
+            <Input placeholder="例如: 手动记录 / 修改配置" />
+          </Form.Item>
+          <Form.Item name="details" label="详情" rules={[{ required: true }]}>
+            <Input.TextArea rows={4} placeholder="请输入详细描述" />
+          </Form.Item>
+          <Form.Item name="ip" label="来源" rules={[{ required: true }]}>
+            <Input placeholder="Admin" />
+          </Form.Item>
         </Form>
       </Modal>
     </Layout>
