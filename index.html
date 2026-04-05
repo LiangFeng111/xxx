@@ -681,7 +681,7 @@
                         cancelButtonText: '取消',
                         inputType: 'password',
                     }).then(({ value }) => {
-                        const API_BASE = window.CONFIG.ADMIN_URL.replace('frontend/index.html', 'backend/api');
+                        const API_BASE = window.CONFIG.API_URL
                         // Handle potential relative path or absolute path
                         const absoluteApiBase = API_BASE.startsWith('http') ? API_BASE : window.location.origin + '/' + API_BASE;
                         
