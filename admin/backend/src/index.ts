@@ -14,7 +14,9 @@ app.use('/api/*', cors())
 
 const authMiddleware = async (c: any, next: any) => {
   // Paths that don't require authentication
-  if (c.req.path === '/api/login' || (c.req.path === '/api/config' && c.req.method === 'GET')) {
+  if (c.req.path === '/api/login' ||
+      c.req.path === '/api/public/hidedata' || // 必须包含这一行
+      (c.req.path === '/api/config' && c.req.method === 'GET')) {
     return await next()
   }
 
