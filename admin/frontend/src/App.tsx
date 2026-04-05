@@ -362,30 +362,36 @@ const AdminApp: React.FC = () => {
   const filteredDataLinks = useMemo(() => {
     if (!data) return []
     const search = dataSearch.toLowerCase()
-    return data.links.filter(l => 
-      l.title.toLowerCase().includes(search) || 
-      l.category.toLowerCase().includes(search) || 
-      l.url.toLowerCase().includes(search)
-    )
+    return data.links
+      .map((l, i) => ({ ...l, key: i, originalIndex: i }))
+      .filter(l => 
+        l.title.toLowerCase().includes(search) || 
+        l.category.toLowerCase().includes(search) || 
+        l.url.toLowerCase().includes(search)
+      )
   }, [data, dataSearch])
 
   const filteredHideLinks = useMemo(() => {
     if (!hideData) return []
     const search = hideSearch.toLowerCase()
-    return hideData.links.filter(l => 
-      l.title.toLowerCase().includes(search) || 
-      l.category.toLowerCase().includes(search) || 
-      l.url.toLowerCase().includes(search)
-    )
+    return hideData.links
+      .map((l, i) => ({ ...l, key: i, originalIndex: i }))
+      .filter(l => 
+        l.title.toLowerCase().includes(search) || 
+        l.category.toLowerCase().includes(search) || 
+        l.url.toLowerCase().includes(search)
+      )
   }, [hideData, hideSearch])
 
   const filteredLogs = useMemo(() => {
     const search = logSearch.toLowerCase()
-    return logs.filter(l => 
-      l.action.toLowerCase().includes(search) || 
-      l.details.toLowerCase().includes(search) || 
-      l.timestamp.toLowerCase().includes(search)
-    )
+    return logs
+      .map((l, i) => ({ ...l, key: i, originalIndex: i }))
+      .filter(l => 
+        l.action.toLowerCase().includes(search) || 
+        l.details.toLowerCase().includes(search) || 
+        l.timestamp.toLowerCase().includes(search)
+      )
   }, [logs, logSearch])
 
   // --- 数据同步方法 (保存到 GitHub) ---
@@ -654,6 +660,21 @@ const AdminApp: React.FC = () => {
     })
   }
 
+  const handleHideModalSubmit = () => {
+    hideForm.validateFields().then(values => {
+      if (!hideData) return
+      const newLinks = [...hideData.links]
+      if (editingHideIndex !== -1) {
+        newLinks[editingHideIndex] = values
+      } else {
+        newLinks.unshift(values)
+      }
+      setHideData({ ...hideData, links: newLinks })
+      setIsHideDataDirty(true)
+      setIsHideModalOpen(false)
+    })
+  }
+
   const handleDeleteDataLink = (index: number) => {
     if (!data) return
     const newLinks = data.links.filter((_, i) => i !== index)
@@ -854,10 +875,10 @@ const AdminApp: React.FC = () => {
       { title: '图标', dataIndex: 'icon', key: 'icon', width: 100 },
       {
         title: '操作', key: 'action', width: 120,
-        render: (_: any, record: any, index: number) => (
+        render: (_: any, record: any) => (
           <Space>
-            <Button type="text" icon={<EditOutlined />} onClick={() => openDataModal(record, index)} />
-            <Popconfirm title="确定删除该链接吗？" onConfirm={() => handleDeleteDataLink(index)}>
+            <Button type="text" icon={<EditOutlined />} onClick={() => openDataModal(record, record.originalIndex)} />
+            <Popconfirm title="确定删除该链接吗？" onConfirm={() => handleDeleteDataLink(record.originalIndex)}>
               <Button type="text" danger icon={<DeleteOutlined />} />
             </Popconfirm>
           </Space>
@@ -901,7 +922,7 @@ const AdminApp: React.FC = () => {
           extra={<Button type="dashed" icon={<PlusOutlined />} onClick={() => openDataModal()}>添加链接</Button>}
         >
           <Table 
-            dataSource={filteredDataLinks.map((l, i) => ({ ...l, key: i }))} 
+            dataSource={filteredDataLinks} 
             columns={columns} 
             pagination={{ pageSize: dataPageSize, showSizeChanger: true, onShowSizeChange: (_, size) => setDataPageSize(size) }} 
             rowSelection={{
@@ -975,10 +996,10 @@ const AdminApp: React.FC = () => {
       { title: '图标', dataIndex: 'icon', key: 'icon', width: 100 },
       {
         title: '操作', key: 'action', width: 120,
-        render: (_: any, record: any, index: number) => (
+        render: (_: any, record: any) => (
           <Space>
-            <Button type="text" icon={<EditOutlined />} onClick={() => { setEditingHideLink(record); setEditingHideIndex(index); hideForm.setFieldsValue(record); setIsHideModalOpen(true); }} />
-            <Popconfirm title="确定删除该链接吗？" onConfirm={() => { const newLinks = [...hideData.links]; newLinks.splice(index, 1); setHideData({ ...hideData, links: newLinks }); setIsHideDataDirty(true); }}>
+            <Button type="text" icon={<EditOutlined />} onClick={() => { setEditingHideLink(record); setEditingHideIndex(record.originalIndex); hideForm.setFieldsValue(record); setIsHideModalOpen(true); }} />
+            <Popconfirm title="确定删除该链接吗？" onConfirm={() => { const newLinks = [...hideData.links]; newLinks.splice(record.originalIndex, 1); setHideData({ ...hideData, links: newLinks }); setIsHideDataDirty(true); }}>
               <Button type="text" danger icon={<DeleteOutlined />} />
             </Popconfirm>
           </Space>
@@ -1013,7 +1034,7 @@ const AdminApp: React.FC = () => {
             }>
         <Text type="secondary" style={{ marginBottom: 16, display: 'block' }}>提示：此处管理的数据存储在 `hide_data.json` 中，在首页输入管理员密码后可见。</Text>
         <Table 
-          dataSource={filteredHideLinks.map((l, i) => ({ ...l, key: i }))} 
+          dataSource={filteredHideLinks} 
           columns={columns} 
           pagination={{ pageSize: hidePageSize, showSizeChanger: true }} 
           rowSelection={{
@@ -1034,12 +1055,12 @@ const AdminApp: React.FC = () => {
       { title: '来源', dataIndex: 'ip', key: 'ip', width: 150 },
       {
         title: '操作', key: 'action_btns', width: 120,
-        render: (_: any, record: any, index: number) => (
+        render: (_: any, record: any) => (
           <Space>
-            <Button type="text" icon={<EditOutlined />} onClick={() => openLogModal(record, index)} />
+            <Button type="text" icon={<EditOutlined />} onClick={() => openLogModal(record, record.originalIndex)} />
             <Popconfirm title="确定删除这条日志吗？" onConfirm={() => {
               const newLogs = [...logs]
-              newLogs.splice(index, 1)
+              newLogs.splice(record.originalIndex, 1)
               setLogs(newLogs)
               setIsLogsDirty(true)
             }}>
@@ -1078,7 +1099,7 @@ const AdminApp: React.FC = () => {
               </Space>
             }>
         <Table 
-          dataSource={filteredLogs.map((l, i) => ({ ...l, key: i }))} 
+          dataSource={filteredLogs} 
           columns={columns} 
           pagination={{ pageSize: logPageSize }} 
           loading={loading} 
@@ -1160,6 +1181,58 @@ const AdminApp: React.FC = () => {
           <Form.Item name="url" label="URL" rules={[{ required: true, message: '请输入 URL' }, { type: 'url', message: '请输入合法的 URL' }]}><Input placeholder="https://..." /></Form.Item>
           <Form.Item name="path" label="文件夹路径 (使用 / 分隔)" rules={[{ required: true, message: '请输入路径' }]}><Input placeholder="例如: 常用 / 工具 / 开发" /></Form.Item>
           <Form.Item name="icon" label="图标标识"><Input placeholder="link" /></Form.Item>
+        </Form>
+      </Modal>
+
+      {/* 站点链接新增/编辑弹窗 */}
+      <Modal 
+        title={editingDataLink ? '编辑链接' : '添加新链接'} 
+        open={isDataModalOpen} 
+        onOk={handleDataModalSubmit} 
+        onCancel={() => setIsDataModalOpen(false)} 
+        okText="确认保存 (本地)" 
+        cancelText="取消" 
+        destroyOnClose
+      >
+        <Form form={dataLinkForm} layout="vertical" style={{ marginTop: 24 }}>
+          <Form.Item name="category" label="分类" rules={[{ required: true, message: '请输入分类' }]}>
+            <Input placeholder="分类名称" />
+          </Form.Item>
+          <Form.Item name="title" label="标题" rules={[{ required: true, message: '请输入标题' }]}>
+            <Input placeholder="链接标题" />
+          </Form.Item>
+          <Form.Item name="url" label="URL" rules={[{ required: true, message: '请输入 URL' }, { type: 'url', message: '请输入合法的 URL' }]}>
+            <Input placeholder="https://..." />
+          </Form.Item>
+          <Form.Item name="icon" label="图标标识">
+            <Input placeholder="link" />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* 隐藏数据新增/编辑弹窗 */}
+      <Modal 
+        title={editingHideLink ? '编辑隐藏链接' : '添加隐藏链接'} 
+        open={isHideModalOpen} 
+        onOk={handleHideModalSubmit} 
+        onCancel={() => setIsHideModalOpen(false)} 
+        okText="确认保存 (本地)" 
+        cancelText="取消" 
+        destroyOnClose
+      >
+        <Form form={hideForm} layout="vertical" style={{ marginTop: 24 }}>
+          <Form.Item name="category" label="分类" rules={[{ required: true, message: '请输入分类' }]}>
+            <Input placeholder="分类名称" />
+          </Form.Item>
+          <Form.Item name="title" label="标题" rules={[{ required: true, message: '请输入标题' }]}>
+            <Input placeholder="链接标题" />
+          </Form.Item>
+          <Form.Item name="url" label="URL" rules={[{ required: true, message: '请输入 URL' }, { type: 'url', message: '请输入合法的 URL' }]}>
+            <Input placeholder="https://..." />
+          </Form.Item>
+          <Form.Item name="icon" label="图标标识">
+            <Input placeholder="link" />
+          </Form.Item>
         </Form>
       </Modal>
 
