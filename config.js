@@ -6,5 +6,8 @@ window.CONFIG = {
   DATA_URL: 'data.json',
   
   // 2. 书签数据 (由转换工具生成)
-  BOOKMARKS_URL: 'converted_bookmarks.json'
+  BOOKMARKS_URL: 'converted_bookmarks.json',
+
+  // 3. 后台管理地址
+  ADMIN_URL: 'admin/frontend/index.html'
 };

@@ -1,0 +1,11 @@
+{
+  "name": "admin-system",
+  "version": "1.0.0",
+  "scripts": {
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "deploy:backend": "cd backend && npm run deploy",
+    "build:frontend": "cd frontend && npm run build",
+    "build:all": "npm run build:frontend && mkdir -p ../deploy_site && rsync -av --exclude='admin' --exclude='.git' --exclude='.github' --exclude='.idea' --exclude='node_modules' --exclude='deploy_site' ../ ./deploy_site/ && mkdir -p ./deploy_site/admin/frontend && cp -r frontend/dist/* ./deploy_site/admin/frontend/"
+  }
+}

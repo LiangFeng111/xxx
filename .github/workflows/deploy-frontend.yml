@@ -1,0 +1,48 @@
+name: Deploy Frontend to Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'admin/backend/**'
+      - '.github/workflows/deploy-backend.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Build and Deploy Frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: 'admin/frontend/package-lock.json'
+
+      - name: Build Admin Frontend
+        run: |
+          cd admin/frontend
+          npm install
+          npm run build
+        env:
+          VITE_API_BASE: ${{ vars.VITE_API_BASE }}
+
+      - name: Prepare Deployment Directory
+        run: |
+          mkdir deploy_site
+          # Copy root files (exclude admin folder and git-related stuff)
+          rsync -av --exclude='admin' --exclude='.git' --exclude='.github' --exclude='.idea' --exclude='node_modules' --exclude='deploy_site' ./ deploy_site/
+          # Copy resources, tools, games (already in root, so they were copied by rsync)
+          # Now copy the built admin frontend to the right place
+          mkdir -p deploy_site/admin/frontend
+          cp -r admin/frontend/dist/* deploy_site/admin/frontend/
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy deploy_site --project-name=admin-frontend-pages

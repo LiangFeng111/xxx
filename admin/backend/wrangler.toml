@@ -1,0 +1,16 @@
+name = "admin-backend"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+[vars]
+# GITHUB_TOKEN = "your_github_token"
+# GITHUB_OWNER = "your_github_username"
+# GITHUB_REPO = "your_repo_name"
+# GITHUB_BRANCH = "main"
+
+[dev.vars]
+# You can set these for local development in .dev.vars file
+# GITHUB_TOKEN = "your_github_token"
+# GITHUB_OWNER = "your_github_username"
+# GITHUB_REPO = "your_repo_name"
+# GITHUB_BRANCH = "main"
