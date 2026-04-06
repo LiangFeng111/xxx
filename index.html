@@ -53,8 +53,7 @@
             top: 0;
             display: flex;
             flex-direction: column;
-            z-index: 120;
-            transition: all 0.3s ease;
+            z-index: 100;
         }
 
         .main-content {
@@ -110,12 +109,24 @@
             justify-content: center;
             margin-right: 1rem;
             flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
         }
 
+        /* 允许通过 Tailwind 类覆盖尺寸 */
+        .tool-icon.w-10 { width: 40px; }
+        .tool-icon.h-10 { height: 40px; }
+        .tool-icon.w-4 { width: 16px; }
+        .tool-icon.h-4 { height: 16px; }
+
         .tool-icon img {
-            width: 24px;
-            height: 24px;
-            object-fit: contain;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            background-color: #f1f5f9; /* 添加背景色，防止图片加载失败时全透明 */
         }
 
         /* 搜索框样式 */
@@ -123,8 +134,9 @@
             max-width: 800px;
             margin: 0 auto 3rem;
             position: sticky;
-            top: 1rem;
+            top: 2rem;
             z-index: 100;
+            transition: all 0.3s;
         }
 
         .search-input .el-input__wrapper {
@@ -194,47 +206,79 @@
         /* 移动端适配 */
         @media (max-width: 768px) {
             .sidebar {
-                transform: translateX(-100%);
-            }
-
-            .sidebar.is-open {
-                transform: translateX(0);
+                display: none !important; /* 移动端完全隐藏桌面版侧边栏 */
             }
 
             .main-content {
-                margin-left: 0;
-                width: 100%;
-                padding: 1rem;
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding: 1rem 0.75rem;
             }
 
             .mobile-header {
-                display: flex !important;
+                display: block !important;
+                width: 50px;
+                height: 50px;
+                background: transparent;
+                padding: 10px !important;
+                position: fixed;
+                left: 0;
+                top: 0;
+                z-index: 110;
             }
 
-            .sidebar-overlay {
-                display: block;
-                position: fixed;
-                inset: 0;
-                background: rgba(0, 0, 0, 0.5);
-                z-index: 115;
+            .mobile-header .el-button {
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                background: rgba(255, 255, 255, 0.9);
+                backdrop-filter: blur(4px);
             }
 
             .search-bar {
-                margin-bottom: 2rem;
+                margin-bottom: 1.5rem;
+                position: relative !important;
+                top: 0 !important;
+                padding: 0;
             }
 
             .search-input .el-input__wrapper {
                 padding: 8px 16px;
+                border-radius: 12px;
+            }
+
+            .section-header {
+                margin-bottom: 1.25rem;
+            }
+
+            .section-header h2 {
+                font-size: 1.25rem;
+            }
+
+            .tool-card {
+                padding: 1rem !important;
             }
 
             .tool-icon {
                 width: 40px;
                 height: 40px;
+                margin-right: 0.75rem;
             }
 
             .tool-icon img {
-                width: 20px;
-                height: 20px;
+                width: 100%;
+                height: 100%;
+            }
+
+            .bookmark-folder {
+                padding: 1rem;
+                border-radius: 16px;
+            }
+
+            .bookmark-folder-icon {
+                font-size: 32px;
+            }
+
+            .grid {
+                gap: 0.75rem !important;
             }
 
             .top-welcome {
@@ -244,23 +288,95 @@
             .bookmark-dialog .el-dialog {
                 width: 95% !important;
                 margin-top: 5vh !important;
+                border-radius: 16px;
             }
+
+            .bookmark-dialog .el-dialog__body {
+                padding: 1rem !important;
+            }
+
+            /* 书签弹窗内的布局在移动端改为垂直 */
+            .bookmark-dialog .flex-row {
+                flex-direction: column !important;
+            }
+
+            .bookmark-dialog .w-64 {
+                width: 100% !important;
+                border-right: none !important;
+                border-bottom: 1px solid #f1f5f9;
+                padding-right: 0 !important;
+                padding-bottom: 1rem !important;
+                margin-bottom: 1rem;
+                max-height: 200px;
+                overflow-y: auto;
+            }
+        }
+
+        /* 自定义 el-drawer 样式 */
+        .mobile-sidebar-drawer .el-drawer__body {
+            padding: 0 !important;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mobile-sidebar-drawer .el-drawer__header {
+            margin-bottom: 0;
+            padding: 16px 20px;
+            border-bottom: 1px solid #f1f5f9;
         }
 
         .sidebar-overlay {
             display: none;
         }
 
-        .mobile-header {
-            display: none;
-            padding: 0 1rem;
+        /* 全局加载动画样式 */
+        .global-loading {
+            position: fixed;
+            inset: 0;
             background: #fff;
-            border-bottom: 1px solid #e2e8f0;
-            position: sticky;
-            top: 0;
-            z-index: 110;
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+
+        .global-loading.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--el-color-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+        }
+
+        /* 占位图显示逻辑：不再需要复杂的叠加逻辑 */
+        .tool-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            background-color: #f1f5f9;
+            transition: opacity 0.3s ease-in;
         }
 
         [v-cloak] { display: none; }
@@ -268,21 +384,82 @@
 </head>
 <body>
 <div id="app" v-cloak>
-    <div class="app-container">
-        <!-- 移动端侧边栏遮罩层 -->
-        <div class="sidebar-overlay" v-if="isSidebarOpen" @click="isSidebarOpen = false"></div>
+    <!-- 全局加载屏幕 -->
+    <div :class="['global-loading', !isAppLoading ? 'hidden' : '']">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">正在初始化极简导航...</div>
+    </div>
 
-        <!-- 移动端顶部栏 -->
+    <div class="app-container">
+        <!-- 移动端抽屉式侧边栏 (使用 Element Plus 组件) -->
+        <el-drawer
+            v-model="isSidebarOpen"
+            direction="ltr"
+            size="280px"
+            class="mobile-sidebar-drawer"
+            :with-header="false"
+        >
+            <div class="flex flex-col h-full bg-white">
+                <!-- 抽屉头部 -->
+                <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white">
+                            <el-icon :size="24"><Tools/></el-icon>
+                        </div>
+                        <div>
+                            <h1 class="font-black text-lg tracking-tight leading-none">{{ settings.site_title }}</h1>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">v2.0 简约版</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 抽屉菜单内容 -->
+                <div class="flex-1 overflow-y-auto py-4 category-menu">
+                    <el-menu :default-active="activeMenu" @select="handleMenuSelect">
+                        <el-menu-item-group title="工具分类">
+                            <el-menu-item v-for="group in toolGroups" :key="group.name" :index="'cat-' + group.name">
+                                <el-icon><Grid/></el-icon>
+                                <span>{{ group.name }}</span>
+                            </el-menu-item>
+                        </el-menu-item-group>
+                        <el-menu-item-group title="书签资源">
+                            <el-menu-item index="bookmarks">
+                                <el-icon><CollectionTag/></el-icon>
+                                <span>我的书签</span>
+                            </el-menu-item>
+                        </el-menu-item-group>
+                        <el-menu-item-group title="私密资源" v-if="!hideData">
+                            <el-menu-item index="unlock-hide">
+                                <el-icon><Lock/></el-icon>
+                                <span>解锁隐藏分类</span>
+                            </el-menu-item>
+                        </el-menu-item-group>
+                        <el-menu-item-group title="隐藏分类" v-if="hideData">
+                            <el-menu-item v-for="group in hideGroups" :key="group.name" :index="'hide-' + group.name">
+                                <el-icon><View/></el-icon>
+                                <span>{{ group.name }}</span>
+                            </el-menu-item>
+                        </el-menu-item-group>
+                    </el-menu>
+                </div>
+
+                <!-- 抽屉底部 -->
+                <div class="p-4 border-t border-slate-100 flex flex-col gap-2">
+                    <el-button type="primary" plain block @click="openAdmin" icon="Setting" style="width: 100%">后台管理</el-button>
+                    <div class="text-[10px] text-slate-400 font-bold text-center mt-2">© 2026 {{ settings.site_title }}</div>
+                </div>
+            </div>
+        </el-drawer>
+
+        <!-- 移动端开启按钮 -->
         <div class="mobile-header">
-            <el-button @click="isSidebarOpen = !isSidebarOpen" circle>
+            <el-button @click="isSidebarOpen = true" circle>
                 <el-icon><Operation/></el-icon>
             </el-button>
-            <h1 class="text-xl font-bold">{{ settings.site_title }}</h1>
-            <div style="width: 44px"></div>
         </div>
 
-        <!-- 侧边栏导航 -->
-        <aside :class="['sidebar', isSidebarOpen ? 'is-open' : '']">
+        <!-- 桌面端固定侧边栏 -->
+        <aside class="sidebar">
             <div class="p-6 border-b border-slate-100 flex items-center gap-3">
                 <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white">
                     <el-icon :size="24"><Tools/></el-icon>
@@ -366,13 +543,16 @@
                 <!-- 结果列表 -->
                 <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div v-for="link in searchResults" :key="link.url" @click="openLink(link.url)" class="tool-card p-6 flex items-center">
-                        <div class="tool-icon">
-                            <img v-if="getFavicon(link.url)" loading="lazy" :src="getFavicon(link.url)" @error="handleIconError">
-                            <el-icon v-else :size="24" class="text-indigo-400"><Link/></el-icon>
+                        <div class="tool-icon" :style="{ backgroundImage: 'url(' + DEFAULT_ICON + ')' }">
+                            <!-- 直接尝试加载目标图标，失败则触发 handleIconError 切换到 DEFAULT_ICON -->
+                            <img :src="link.icon || getFavicon(link.url) || DEFAULT_ICON" 
+                                 @error="handleIconError">
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2 mb-0.5">
-                                <span class="text-[10px] font-bold uppercase tracking-tighter bg-slate-100 px-1.5 py-0.5 rounded text-slate-500">{{ link.category || '书签' }}</span>
+                                <span class="text-[10px] font-bold uppercase tracking-tighter bg-slate-100 px-1.5 py-0.5 rounded text-slate-500">
+                                    {{ link.path ? link.path.replace(/\//g, ' > ') : (link.category || '书签') }}
+                                </span>
                             </div>
                             <h3 class="font-bold text-base truncate">{{ link.title }}</h3>
                         </div>
@@ -391,10 +571,8 @@
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                         <div v-for="link in group.items" :key="link.url" @click="openLink(link.url)" class="tool-card p-5 flex items-center">
-                            <div class="tool-icon">
-                                <img v-if="link.icon && isImageUrl(link.icon)" :src="link.icon" @error="handleIconError">
-                                <img v-else-if="getFavicon(link.url)" :src="getFavicon(link.url)" @error="handleIconError">
-                                <el-icon v-else :size="24" class="text-indigo-400"><Link/></el-icon>
+                            <div class="tool-icon" :style="{ backgroundImage: 'url(' + DEFAULT_ICON + ')' }">
+                                <img :src="link.icon || getFavicon(link.url) || DEFAULT_ICON" @error="handleIconError">
                             </div>
                             <div class="flex-1 min-w-0">
                                 <h3 class="font-bold text-base truncate">{{ link.title }}</h3>
@@ -422,9 +600,8 @@
 
                             <!-- 单个书签展示 -->
                             <div v-else @click="openLink(node.url)" class="tool-card p-4 flex flex-col items-center text-center">
-                                <div class="tool-icon mr-0 mb-3">
-                                    <img v-if="getFavicon(node.url)" :src="getFavicon(node.url)" @error="handleIconError">
-                                    <el-icon v-else :size="24" class="text-indigo-400"><Link/></el-icon>
+                                <div class="tool-icon mr-0 mb-3" :style="{ backgroundImage: 'url(' + DEFAULT_ICON + ')' }">
+                                    <img :src="node.icon || getFavicon(node.url) || DEFAULT_ICON" @error="handleIconError">
                                 </div>
                                 <h3 class="font-bold text-xs truncate w-full">{{ node.title }}</h3>
                             </div>
@@ -441,10 +618,8 @@
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                         <div v-for="link in group.items" :key="link.url" @click="openLink(link.url)" class="tool-card p-5 flex items-center border-indigo-100 bg-indigo-50/10">
-                            <div class="tool-icon bg-indigo-50">
-                                <img v-if="link.icon && isImageUrl(link.icon)" :src="link.icon" @error="handleIconError">
-                                <img v-else-if="getFavicon(link.url)" :src="getFavicon(link.url)" @error="handleIconError">
-                                <el-icon v-else :size="24" class="text-indigo-400"><Link/></el-icon>
+                            <div class="tool-icon bg-indigo-50" :style="{ backgroundImage: 'url(' + DEFAULT_ICON + ')' }">
+                                <img :src="link.icon || getFavicon(link.url) || DEFAULT_ICON" @error="handleIconError">
                             </div>
                             <div class="flex-1 min-w-0">
                                 <h3 class="font-bold text-base truncate">{{ link.title }}</h3>
@@ -467,8 +642,9 @@
                             <span class="flex items-center gap-2 text-sm overflow-hidden">
                                 <el-icon v-if="data.type === 'folder'" class="text-amber-500"><Folder/></el-icon>
                                 <template v-else>
-                                    <img v-if="getFavicon(data.url)" :src="getFavicon(data.url)" class="w-4 h-4 object-contain" @error="handleIconError">
-                                    <el-icon v-else class="text-indigo-400"><Link/></el-icon>
+                                    <div class="w-4 h-4 tool-icon relative flex-shrink-0" :style="{ backgroundImage: 'url(' + DEFAULT_ICON + ')' }">
+                                        <img :src="data.icon || getFavicon(data.url) || DEFAULT_ICON" @error="handleIconError">
+                                    </div>
                                 </template>
                                 <span class="truncate">{{ data.name || data.title }}</span>
                             </span>
@@ -480,9 +656,8 @@
             <div class="flex-1">
                 <div v-if="currentLinks.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div v-for="link in currentLinks" :key="link.url" @click="openLink(link.url)" class="tool-card p-4 flex items-center">
-                        <div class="tool-icon w-10 h-10">
-                            <img v-if="getFavicon(link.url)" loading="lazy" :src="getFavicon(link.url)" @error="handleIconError">
-                            <el-icon v-else :size="18" class="text-indigo-400"><Link/></el-icon>
+                        <div class="tool-icon w-10 h-10" :style="{ backgroundImage: 'url(' + DEFAULT_ICON + ')' }">
+                            <img :src="link.icon || getFavicon(link.url) || DEFAULT_ICON" @error="handleIconError">
                         </div>
                         <div class="flex-1 min-w-0">
                             <h4 class="font-bold text-sm truncate">{{ link.title }}</h4>
@@ -513,6 +688,8 @@
 <script>
     const {createApp, ref, onMounted, computed, watch, nextTick} = Vue;
 
+    const DEFAULT_ICON = 'https://backend.liangfeng111.top/f/imgs/1775248045019-head.jpeg';
+
     const app = createApp({
         setup() {
             // 状态定义
@@ -527,6 +704,13 @@
             const isModalOpen = ref(false);  // 书签浏览器弹窗是否开启
             const selectedFolder = ref(null);// 书签弹窗中当前选中的根文件夹
             const currentLinks = ref([]);    // 书签弹窗中当前展示的链接列表
+            const isAppLoading = ref(true);  // 全局加载状态
+
+            // 监听侧边栏状态，开启时利用 el-drawer 自动处理 body 锁定
+            // 我们只需要保留基本的状态控制，el-drawer 会处理 z-index 和遮罩层点击
+            watch(isSidebarOpen, (val) => {
+                // el-drawer 默认会处理 body 滚动锁定
+            });
 
             const treeProps = {
                 label: (data) => data.name || data.title,
@@ -534,8 +718,15 @@
             };
 
             onMounted(async () => {
-                await fetchData();
-                await fetchBookmarks();
+                try {
+                    // 并行加载数据以优化速度
+                    await Promise.all([fetchData(), fetchBookmarks()]);
+                } finally {
+                    // 无论成功失败，加载完成后移除加载动画
+                    setTimeout(() => {
+                        isAppLoading.value = false;
+                    }, 300);
+                }
 
                 // 初始化 Scroll Spy (滚动自动切换侧边栏选中)
                 const observer = new IntersectionObserver((entries) => {
@@ -638,11 +829,24 @@
             // 获取 Favicon 图标，使用 Google 的 Favicon 服务
             const getFavicon = (url) => {
                 if (!url || url.includes('工具/') || url.includes('游戏/') || url.includes('vip/')) return null;
-                return `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${encodeURIComponent(url)}&size=64`;
+                try {
+                    const domain = new URL(url).hostname;
+                    // 使用 Google 的 Favicon 服务作为首选，通常更稳定
+                    return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+                } catch (e) {
+                    return null;
+                }
             };
 
             const handleIconError = (e) => {
-                e.target.style.display = 'none';
+                const target = e.target;
+                // 防止死循环：如果已经是默认图标且加载失败，则不再尝试
+                if (target.src === DEFAULT_ICON) {
+                    // 如果默认图标也加载失败，可以显示一个本地备用图标或 placeholder
+                    console.error('Default icon failed to load');
+                    return;
+                }
+                target.src = DEFAULT_ICON;
             };
 
             const openBookmarkModal = (folder) => {
@@ -742,7 +946,8 @@
                 activeMenu, isSidebarOpen, showNotice, isModalOpen, selectedFolder,
                 currentLinks, treeProps, handleMenuSelect, openLink, openAdmin, formatUrl,
                 isImageUrl, getFavicon, handleIconError, openBookmarkModal,
-                handleTreeNodeClick, handleSearch, unlockHideData
+                handleTreeNodeClick, handleSearch, unlockHideData,
+                isAppLoading, DEFAULT_ICON
             };
         }
     });

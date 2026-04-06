@@ -134,8 +134,10 @@
                         if (url && !url.startsWith('chrome://')) {
                             let iconUrl = 'link';
                             try {
-                                // 使用 Google 官方更强大的 Favicon V2 服务，直接传入完整 URL
-                                iconUrl = `https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${encodeURIComponent(url)}&size=64`;
+                                // 提取链接的域名 (hostname)
+                                const domain = new URL(url).hostname;
+                                // 使用国内稳定的 Favicon 聚合接口替换被墙的 Google 服务
+                                iconUrl = `https://api.iowen.cn/favicon/${domain}.png`;
                             } catch (e) {
                                 console.warn('URL 解析失败:', url);
                             }
