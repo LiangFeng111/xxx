@@ -5,6 +5,9 @@
 window.CONFIG = {
   // 1. 主工具数据源 (手动维护的 data.json 路径)
   DATA_URL: 'data.json',
+
+  // 默认图片 (当没有图片时显示的图片)
+  DEFAULT_IMAGE : 'https://backend.liangfeng111.top/f/imgs/1775248045019-head.jpeg',
   
   // 2. 书签数据源 (由浏览器书签转换工具生成的 JSON 文件路径)
   BOOKMARKS_URL: 'converted_bookmarks.json',

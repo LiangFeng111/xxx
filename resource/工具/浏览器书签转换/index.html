@@ -137,7 +137,7 @@
                                 // 提取链接的域名 (hostname)
                                 const domain = new URL(url).hostname;
                                 // 使用国内稳定的 Favicon 聚合接口替换被墙的 Google 服务
-                                iconUrl = `https://api.iowen.cn/favicon/${domain}.png`;
+                                iconUrl = `https://favicon.im/zh/${domain}`;
                             } catch (e) {
                                 console.warn('URL 解析失败:', url);
                             }

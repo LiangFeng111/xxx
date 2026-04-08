@@ -15,372 +15,7 @@
     <!-- 引入全局配置文件 -->
     <script src="config.js"></script>
 
-    <style>
-        :root {
-            /* Element Plus 主题颜色覆盖 */
-            --el-color-primary: #4f46e5;
-            --el-color-primary-light-3: #818cf8;
-            --el-color-primary-light-5: #a5b4fc;
-            --el-color-primary-light-7: #c7d2fe;
-            --el-color-primary-light-8: #e0e7ff;
-            --el-color-primary-light-9: #eef2ff;
-            --el-color-primary-dark-2: #3730a3;
-        }
-
-        body {
-            background-color: #f8fafc;
-            color: #1e293b;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            font-size: 18px;
-        }
-
-        /* 布局相关样式 */
-        .app-container {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .sidebar {
-            width: 260px;
-            background: #fff;
-            border-right: 1px solid #e2e8f0;
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            display: flex;
-            flex-direction: column;
-            z-index: 100;
-        }
-
-        .main-content {
-            flex: 1;
-            margin-left: 260px;
-            padding: 2rem;
-            max-width: 1400px;
-            width: calc(100% - 260px);
-        }
-
-        /* 侧边栏菜单样式 */
-        .category-menu .el-menu {
-            border-right: none;
-        }
-
-        .category-menu .el-menu-item {
-            height: 50px;
-            line-height: 50px;
-            border-radius: 8px;
-            margin: 4px 12px;
-            font-weight: 500;
-        }
-
-        .category-menu .el-menu-item.is-active {
-            background-color: var(--el-color-primary-light-9);
-            color: var(--el-color-primary);
-        }
-
-        /* 工具卡片样式 */
-        .tool-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid #f1f5f9;
-            border-radius: 16px;
-            background: #fff;
-            overflow: hidden;
-            cursor: pointer;
-            height: 100%;
-        }
-
-        .tool-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.1);
-            border-color: var(--el-color-primary-light-5);
-        }
-
-        .tool-icon {
-            width: 48px;
-            height: 48px;
-            background: #f8fafc;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 1rem;
-            flex-shrink: 0;
-            position: relative;
-            overflow: hidden;
-            background-size: cover;
-            background-position: center;
-        }
-
-        /* 允许通过 Tailwind 类覆盖尺寸 */
-        .tool-icon.w-10 { width: 40px; }
-        .tool-icon.h-10 { height: 40px; }
-        .tool-icon.w-4 { width: 16px; }
-        .tool-icon.h-4 { height: 16px; }
-
-        .tool-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            background-color: #f1f5f9; /* 添加背景色，防止图片加载失败时全透明 */
-        }
-
-        /* 搜索框样式 */
-        .search-bar {
-            max-width: 800px;
-            margin: 0 auto 3rem;
-            position: sticky;
-            top: 2rem;
-            z-index: 100;
-            transition: all 0.3s;
-        }
-
-        .search-input .el-input__wrapper {
-            padding: 12px 24px;
-            border-radius: 20px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            border: 2px solid transparent;
-            transition: all 0.3s;
-            background: #fff;
-        }
-
-        .search-input .el-input__wrapper.is-focus {
-            border-color: var(--el-color-primary);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-
-        /* 分类标题样式 */
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .section-header h2 {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: #0f172a;
-            letter-spacing: -0.025em;
-        }
-
-        .section-badge {
-            background: #f1f5f9;
-            color: #64748b;
-            padding: 2px 10px;
-            border-radius: 999px;
-            font-size: 0.75rem;
-            font-weight: 700;
-        }
-
-        /* 书签文件夹卡片样式 */
-        .bookmark-folder {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: #fff;
-            border: 1px solid #f1f5f9;
-            border-radius: 20px;
-            padding: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .bookmark-folder:hover {
-            background: #fefce8;
-            border-color: #fde047;
-            transform: scale(1.02);
-        }
-
-        .bookmark-folder-icon {
-            font-size: 40px;
-            color: #eab308;
-            margin-bottom: 0.5rem;
-        }
-
-        /* 移动端适配 */
-        @media (max-width: 768px) {
-            .sidebar {
-                display: none !important; /* 移动端完全隐藏桌面版侧边栏 */
-            }
-
-            .main-content {
-                margin-left: 0 !important;
-                width: 100% !important;
-                padding: 1rem 0.75rem;
-            }
-
-            .mobile-header {
-                display: block !important;
-                width: 50px;
-                height: 50px;
-                background: transparent;
-                padding: 10px !important;
-                position: fixed;
-                left: 0;
-                top: 0;
-                z-index: 110;
-            }
-
-            .mobile-header .el-button {
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-                background: rgba(255, 255, 255, 0.9);
-                backdrop-filter: blur(4px);
-            }
-
-            .search-bar {
-                margin-bottom: 1.5rem;
-                position: relative !important;
-                top: 0 !important;
-                padding: 0;
-            }
-
-            .search-input .el-input__wrapper {
-                padding: 8px 16px;
-                border-radius: 12px;
-            }
-
-            .section-header {
-                margin-bottom: 1.25rem;
-            }
-
-            .section-header h2 {
-                font-size: 1.25rem;
-            }
-
-            .tool-card {
-                padding: 1rem !important;
-            }
-
-            .tool-icon {
-                width: 40px;
-                height: 40px;
-                margin-right: 0.75rem;
-            }
-
-            .tool-icon img {
-                width: 100%;
-                height: 100%;
-            }
-
-            .bookmark-folder {
-                padding: 1rem;
-                border-radius: 16px;
-            }
-
-            .bookmark-folder-icon {
-                font-size: 32px;
-            }
-
-            .grid {
-                gap: 0.75rem !important;
-            }
-
-            .top-welcome {
-                display: none;
-            }
-
-            .bookmark-dialog .el-dialog {
-                width: 95% !important;
-                margin-top: 5vh !important;
-                border-radius: 16px;
-            }
-
-            .bookmark-dialog .el-dialog__body {
-                padding: 1rem !important;
-            }
-
-            /* 书签弹窗内的布局在移动端改为垂直 */
-            .bookmark-dialog .flex-row {
-                flex-direction: column !important;
-            }
-
-            .bookmark-dialog .w-64 {
-                width: 100% !important;
-                border-right: none !important;
-                border-bottom: 1px solid #f1f5f9;
-                padding-right: 0 !important;
-                padding-bottom: 1rem !important;
-                margin-bottom: 1rem;
-                max-height: 200px;
-                overflow-y: auto;
-            }
-        }
-
-        /* 自定义 el-drawer 样式 */
-        .mobile-sidebar-drawer .el-drawer__body {
-            padding: 0 !important;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .mobile-sidebar-drawer .el-drawer__header {
-            margin-bottom: 0;
-            padding: 16px 20px;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .sidebar-overlay {
-            display: none;
-        }
-
-        /* 全局加载动画样式 */
-        .global-loading {
-            position: fixed;
-            inset: 0;
-            background: #fff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.5s, visibility 0.5s;
-        }
-
-        .global-loading.hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
-
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--el-color-primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 1rem;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            color: #64748b;
-            font-size: 14px;
-            font-weight: 500;
-            letter-spacing: 0.05em;
-        }
-
-        /* 占位图显示逻辑：不再需要复杂的叠加逻辑 */
-        .tool-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            background-color: #f1f5f9;
-            transition: opacity 0.3s ease-in;
-        }
-
-        [v-cloak] { display: none; }
-    </style>
+    <link rel="stylesheet" href="resource/css/style.css">
 </head>
 <body>
 <div id="app" v-cloak>
@@ -399,43 +34,43 @@
             class="mobile-sidebar-drawer"
             :with-header="false"
         >
-            <div class="flex flex-col h-full bg-white">
+            <div class="flex flex-col h-full bg-transparent">
                 <!-- 抽屉头部 -->
-                <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+                <div class="p-6 border-b border-white/10 flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white">
+                        <div class="w-10 h-10 bg-indigo-500/50 rounded-xl flex items-center justify-center text-white">
                             <el-icon :size="24"><Tools/></el-icon>
                         </div>
                         <div>
                             <h1 class="font-black text-lg tracking-tight leading-none">{{ settings.site_title }}</h1>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">v2.0 简约版</p>
+                            <p class="text-[10px] text-white/70 font-bold uppercase tracking-widest mt-1">v2.0 简约版</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- 抽屉菜单内容 -->
                 <div class="flex-1 overflow-y-auto py-4 category-menu">
-                    <el-menu :default-active="activeMenu" @select="handleMenuSelect">
-                        <el-menu-item-group title="工具分类">
-                            <el-menu-item v-for="group in toolGroups" :key="group.name" :index="'cat-' + group.name">
+                    <el-menu :default-active="activeMenu" @select="handleMenuSelect" class="bg-transparent border-none">
+                        <el-menu-item-group title="工具分类" class="bg-transparent">
+                            <el-menu-item v-for="group in toolGroups" :key="group.name" :index="'cat-' + group.name" class="hover:bg-white/10">
                                 <el-icon><Grid/></el-icon>
                                 <span>{{ group.name }}</span>
                             </el-menu-item>
                         </el-menu-item-group>
-                        <el-menu-item-group title="书签资源">
-                            <el-menu-item index="bookmarks">
+                        <el-menu-item-group title="书签资源" class="bg-transparent">
+                            <el-menu-item index="bookmarks" class="hover:bg-white/10">
                                 <el-icon><CollectionTag/></el-icon>
                                 <span>我的书签</span>
                             </el-menu-item>
                         </el-menu-item-group>
-                        <el-menu-item-group title="私密资源" v-if="!hideData">
-                            <el-menu-item index="unlock-hide">
+                        <el-menu-item-group title="私密资源" v-if="!hideData" class="bg-transparent">
+                            <el-menu-item index="unlock-hide" class="hover:bg-white/10">
                                 <el-icon><Lock/></el-icon>
                                 <span>解锁隐藏分类</span>
                             </el-menu-item>
                         </el-menu-item-group>
-                        <el-menu-item-group title="隐藏分类" v-if="hideData">
-                            <el-menu-item v-for="group in hideGroups" :key="group.name" :index="'hide-' + group.name">
+                        <el-menu-item-group title="隐藏分类" v-if="hideData" class="bg-transparent">
+                            <el-menu-item v-for="group in hideGroups" :key="group.name" :index="'hide-' + group.name" class="hover:bg-white/10">
                                 <el-icon><View/></el-icon>
                                 <span>{{ group.name }}</span>
                             </el-menu-item>
@@ -444,9 +79,9 @@
                 </div>
 
                 <!-- 抽屉底部 -->
-                <div class="p-4 border-t border-slate-100 flex flex-col gap-2">
-                    <el-button type="primary" plain block @click="openAdmin" icon="Setting" style="width: 100%">后台管理</el-button>
-                    <div class="text-[10px] text-slate-400 font-bold text-center mt-2">© 2026 {{ settings.site_title }}</div>
+                <div class="p-4 border-t border-white/10 flex flex-col gap-2">
+                    <el-button type="primary" plain block @click="openAdmin" icon="Setting" style="width: 100%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white;">后台管理</el-button>
+                    <div class="text-[10px] text-white/50 font-bold text-center mt-2">© 2026 {{ settings.site_title }}</div>
                 </div>
             </div>
         </el-drawer>
@@ -517,7 +152,6 @@
             <!-- 桌面端顶部栏 -->
             <div class="flex justify-between items-center mb-8 top-welcome">
                 <div class="text-slate-400 font-medium">欢迎使用 {{ settings.site_title }}</div>
-                <el-button type="primary" plain round @click="openAdmin" icon="Setting">后台管理</el-button>
             </div>
 
             <!-- 全局搜索框 -->
@@ -525,6 +159,77 @@
                 <el-input v-model="searchQuery" placeholder="搜索在线资源、工具或书签..." class="search-input" clearable @input="handleSearch">
                     <template #prefix><el-icon><Search/></el-icon></template>
                 </el-input>
+            </div>
+
+            <!-- 最近使用 (浮动布局) -->
+            <div v-if="!searchQuery" class="mb-12 space-y-6">
+                <!-- 最近使用 -->
+                <div v-if="recentTools.length > 0" class="collapse-section">
+                    <div class="collapse-header" @click="toggleSection('recent')">
+                        <div class="flex items-center gap-2">
+                            <el-icon :class="{'rotate-90': expandedSections.includes('recent')}" class="transition-transform text-xs"><ArrowRight /></el-icon>
+                            <span class="text-sm font-bold tracking-wider uppercase text-white/60">最近使用</span>
+                        </div>
+                        <span class="section-badge">{{ recentTools.length }}</span>
+                    </div>
+                    <div v-show="expandedSections.includes('recent')" class="collapse-content flex flex-wrap gap-3 pt-4">
+                        <div v-for="tool in recentTools" :key="'recent-'+tool.url" @click="openLink(tool.url, tool)" 
+                             class="float-tool-item group">
+                            <div class="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 bg-white/10 p-1">
+                                <img :src="tool.icon || getFavicon(tool.url) || DEFAULT_ICON" @error="handleIconError" class="w-full h-full object-contain">
+                            </div>
+                            <span class="text-xs font-medium">{{ tool.title }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 分类导航 (面包屑/标签样式) -->
+            <div v-if="!searchQuery" class="flex items-center gap-2 mb-8 p-2 bg-black/20 rounded-2xl overflow-x-auto border border-white/10 no-scrollbar">
+                <!-- 工具分类 -->
+                <el-button 
+                    v-for="group in toolGroups" 
+                    :key="'nav-'+group.name"
+                    @click="currentCategory = group.name; activeMenu = 'cat-'+group.name"
+                    round 
+                    size="small" 
+                    :type="currentCategory === group.name ? 'primary' : ''"
+                    :plain="currentCategory !== group.name"
+                    class="flex-shrink-0"
+                    :style="{ background: currentCategory === group.name ? '' : 'rgba(255,255,255,0.05)', border: currentCategory === group.name ? '' : '1px solid rgba(255,255,255,0.1)', color: 'white' }"
+                >
+                    {{ group.name }}
+                </el-button>
+                
+                <!-- 书签按钮 -->
+                <el-button 
+                    @click="currentCategory = 'bookmarks'; activeMenu = 'bookmarks'"
+                    round 
+                    size="small" 
+                    :type="currentCategory === 'bookmarks' ? 'primary' : ''"
+                    :plain="currentCategory !== 'bookmarks'"
+                    class="flex-shrink-0"
+                    :style="{ background: currentCategory === 'bookmarks' ? '' : 'rgba(255,255,255,0.05)', border: currentCategory === 'bookmarks' ? '' : '1px solid rgba(255,255,255,0.1)', color: 'white' }"
+                >
+                    我的书签
+                </el-button>
+
+                <!-- 隐藏分类按钮 -->
+                <template v-if="hideData">
+                    <el-button 
+                        v-for="group in hideGroups" 
+                        :key="'nav-hide-'+group.name"
+                        @click="currentCategory = 'hide-'+group.name; activeMenu = 'hide-'+group.name"
+                        round 
+                        size="small" 
+                        :type="currentCategory === 'hide-'+group.name ? 'primary' : ''"
+                        :plain="currentCategory !== 'hide-'+group.name"
+                        class="flex-shrink-0"
+                        :style="{ background: currentCategory === 'hide-'+group.name ? '' : 'rgba(255,255,255,0.05)', border: currentCategory === 'hide-'+group.name ? '' : '1px solid rgba(255,255,255,0.1)', color: 'white' }"
+                    >
+                        {{ group.name }}
+                    </el-button>
+                </template>
             </div>
 
             <!-- 搜索结果展示 -->
@@ -544,8 +249,8 @@
                 <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div v-for="link in searchResults" :key="link.url" @click="openLink(link.url)" class="tool-card p-6 flex items-center">
                         <div class="tool-icon" :style="{ backgroundImage: 'url(' + DEFAULT_ICON + ')' }">
-                            <!-- 直接尝试加载目标图标，失败则触发 handleIconError 切换到 DEFAULT_ICON -->
-                            <img :src="link.icon || getFavicon(link.url) || DEFAULT_ICON" 
+                            <!-- 直接尝试加载目标图标，失败则切换 DEFAULT_ICON -->
+                            <img :src="link.icon || getFavicon(link.url) || DEFAULT_ICON"
                                  @error="handleIconError">
                         </div>
                         <div class="flex-1 min-w-0">
@@ -554,120 +259,119 @@
                                     {{ link.path ? link.path.replace(/\//g, ' > ') : (link.category || '书签') }}
                                 </span>
                             </div>
-                            <h3 class="font-bold text-base truncate">{{ link.title }}</h3>
+                            <h3 class="font-bold text-base">{{ link.title }}</h3>
                         </div>
                         <el-icon class="text-slate-300"><ArrowRight/></el-icon>
                     </div>
                 </div>
             </div>
 
-            <!-- 默认展示内容 (工具和书签) -->
-            <div v-else class="space-y-16">
-                <!-- 工具分类渲染 -->
-                <div v-for="group in toolGroups" :key="group.name" :id="'cat-' + group.name" class="scroll-mt-24">
-                    <div class="section-header">
-                        <h2>{{ group.name }}</h2>
-                        <span class="section-badge">{{ group.items.length }}</span>
+            <!-- 主内容展示区域 (单分类显示模式) -->
+            <div v-else class="min-h-[400px]">
+                <!-- 工具列表 -->
+                <div v-for="group in toolGroups" :key="'section-'+group.name" v-show="currentCategory === group.name" class="animate-in fade-in slide-in-from-left-4 duration-300">
+                    <div class="section-header mb-8 flex justify-between items-end">
+                        <h2 class="text-4xl font-black tracking-tight text-white">{{ group.name }}</h2>
+                        <span class="section-badge text-lg px-4 bg-white/10">{{ group.items.length }} 项工具</span>
                     </div>
+                    
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                        <div v-for="link in group.items" :key="link.url" @click="openLink(link.url)" class="tool-card p-5 flex items-center">
-                            <div class="tool-icon" :style="{ backgroundImage: 'url(' + DEFAULT_ICON + ')' }">
+                        <div v-for="link in group.items" :key="link.url" @click="openLink(link.url, link)" class="tool-card p-6 flex items-center">
+                            <div class="tool-icon w-14 h-14" :style="{ backgroundImage: 'url(' + DEFAULT_ICON + ')' }">
                                 <img :src="link.icon || getFavicon(link.url) || DEFAULT_ICON" @error="handleIconError">
                             </div>
                             <div class="flex-1 min-w-0">
-                                <h3 class="font-bold text-base truncate">{{ link.title }}</h3>
-                                <p class="text-[10px] text-slate-400 truncate mt-1">{{ formatUrl(link.url) }}</p>
+                                <h4 class="font-bold text-xl mb-2">{{ link.title }}</h4>
+                                <p class="text-sm text-white/60 leading-relaxed">{{ link.description || formatUrl(link.url) }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 我的书签部分 -->
-                <div id="bookmarks" class="scroll-mt-24 pt-8 border-t border-slate-100">
-                    <div class="section-header">
-                        <h2>我的书签</h2>
-                        <span class="section-badge">{{ bookmarkTree.length }}</span>
+                <!-- 书签版块 -->
+                <div v-show="currentCategory === 'bookmarks'" class="animate-in fade-in slide-in-from-left-4 duration-300">
+                    <div class="section-header mb-8 flex justify-between items-end">
+                        <h2 class="text-4xl font-black tracking-tight text-white">我的书签</h2>
+                        <span class="section-badge text-lg px-4 bg-white/10">{{ bookmarkTree.length }} 个目录</span>
                     </div>
-
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-                        <template v-for="node in bookmarkTree" :key="node.name || node.title">
-                            <!-- 文件夹展示 -->
-                            <div v-if="node.type === 'folder'" @click="openBookmarkModal(node)" class="bookmark-folder group">
-                                <div class="bookmark-folder-icon group-hover:scale-110 transition-transform"><el-icon><Folder/></el-icon></div>
-                                <h3 class="font-bold text-sm truncate">{{ node.name }}</h3>
-                                <p class="text-[10px] text-slate-400 font-bold mt-1 uppercase">{{ (node.children || []).length }} 项</p>
-                            </div>
-
-                            <!-- 单个书签展示 -->
-                            <div v-else @click="openLink(node.url)" class="tool-card p-4 flex flex-col items-center text-center">
-                                <div class="tool-icon mr-0 mb-3" :style="{ backgroundImage: 'url(' + DEFAULT_ICON + ')' }">
-                                    <img :src="node.icon || getFavicon(node.url) || DEFAULT_ICON" @error="handleIconError">
-                                </div>
-                                <h3 class="font-bold text-xs truncate w-full">{{ node.title }}</h3>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-
-                <!-- 解锁后的隐藏资源分类 -->
-                <div v-if="hideData" v-for="group in hideGroups" :key="group.name" :id="'hide-' + group.name" class="scroll-mt-24 pt-8 border-t border-slate-100">
-                    <div class="section-header">
-                        <h2>{{ group.name }}</h2>
-                        <span class="section-badge">{{ group.items.length }}</span>
-                        <el-icon class="text-indigo-500"><Lock/></el-icon>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                        <div v-for="link in group.items" :key="link.url" @click="openLink(link.url)" class="tool-card p-5 flex items-center border-indigo-100 bg-indigo-50/10">
-                            <div class="tool-icon bg-indigo-50" :style="{ backgroundImage: 'url(' + DEFAULT_ICON + ')' }">
-                                <img :src="link.icon || getFavicon(link.url) || DEFAULT_ICON" @error="handleIconError">
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <h3 class="font-bold text-base truncate">{{ link.title }}</h3>
-                                <p class="text-[10px] text-slate-400 truncate mt-1">{{ formatUrl(link.url) }}</p>
-                            </div>
+                        <div v-for="folder in bookmarkTree" :key="'folder-'+folder.name" @click="openBookmarkModal(folder)" class="bookmark-folder group p-6">
+                            <div class="bookmark-folder-icon group-hover:scale-110 transition-transform text-5xl mb-3"><el-icon><Folder/></el-icon></div>
+                            <h3 class="font-bold text-base text-center">{{ folder.name }}</h3>
+                            <p class="text-xs text-white/40 mt-2">{{ (folder.children || []).length }} 项资源</p>
                         </div>
                     </div>
                 </div>
+
+                <!-- 隐藏分类版块 -->
+                <template v-if="hideData">
+                    <div v-for="group in hideGroups" :key="'section-hide-'+group.name" v-show="currentCategory === 'hide-'+group.name" class="animate-in fade-in slide-in-from-left-4 duration-300">
+                        <div class="section-header mb-8 flex justify-between items-end">
+                            <h2 class="text-4xl font-black tracking-tight text-white">{{ group.name }}</h2>
+                            <span class="section-badge text-lg px-4 bg-indigo-500/20 text-indigo-200">{{ group.items.length }} 项资源</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                            <div v-for="link in group.items" :key="'hide-link-'+link.url" @click="openLink(link.url, link)" class="tool-card p-6 flex items-center border-indigo-500/30 bg-indigo-500/5">
+                                <div class="tool-icon w-14 h-14 bg-indigo-500/10" :style="{ backgroundImage: 'url(' + DEFAULT_ICON + ')' }">
+                                    <img :src="link.icon || getFavicon(link.url) || DEFAULT_ICON" @error="handleIconError">
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="font-bold text-xl mb-2">{{ link.title }}</h4>
+                                    <p class="text-sm text-indigo-200/60 leading-relaxed">{{ link.description || formatUrl(link.url) }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
             </div>
         </main>
     </div>
 
-    <!-- 书签浏览器弹窗 -->
-    <el-dialog v-model="isModalOpen" :title="selectedFolder?.name || '书签浏览'" width="80%" class="bookmark-dialog" destroy-on-close>
-        <div class="flex flex-col md:flex-row gap-6 min-h-[400px]">
-            <!-- 左侧：文件夹树 -->
-            <div class="w-full md:w-64 border-r border-slate-100 pr-4">
-                <el-tree :data="selectedFolder?.children" :props="treeProps" @node-click="handleTreeNodeClick" highlight-current>
-                    <template #default="{ node, data }">
-                            <span class="flex items-center gap-2 text-sm overflow-hidden">
-                                <el-icon v-if="data.type === 'folder'" class="text-amber-500"><Folder/></el-icon>
-                                <template v-else>
-                                    <div class="w-4 h-4 tool-icon relative flex-shrink-0" :style="{ backgroundImage: 'url(' + DEFAULT_ICON + ')' }">
-                                        <img :src="data.icon || getFavicon(data.url) || DEFAULT_ICON" @error="handleIconError">
-                                    </div>
-                                </template>
-                                <span class="truncate">{{ data.name || data.title }}</span>
-                            </span>
-                    </template>
-                </el-tree>
+    <!-- 书签浏览器弹窗 (优化为更快的网格导航) -->
+    <el-dialog v-model="isModalOpen" :title="currentFolderName" width="85%" class="bookmark-dialog">
+        <div class="flex flex-col gap-6 h-[70vh] max-h-[800px]">
+            <!-- 顶部导航栏 / 面包屑 (优化对比度) -->
+            <div class="flex items-center gap-2 p-3 bg-black/20 rounded-2xl overflow-x-auto border border-white/10 no-scrollbar flex-shrink-0">
+                <el-button @click="resetNavigation" circle size="small" :type="navigationStack.length === 0 ? 'primary' : ''" class="flex-shrink-0" :style="{ background: navigationStack.length === 0 ? '' : 'rgba(255,255,255,0.1)', border: 'none' }">
+                    <el-icon :class="navigationStack.length === 0 ? 'text-white' : 'text-white/70'"><HomeFilled /></el-icon>
+                </el-button>
+                <template v-for="(folder, index) in navigationStack" :key="folder.name">
+                    <el-icon class="text-white/30 flex-shrink-0"><ArrowRight /></el-icon>
+                    <el-button @click="jumpToFolder(index)" round size="small" type="primary" plain class="flex-shrink-0" :style="{ background: 'rgba(79, 70, 229, 0.3)', border: '1px solid rgba(255,255,255,0.2)', color: 'white' }">
+                        {{ folder.name }}
+                    </el-button>
+                </template>
             </div>
 
-            <!-- 右侧：书签内容 -->
-            <div class="flex-1">
-                <div v-if="currentLinks.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div v-for="link in currentLinks" :key="link.url" @click="openLink(link.url)" class="tool-card p-4 flex items-center">
-                        <div class="tool-icon w-10 h-10" :style="{ backgroundImage: 'url(' + DEFAULT_ICON + ')' }">
+            <!-- 内容网格：文件夹和链接 (开启内部滚动) -->
+            <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                <div v-if="currentFolderItems.length > 0" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 animate-in fade-in zoom-in-95 duration-200">
+                    <!-- 文件夹项 -->
+                    <div v-for="node in currentFolderItems.filter(i => i.type === 'folder')" 
+                         :key="node.name" 
+                         @click="enterFolder(node)" 
+                         class="bookmark-folder group p-4 border border-white/5 hover:border-amber-400/50">
+                        <div class="bookmark-folder-icon group-hover:scale-110 transition-transform text-3xl mb-2"><el-icon><Folder/></el-icon></div>
+                        <h3 class="font-bold text-xs w-full text-center">{{ node.name }}</h3>
+                        <p class="text-[9px] text-white/40 mt-1 text-center">{{ (node.children || []).length }} 项</p>
+                    </div>
+
+                    <!-- 链接项 -->
+                    <div v-for="link in currentFolderItems.filter(i => i.type === 'link')" 
+                         :key="link.url" 
+                         @click="openLink(link.url, link)" 
+                         class="tool-card p-4 flex flex-col items-center text-center group">
+                        <div class="tool-icon mr-0 mb-3 w-10 h-10 group-hover:scale-110 transition-transform" :style="{ backgroundImage: 'url(' + DEFAULT_ICON + ')' }">
                             <img :src="link.icon || getFavicon(link.url) || DEFAULT_ICON" @error="handleIconError">
                         </div>
-                        <div class="flex-1 min-w-0">
-                            <h4 class="font-bold text-sm truncate">{{ link.title }}</h4>
-                            <p class="text-[10px] text-slate-400 truncate">{{ link.url }}</p>
-                        </div>
+                        <h4 class="font-bold text-xs w-full">{{ link.title }}</h4>
                     </div>
                 </div>
-                <div v-else class="h-full flex flex-col items-center justify-center text-slate-300 py-12">
-                    <el-icon :size="48"><InfoFilled/></el-icon>
-                    <p class="mt-4 font-bold">请选择左侧分类查看内容</p>
+
+                <!-- 空文件夹提示 -->
+                <div v-else class="h-full flex flex-col items-center justify-center text-white/20 py-20">
+                    <el-icon :size="64"><FolderOpened/></el-icon>
+                    <p class="mt-4 font-bold text-lg">当前文件夹为空</p>
                 </div>
             </div>
         </div>
@@ -685,280 +389,6 @@
     </el-dialog>
 </div>
 
-<script>
-    const {createApp, ref, onMounted, computed, watch, nextTick} = Vue;
-
-    const DEFAULT_ICON = 'https://backend.liangfeng111.top/f/imgs/1775248045019-head.jpeg';
-
-    const app = createApp({
-        setup() {
-            // 状态定义
-            const settings = ref({});        // 站点设置
-            const toolLinks = ref([]);      // data.json 中的普通链接
-            const bookmarkTree = ref([]);    // 书签树
-            const hideData = ref(null);      // 解锁后的隐藏数据
-            const searchQuery = ref('');     // 搜索关键词
-            const activeMenu = ref('');      // 当前选中的侧边栏 ID
-            const isSidebarOpen = ref(false);// 移动端侧边栏是否开启
-            const showNotice = ref(true);    // 是否显示公告
-            const isModalOpen = ref(false);  // 书签浏览器弹窗是否开启
-            const selectedFolder = ref(null);// 书签弹窗中当前选中的根文件夹
-            const currentLinks = ref([]);    // 书签弹窗中当前展示的链接列表
-            const isAppLoading = ref(true);  // 全局加载状态
-
-            // 监听侧边栏状态，开启时利用 el-drawer 自动处理 body 锁定
-            // 我们只需要保留基本的状态控制，el-drawer 会处理 z-index 和遮罩层点击
-            watch(isSidebarOpen, (val) => {
-                // el-drawer 默认会处理 body 滚动锁定
-            });
-
-            const treeProps = {
-                label: (data) => data.name || data.title,
-                children: 'children'
-            };
-
-            onMounted(async () => {
-                try {
-                    // 并行加载数据以优化速度
-                    await Promise.all([fetchData(), fetchBookmarks()]);
-                } finally {
-                    // 无论成功失败，加载完成后移除加载动画
-                    setTimeout(() => {
-                        isAppLoading.value = false;
-                    }, 300);
-                }
-
-                // 初始化 Scroll Spy (滚动自动切换侧边栏选中)
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            activeMenu.value = entry.target.id;
-                        }
-                    });
-                }, {rootMargin: '-10% 0px -80% 0px'});
-
-                nextTick(() => {
-                    toolGroups.value.forEach(g => {
-                        const el = document.getElementById('cat-' + g.name);
-                        if (el) observer.observe(el);
-                    });
-                    const bookmarkEl = document.getElementById('bookmarks');
-                    if (bookmarkEl) observer.observe(bookmarkEl);
-                });
-            });
-
-            // 获取 data.json 数据
-            const fetchData = async () => {
-                try {
-                    const res = await fetch(window.CONFIG.DATA_URL);
-                    const data = await res.json();
-                    settings.value = data.settings;
-                    toolLinks.value = data.links;
-                } catch (e) {
-                    console.error('Data error:', e);
-                }
-            };
-
-            // 获取书签数据
-            const fetchBookmarks = async () => {
-                try {
-                    const res = await fetch(window.CONFIG.BOOKMARKS_URL);
-                    const data = await res.json();
-                    bookmarkTree.value = data.links;
-                } catch (e) {
-                    console.error('Bookmarks error:', e);
-                }
-            };
-
-            // 将工具链接按分类分组 (Computed)
-            const toolGroups = computed(() => {
-                const groups = {};
-                toolLinks.value.forEach(link => {
-                    if (!groups[link.category]) groups[link.category] = [];
-                    groups[link.category].push(link);
-                });
-                return Object.keys(groups).map(name => ({name, items: groups[name]}));
-            });
-
-            // 将隐藏链接按分类分组 (Computed)
-            const hideGroups = computed(() => {
-                if (!hideData.value) return [];
-                const groups = {};
-                hideData.value.links.forEach(link => {
-                    if (!groups[link.category]) groups[link.category] = [];
-                    groups[link.category].push(link);
-                });
-                return Object.keys(groups).map(name => ({name, items: groups[name]}));
-            });
-
-            // 处理菜单项点击，滚动到对应锚点
-            const handleMenuSelect = (index) => {
-                if (index === 'unlock-hide') {
-                    unlockHideData();
-                    return;
-                }
-                activeMenu.value = index;
-                const el = document.getElementById(index);
-                if (el) {
-                    el.scrollIntoView({behavior: 'smooth'});
-                    if (window.innerWidth < 768) isSidebarOpen.value = false;
-                }
-            };
-
-            const openLink = (url) => {
-                window.open(url, '_blank');
-            };
-
-            const openAdmin = () => {
-                window.open(window.CONFIG.ADMIN_URL, '_blank');
-            };
-
-            const formatUrl = (url) => {
-                try {
-                    const u = new URL(url);
-                    return u.hostname;
-                } catch (e) {
-                    return url;
-                }
-            };
-
-            const isImageUrl = (url) => {
-                return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(url) || url.startsWith('http');
-            };
-
-            // 获取 Favicon 图标，使用 Google 的 Favicon 服务
-            const getFavicon = (url) => {
-                if (!url || url.includes('工具/') || url.includes('游戏/') || url.includes('vip/')) return null;
-                try {
-                    const domain = new URL(url).hostname;
-                    // 使用 Google 的 Favicon 服务作为首选，通常更稳定
-                    return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
-                } catch (e) {
-                    return null;
-                }
-            };
-
-            const handleIconError = (e) => {
-                const target = e.target;
-                // 防止死循环：如果已经是默认图标且加载失败，则不再尝试
-                if (target.src === DEFAULT_ICON) {
-                    // 如果默认图标也加载失败，可以显示一个本地备用图标或 placeholder
-                    console.error('Default icon failed to load');
-                    return;
-                }
-                target.src = DEFAULT_ICON;
-            };
-
-            const openBookmarkModal = (folder) => {
-                selectedFolder.value = folder;
-                currentLinks.value = (folder.children || []).filter(c => c.type === 'link');
-                isModalOpen.value = true;
-            };
-
-            // 书签弹窗左侧树点击处理
-            const handleTreeNodeClick = (data) => {
-                if (data.type === 'folder') {
-                    currentLinks.value = (data.children || []).filter(c => c.type === 'link');
-                } else if (data.type === 'link') {
-                    openLink(data.url);
-                }
-            };
-
-            // 解锁隐藏资源逻辑
-            const unlockHideData = () => {
-                ElementPlus.ElMessageBox.prompt('请输入解锁密码', '私密资源', {
-                    confirmButtonText: '解锁',
-                    cancelButtonText: '取消',
-                    inputType: 'password',
-                }).then(({value}) => {
-                    const API_BASE = window.CONFIG.API_URL
-                    // 处理相对路径或绝对路径
-                    const absoluteApiBase = API_BASE.startsWith('http') ? API_BASE : window.location.origin + '/' + API_BASE;
-
-                    fetch(`${absoluteApiBase}/public/hidedata`, {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({password: value})
-                    })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.error) {
-                                ElementPlus.ElMessage.error(data.error);
-                            } else {
-                                hideData.value = data;
-                                ElementPlus.ElMessage.success('解锁成功');
-                                nextTick(() => {
-                                    // 动态添加对隐藏分类的滚动观察
-                                    const observer = new IntersectionObserver((entries) => {
-                                        entries.forEach(entry => {
-                                            if (entry.isIntersecting) {
-                                                activeMenu.value = entry.target.id;
-                                            }
-                                        });
-                                    }, {rootMargin: '-10% 0px -80% 0px'});
-                                    hideGroups.value.forEach(g => {
-                                        const el = document.getElementById('hide-' + g.name);
-                                        if (el) observer.observe(el);
-                                    });
-                                });
-                            }
-                        })
-                        .catch(err => {
-                            ElementPlus.ElMessage.error('解锁失败，请检查网络或配置');
-                        });
-                });
-            };
-
-            // 搜索逻辑 (使用 Fuse.js 进行模糊匹配)
-            const searchResults = ref([]);
-            let fuseTools = null;
-            let fuseBookmarks = null;
-
-            const handleSearch = () => {
-                if (!searchQuery.value) {
-                    searchResults.value = [];
-                    return;
-                }
-
-                // 初始化 Fuse 实例 (仅在第一次搜索时)
-                if (!fuseTools) {
-                    fuseTools = new Fuse(toolLinks.value, {keys: ['title', 'category', 'url'], threshold: 0.3});
-
-                    // 扁平化书签用于搜索
-                    const flatBookmarks = [];
-                    const flatten = (nodes, path = []) => {
-                        nodes.forEach(n => {
-                            if (n.type === 'link') flatBookmarks.push({...n, category: '书签', path: path.join('/')});
-                            else if (n.children) flatten(n.children, [...path, n.name]);
-                        });
-                    };
-                    flatten(bookmarkTree.value);
-                    fuseBookmarks = new Fuse(flatBookmarks, {keys: ['title', 'url', 'path'], threshold: 0.3});
-                }
-
-                const tools = fuseTools.search(searchQuery.value).map(r => r.item);
-                const bookmarks = fuseBookmarks.search(searchQuery.value).map(r => r.item);
-                searchResults.value = [...tools, ...bookmarks];
-            };
-
-            return {
-                settings, toolGroups, bookmarkTree, hideData, hideGroups, searchQuery, searchResults,
-                activeMenu, isSidebarOpen, showNotice, isModalOpen, selectedFolder,
-                currentLinks, treeProps, handleMenuSelect, openLink, openAdmin, formatUrl,
-                isImageUrl, getFavicon, handleIconError, openBookmarkModal,
-                handleTreeNodeClick, handleSearch, unlockHideData,
-                isAppLoading, DEFAULT_ICON
-            };
-        }
-    });
-
-    // 注册 Element Plus 图标
-    for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-        app.component(key, component);
-    }
-
-    app.use(ElementPlus);
-    app.mount('#app');
-</script>
+<script src="resource/js/main.js"></script>
 </body>
 </html>
