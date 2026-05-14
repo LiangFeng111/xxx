@@ -10,5 +10,11 @@
     "action": "修改隐藏数据",
     "details": "更新了隐藏数据列表",
     "ip": "Cloudflare-Worker"
+  },
+  {
+    "timestamp": "2026/5/14 09:11:19",
+    "action": "修改管理员配置",
+    "details": "更新了管理员配置和密码",
+    "ip": "Cloudflare-Worker"
   }
 ]
