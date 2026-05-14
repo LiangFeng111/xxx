@@ -4,5 +4,11 @@
     "action": "修改隐藏数据",
     "details": "更新了隐藏数据列表",
     "ip": "Cloudflare-Worker"
+  },
+  {
+    "timestamp": "2026/5/14 09:09:42",
+    "action": "修改隐藏数据",
+    "details": "更新了隐藏数据列表",
+    "ip": "Cloudflare-Worker"
   }
 ]
