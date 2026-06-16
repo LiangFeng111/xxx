@@ -91,6 +91,12 @@
               "title": "福利吧 - 福利吧",
               "url": "https://fuliba2023.net/fuli",
               "icon": "https://favicon.im/zh/fuliba2023.net"
+            },
+            {
+              "type": "link",
+              "title": "【新提醒】恩山无线论坛 - Powered by Discuz!",
+              "url": "https://www.right.com.cn/forum/forum.php",
+              "icon": "https://favicon.im/zh/www.right.com.cn"
             }
           ]
         },
@@ -319,6 +325,12 @@
               "title": "PageSpeed Insights",
               "url": "https://pagespeed.web.dev/analysis/https-liangfeng111-top-index/wnita1yxif?form_factor=mobile",
               "icon": "https://favicon.im/zh/pagespeed.web.dev"
+            },
+            {
+              "type": "link",
+              "title": "#49b1f5 十六进制颜色信息",
+              "url": "https://zh.spycolor.com/49b1f5",
+              "icon": "https://favicon.im/zh/zh.spycolor.com"
             }
           ]
         },
@@ -577,6 +589,12 @@
               "title": "动漫共和国官网 - 官方正版APP下载 | 追番神器",
               "url": "https://oneghg.com/",
               "icon": "https://favicon.im/zh/oneghg.com"
+            },
+            {
+              "type": "link",
+              "title": "智能电视网_智能电视论坛_智能电视软件_安卓机顶盒论坛",
+              "url": "https://www.znds.com/",
+              "icon": "https://favicon.im/zh/www.znds.com"
             }
           ]
         },
@@ -794,6 +812,12 @@
                 },
                 {
                   "type": "link",
+                  "title": "国内客户中心 - FlowerCloud",
+                  "url": "https://api-flowercloud.com/clientarea.php",
+                  "icon": "https://favicon.im/zh/api-flowercloud.com"
+                },
+                {
+                  "type": "link",
                   "title": "在线订阅转换工具",
                   "url": "https://sub.v1.mk/",
                   "icon": "https://favicon.im/zh/sub.v1.mk"
@@ -803,6 +827,12 @@
                   "title": "ACL4SSR Mannix 订阅转换极速版",
                   "url": "https://sub.com.mp/",
                   "icon": "https://favicon.im/zh/sub.com.mp"
+                },
+                {
+                  "type": "link",
+                  "title": "Clash (Mihomo) ↔ 节点链接 转换工具",
+                  "url": "https://convert.siiway.top/",
+                  "icon": "https://favicon.im/zh/convert.siiway.top"
                 },
                 {
                   "type": "folder",
@@ -826,6 +856,12 @@
             },
             {
               "type": "link",
+              "title": "显示查询自己的 IP 地址",
+              "url": "https://ip111.cn/",
+              "icon": "https://favicon.im/zh/ip111.cn"
+            },
+            {
+              "type": "link",
               "title": "STC-SERVER",
               "url": "https://www2.gardenparty.me/auth/login",
               "icon": "https://favicon.im/zh/www2.gardenparty.me"
@@ -835,12 +871,6 @@
               "title": "套餐商店 — 最萌の云 - CuteCloud",
               "url": "https://www.cutecloud.net/user/shop",
               "icon": "https://favicon.im/zh/www.cutecloud.net"
-            },
-            {
-              "type": "link",
-              "title": "飞鸟云(国内）",
-              "url": "https://feiniaoyun.life/#/login",
-              "icon": "https://favicon.im/zh/feiniaoyun.life"
             },
             {
               "type": "link",
@@ -991,6 +1021,12 @@
               "title": "仪表盘 | Kepa云",
               "url": "https://a.kpyun.live/#/dashboard",
               "icon": "https://favicon.im/zh/a.kpyun.live"
+            },
+            {
+              "type": "link",
+              "title": "网络加速节点推荐🚀（长期更新） | 猫梦博客",
+              "url": "https://maomeng.cc/2021/06/11/ji-chang-tui-jian-chang-qi-geng-xin/",
+              "icon": "https://favicon.im/zh/maomeng.cc"
             }
           ]
         },
@@ -1213,6 +1249,12 @@
               "title": "3DM MOD站 - 最新最全的免费游戏Mod资源下载站",
               "url": "https://mod.3dmgame.com/",
               "icon": "https://favicon.im/zh/mod.3dmgame.com"
+            },
+            {
+              "type": "link",
+              "title": "迅雷破解版永久会员 2026 版下载 - 迅雷 svip 破解版精简版免费下载 v11.1.3.1110 - 多多软件站",
+              "url": "https://www.ddooo.com/softdown/205754.htm",
+              "icon": "https://favicon.im/zh/www.ddooo.com"
             }
           ]
         },
@@ -1423,6 +1465,12 @@
               "title": "KDown-Free - 百度网盘解析工具 | 免费高速下载 | 无需登录",
               "url": "https://kdown.moiu.cn/free/#/list",
               "icon": "https://favicon.im/zh/kdown.moiu.cn"
+            },
+            {
+              "type": "link",
+              "title": "文武PanDownload",
+              "url": "https://pandown.wangdu.site/parse/login",
+              "icon": "https://favicon.im/zh/pandown.wangdu.site"
             }
           ]
         },
@@ -1507,6 +1555,12 @@
               "title": "vika.cn/workbench/dstJue1JlSXxQs3QE4/viwHzPkYPfK36",
               "url": "https://vika.cn/workbench/dstJue1JlSXxQs3QE4/viwHzPkYPfK36",
               "icon": "https://favicon.im/zh/vika.cn"
+            },
+            {
+              "type": "link",
+              "title": "Obsidian + jsDelivr + PicGo = 免费无限图床：一键上传，全平台粘贴即发本文手把手教你用 jsD - 掘金",
+              "url": "https://juejin.cn/post/7624041920381386778",
+              "icon": "https://favicon.im/zh/juejin.cn"
             }
           ]
         },
@@ -1647,6 +1701,36 @@
               "icon": "https://favicon.im/zh/www.dddruanjian.com"
             }
           ]
+        },
+        {
+          "type": "folder",
+          "name": "局域网传输",
+          "children": [
+            {
+              "type": "link",
+              "title": "传文件，传文本，传屏幕，传实时视频 - 轻松传",
+              "url": "https://easychuan.cn/",
+              "icon": "https://favicon.im/zh/easychuan.cn"
+            }
+          ]
+        },
+        {
+          "type": "folder",
+          "name": "变声器",
+          "children": [
+            {
+              "type": "link",
+              "title": "小源的变声器工具箱 - 飞书云文档",
+              "url": "https://yuanxingai.feishu.cn/docx/H9CrdcUfBo3OhoxS2a2cW6flnAh",
+              "icon": "https://favicon.im/zh/yuanxingai.feishu.cn"
+            },
+            {
+              "type": "link",
+              "title": "AI 模型 (RVC)",
+              "url": "https://pitch-family-06a.notion.site/AI-RVC-edee304e62974c52b4ffe676afbb264a",
+              "icon": "https://favicon.im/zh/pitch-family-06a.notion.site"
+            }
+          ]
         }
       ]
     },
@@ -1659,46 +1743,70 @@
           "name": "编程搜索站",
           "children": [
             {
-              "type": "link",
-              "title": "AI写代码",
-              "url": "https://chat.openai.com/chat",
-              "icon": "https://favicon.im/zh/chat.openai.com"
-            },
-            {
-              "type": "link",
-              "title": "Kimi - K2 长思考上线",
-              "url": "https://www.kimi.com/?utm_campaign=KTR_google5&utm_source=google&utm_source=google&utm_account=8726529696&utm_account=8425566174&utm_term=kimi&utm_term=kimi&utm_medium=%E8%B0%B7%E6%AD%8C&campaignid=23040364757&groupid=191428101731&adid=775027356453&network=g&utm_content=%E5%93%81%E7%89%8C%E8%AF%8D&gad_source=1&gad_campaignid=23040364757&gbraid=0AAAABAsUyXhmZFjn-Di8hPcX3j3HN7U5j&gclid=CjwKCAiAz_DIBhBJEiwAVH2XwL5ohqyVDJkfqIkgxkGcyF2kcD0v8ILTPF9hmzT8icvCxcnm8aKpiRoCPLgQAvD_BwE",
-              "icon": "https://favicon.im/zh/www.kimi.com"
-            },
-            {
-              "type": "link",
-              "title": "Google Gemini",
-              "url": "https://gemini.google.com/app",
-              "icon": "https://favicon.im/zh/gemini.google.com"
-            },
-            {
-              "type": "link",
-              "title": "即梦 AI - 一站式 AI 创作平台",
-              "url": "https://jimeng.jianying.com/ai-tool/generate",
-              "icon": "https://favicon.im/zh/jimeng.jianying.com"
+              "type": "folder",
+              "name": "ai使用",
+              "children": [
+                {
+                  "type": "link",
+                  "title": "PackyAPI",
+                  "url": "https://www.packyapi.com/console",
+                  "icon": "https://favicon.im/zh/www.packyapi.com"
+                },
+                {
+                  "type": "link",
+                  "title": "Chatbox AI 官网：办公学习的 AI 好助手，全平台 AI 客户端，官方免费下载",
+                  "url": "https://chatboxai.app/zh",
+                  "icon": "https://favicon.im/zh/chatboxai.app"
+                },
+                {
+                  "type": "link",
+                  "title": "LiblibAI-哩布哩布AI - 中国领先的AI创作平台",
+                  "url": "https://www.liblib.art/",
+                  "icon": "https://favicon.im/zh/www.liblib.art"
+                },
+                {
+                  "type": "link",
+                  "title": "AI写代码",
+                  "url": "https://chat.openai.com/chat",
+                  "icon": "https://favicon.im/zh/chat.openai.com"
+                },
+                {
+                  "type": "link",
+                  "title": "Kimi - K2 长思考上线",
+                  "url": "https://www.kimi.com/?utm_campaign=KTR_google5&utm_source=google&utm_source=google&utm_account=8726529696&utm_account=8425566174&utm_term=kimi&utm_term=kimi&utm_medium=%E8%B0%B7%E6%AD%8C&campaignid=23040364757&groupid=191428101731&adid=775027356453&network=g&utm_content=%E5%93%81%E7%89%8C%E8%AF%8D&gad_source=1&gad_campaignid=23040364757&gbraid=0AAAABAsUyXhmZFjn-Di8hPcX3j3HN7U5j&gclid=CjwKCAiAz_DIBhBJEiwAVH2XwL5ohqyVDJkfqIkgxkGcyF2kcD0v8ILTPF9hmzT8icvCxcnm8aKpiRoCPLgQAvD_BwE",
+                  "icon": "https://favicon.im/zh/www.kimi.com"
+                },
+                {
+                  "type": "link",
+                  "title": "Google Gemini",
+                  "url": "https://gemini.google.com/app",
+                  "icon": "https://favicon.im/zh/gemini.google.com"
+                },
+                {
+                  "type": "link",
+                  "title": "即梦 AI - 一站式 AI 创作平台",
+                  "url": "https://jimeng.jianying.com/ai-tool/generate",
+                  "icon": "https://favicon.im/zh/jimeng.jianying.com"
+                },
+                {
+                  "type": "link",
+                  "title": "Claude",
+                  "url": "https://claude.ai/new",
+                  "icon": "https://favicon.im/zh/claude.ai"
+                },
+                {
+                  "type": "link",
+                  "title": "DeepSeek - 探索未至之境",
+                  "url": "https://chat.deepseek.com/",
+                  "icon": "https://favicon.im/zh/chat.deepseek.com"
+                }
+              ]
             },
             {
               "type": "link",
               "title": "Manus",
               "url": "https://manus.im/app",
               "icon": "https://favicon.im/zh/manus.im"
-            },
-            {
-              "type": "link",
-              "title": "Claude",
-              "url": "https://claude.ai/new",
-              "icon": "https://favicon.im/zh/claude.ai"
-            },
-            {
-              "type": "link",
-              "title": "DeepSeek - 探索未至之境",
-              "url": "https://chat.deepseek.com/",
-              "icon": "https://favicon.im/zh/chat.deepseek.com"
             },
             {
               "type": "link",
@@ -2055,12 +2163,6 @@
                 {
                   "type": "link",
                   "title": "♪(^∇^*)欢迎肥来！使用 Github Action 自动部署 | 安知鱼",
-                  "url": "https://blog.anheyu.com/posts/asdx.html#Github-Action-%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B",
-                  "icon": "https://favicon.im/zh/blog.anheyu.com"
-                },
-                {
-                  "type": "link",
-                  "title": "♪(^∇^*)欢迎肥来！使用 Github Action 自动部署 | 安知鱼",
                   "url": "https://blog.anheyu.com/posts/asdx.html#%E5%8F%AF%E8%83%BD%E9%81%87%E5%88%B0%E7%9A%84-bug",
                   "icon": "https://favicon.im/zh/blog.anheyu.com"
                 },
@@ -2111,6 +2213,30 @@
                   "title": "Markdown 简介 | Markdown 简单的世界",
                   "url": "https://wizardforcel.gitbooks.io/markdown-simple-world/content/0.html",
                   "icon": "https://favicon.im/zh/wizardforcel.gitbooks.io"
+                },
+                {
+                  "type": "link",
+                  "title": "首页 | Butterfly 主题美化教程",
+                  "url": "https://butterfly.zhheo.com/",
+                  "icon": "https://favicon.im/zh/butterfly.zhheo.com"
+                },
+                {
+                  "type": "link",
+                  "title": "安知鱼主题官方文档 | 一个简洁、美丽的静态 hexo 主题",
+                  "url": "https://docs.anheyu.com/",
+                  "icon": "https://favicon.im/zh/docs.anheyu.com"
+                },
+                {
+                  "type": "link",
+                  "title": "博客升级 Hexo 版本记录 - 唯知笔记",
+                  "url": "https://note.weizwz.com/hexo/basic/hexo-update",
+                  "icon": "https://favicon.im/zh/note.weizwz.com"
+                },
+                {
+                  "type": "link",
+                  "title": "The AI search and retrieval platform - Agentic | Generative | Search",
+                  "url": "https://www.algolia.com/",
+                  "icon": "https://favicon.im/zh/www.algolia.com"
                 }
               ]
             },
@@ -2565,6 +2691,11 @@
           "name": "html拖拽生成",
           "children": [
             {
+              "type": "folder",
+              "name": "新建文件夹",
+              "children": []
+            },
+            {
               "type": "link",
               "title": "HTML 网页构建器 v3 - htmlpage.cn",
               "url": "https://htmlpage.cn/builder/",
@@ -2965,12 +3096,6 @@
               "title": "Vega AI 创作平台",
               "url": "https://rightbrain.art/text2Image",
               "icon": "https://favicon.im/zh/rightbrain.art"
-            },
-            {
-              "type": "link",
-              "title": "传文件，传文本，传屏幕，传实时视频 - 轻松传",
-              "url": "https://easychuan.cn/",
-              "icon": "https://favicon.im/zh/easychuan.cn"
             }
           ]
         },
@@ -3469,6 +3594,23 @@
               "title": "Compose 修饰符列表  |  Jetpack Compose  |  Android Developers",
               "url": "https://developer.android.google.cn/develop/ui/compose/modifiers-list?hl=zh-cn",
               "icon": "https://favicon.im/zh/developer.android.google.cn"
+            },
+            {
+              "type": "folder",
+              "name": "kotlin Android",
+              "children": [
+                {
+                  "type": "folder",
+                  "name": "新建文件夹",
+                  "children": []
+                },
+                {
+                  "type": "link",
+                  "title": "基本语法・Kotlin 官方文档 中文版",
+                  "url": "https://book.kotlincn.net/text/basic-syntax.html",
+                  "icon": "https://favicon.im/zh/book.kotlincn.net"
+                }
+              ]
             }
           ]
         },
@@ -3673,6 +3815,12 @@
               "title": "兑换视频会员权益",
               "url": "https://m.jr.airstarfinance.net/mp/activity/videoActivity/exchange?from=mipay_indexicon_TVcard&_noDarkMode=true",
               "icon": "https://favicon.im/zh/m.jr.airstarfinance.net"
+            },
+            {
+              "type": "link",
+              "title": "Hello from AutoTaskScript | AutoTaskScript",
+              "url": "https://rh-docs.netlify.app/",
+              "icon": "https://favicon.im/zh/rh-docs.netlify.app"
             }
           ]
         },
@@ -3835,16 +3983,40 @@
               "title": "即时设计 - 可实时协作的专业 UI 设计工具",
               "url": "https://js.design/workspace?compId=UPVN1pvwsmQ&source=csdn&plan=kikicsdn01121&wid=6725aa55970c2fff367d183b",
               "icon": "https://favicon.im/zh/js.design"
+            },
+            {
+              "type": "link",
+              "title": "Stitch - Design with AI",
+              "url": "https://stitch.withgoogle.com/",
+              "icon": "https://favicon.im/zh/stitch.withgoogle.com"
+            }
+          ]
+        },
+        {
+          "type": "folder",
+          "name": "技师工具",
+          "children": [
+            {
+              "type": "link",
+              "title": "material-components/material-components-android：适用于 Android 的模块化和可定制 Material Design UI 组件",
+              "url": "https://github.com/material-components/material-components-android?tab=readme-ov-file",
+              "icon": "https://favicon.im/zh/github.com"
+            },
+            {
+              "type": "link",
+              "title": "Material Design 3 - Google's latest open source design system",
+              "url": "https://m3.material.io/",
+              "icon": "https://favicon.im/zh/m3.material.io"
+            },
+            {
+              "type": "link",
+              "title": "SUNMI Developers",
+              "url": "https://developer.sunmi.com/zh-CN",
+              "icon": "https://favicon.im/zh/developer.sunmi.com"
             }
           ]
         }
       ]
-    },
-    {
-      "type": "link",
-      "title": "文武PanDownload",
-      "url": "https://pandown.wangdu.site/parse/login",
-      "icon": "https://favicon.im/zh/pandown.wangdu.site"
     },
     {
       "type": "link",
@@ -3863,12 +4035,6 @@
       "title": "获取Cookie",
       "url": "javascript:(function(){let domain=document.domain;let cookie=document.cookie;prompt('Cookies: '+domain, cookie)})();",
       "icon": "https://favicon.im/zh/"
-    },
-    {
-      "type": "link",
-      "title": "123",
-      "url": "http://shop-xo.hctestedu.com/",
-      "icon": "https://favicon.im/zh/shop-xo.hctestedu.com"
     },
     {
       "type": "link",
@@ -3893,6 +4059,18 @@
       "title": "有道云笔记",
       "url": "https://note.youdao.com/web/#/file/recent/note/9986d65255163cad25074024507eedfe/",
       "icon": "https://favicon.im/zh/note.youdao.com"
+    },
+    {
+      "type": "link",
+      "title": "闲鱼自动回复管理系统",
+      "url": "https://xy.zhinianboke.com/about",
+      "icon": "https://favicon.im/zh/xy.zhinianboke.com"
+    },
+    {
+      "type": "link",
+      "title": "bbrplus/xianyu-auto-reply - Docker Image",
+      "url": "https://hub.docker.com/r/bbrplus/xianyu-auto-reply",
+      "icon": "https://favicon.im/zh/hub.docker.com"
     }
   ]
 }
