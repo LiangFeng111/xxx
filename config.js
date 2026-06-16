@@ -7,7 +7,10 @@ window.CONFIG = {
   DATA_URL: 'data.json',
 
   // 默认图片 (当没有图片时显示的图片)
-  DEFAULT_IMAGE : 'https://backend.liangfeng111.top/f/imgs/1775248045019-head.jpeg',
+  DEFAULT_IMAGE : 'resource/icon/default-icon.jpeg',
+
+  // 是否使用 Google favicon 服务自动获取外站图标。无 VPN 环境建议保持 false。
+  ENABLE_REMOTE_FAVICON: false,
   
   // 2. 书签数据源 (由浏览器书签转换工具生成的 JSON 文件路径)
   BOOKMARKS_URL: 'converted_bookmarks.json',

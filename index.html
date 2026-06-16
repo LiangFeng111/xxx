@@ -5,11 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>喜淘网工具箱 - 极致简约导航</title>
 
-    <!-- 引入外部 UI 库和资源 -->
-    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
+    <!-- 引入本地 UI 库和资源，避免无代理环境下等待外部 CDN -->
+    <link rel="stylesheet" href="resource/css/element-lite.css">
     <script src="resource/js/vue.global.prod.js"></script>
-    <script src="https://unpkg.com/element-plus"></script>
-    <script src="https://unpkg.com/@element-plus/icons-vue"></script>
+    <script src="resource/js/element-lite.js"></script>
     <script src="resource/js/tailwindcss.js"></script>
     <script src="resource/js/fuse.js@6.6.2.js"></script>
     <!-- 引入全局配置文件 -->
@@ -176,7 +175,7 @@
                         <div v-for="tool in recentTools" :key="'recent-'+tool.url" @click="openLink(tool.url, tool)" 
                              class="float-tool-item group">
                             <div class="w-8 h-8 rounded-lg overflow-hidden flex-shrink-0 bg-white/10 p-1">
-                                <img :src="tool.icon || getFavicon(tool.url) || DEFAULT_ICON" @error="handleIconError" class="w-full h-full object-contain">
+                                <img :src="resolveIcon(tool.icon, tool.url)" @error="handleIconError" class="w-full h-full object-contain">
                             </div>
                             <span class="text-xs font-medium">{{ tool.title }}</span>
                         </div>
@@ -250,7 +249,7 @@
                     <div v-for="link in searchResults" :key="link.url" @click="openLink(link.url)" class="tool-card p-6 flex items-center">
                         <div class="tool-icon" :style="{ backgroundImage: 'url(' + DEFAULT_ICON + ')' }">
                             <!-- 直接尝试加载目标图标，失败则切换 DEFAULT_ICON -->
-                            <img :src="link.icon || getFavicon(link.url) || DEFAULT_ICON"
+                            <img :src="resolveIcon(link.icon, link.url)"
                                  @error="handleIconError">
                         </div>
                         <div class="flex-1 min-w-0">
@@ -278,7 +277,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                         <div v-for="link in group.items" :key="link.url" @click="openLink(link.url, link)" class="tool-card p-6 flex items-center">
                             <div class="tool-icon w-14 h-14" :style="{ backgroundImage: 'url(' + DEFAULT_ICON + ')' }">
-                                <img :src="link.icon || getFavicon(link.url) || DEFAULT_ICON" @error="handleIconError">
+                                <img :src="resolveIcon(link.icon, link.url)" @error="handleIconError">
                             </div>
                             <div class="flex-1 min-w-0">
                                 <h4 class="font-bold text-xl mb-2">{{ link.title }}</h4>
@@ -292,13 +291,24 @@
                 <div v-show="currentCategory === 'bookmarks'" class="animate-in fade-in slide-in-from-left-4 duration-300">
                     <div class="section-header mb-8 flex justify-between items-end">
                         <h2 class="text-4xl font-black tracking-tight text-white">我的书签</h2>
-                        <span class="section-badge text-lg px-4 bg-white/10">{{ bookmarkTree.length }} 个目录</span>
+                        <span class="section-badge text-lg px-4 bg-white/10">{{ rootBookmarkFolders.length }} 个目录 · {{ rootBookmarkLinks.length }} 个链接</span>
                     </div>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-                        <div v-for="folder in bookmarkTree" :key="'folder-'+folder.name" @click="openBookmarkModal(folder)" class="bookmark-folder group p-6">
+                    <div v-if="rootBookmarkFolders.length > 0" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 mb-8">
+                        <div v-for="folder in rootBookmarkFolders" :key="'folder-'+folder.name" @click="openBookmarkModal(folder)" class="bookmark-folder group p-6">
                             <div class="bookmark-folder-icon group-hover:scale-110 transition-transform text-5xl mb-3"><el-icon><Folder/></el-icon></div>
                             <h3 class="font-bold text-base text-center">{{ folder.name }}</h3>
                             <p class="text-xs text-white/40 mt-2">{{ (folder.children || []).length }} 项资源</p>
+                        </div>
+                    </div>
+                    <div v-if="rootBookmarkLinks.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                        <div v-for="link in rootBookmarkLinks" :key="'root-link-'+link.url" @click="openLink(link.url, link)" class="tool-card p-6 flex items-center">
+                            <div class="tool-icon w-14 h-14" :style="{ backgroundImage: 'url(' + DEFAULT_ICON + ')' }">
+                                <img :src="resolveIcon(link.icon, link.url)" @error="handleIconError">
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="font-bold text-xl mb-2">{{ link.title }}</h4>
+                                <p class="text-sm text-white/60 leading-relaxed">{{ formatUrl(link.url) }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -313,7 +323,7 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                             <div v-for="link in group.items" :key="'hide-link-'+link.url" @click="openLink(link.url, link)" class="tool-card p-6 flex items-center border-indigo-500/30 bg-indigo-500/5">
                                 <div class="tool-icon w-14 h-14 bg-indigo-500/10" :style="{ backgroundImage: 'url(' + DEFAULT_ICON + ')' }">
-                                    <img :src="link.icon || getFavicon(link.url) || DEFAULT_ICON" @error="handleIconError">
+                                    <img :src="resolveIcon(link.icon, link.url)" @error="handleIconError">
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <h4 class="font-bold text-xl mb-2">{{ link.title }}</h4>
@@ -347,7 +357,7 @@
             <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar">
                 <div v-if="currentFolderItems.length > 0" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 animate-in fade-in zoom-in-95 duration-200">
                     <!-- 文件夹项 -->
-                    <div v-for="node in currentFolderItems.filter(i => i.type === 'folder')" 
+                    <div v-for="node in currentFolderFolders" 
                          :key="node.name" 
                          @click="enterFolder(node)" 
                          class="bookmark-folder group p-4 border border-white/5 hover:border-amber-400/50">
@@ -357,12 +367,12 @@
                     </div>
 
                     <!-- 链接项 -->
-                    <div v-for="link in currentFolderItems.filter(i => i.type === 'link')" 
+                    <div v-for="link in currentFolderLinks" 
                          :key="link.url" 
                          @click="openLink(link.url, link)" 
                          class="tool-card p-4 flex flex-col items-center text-center group">
                         <div class="tool-icon mr-0 mb-3 w-10 h-10 group-hover:scale-110 transition-transform" :style="{ backgroundImage: 'url(' + DEFAULT_ICON + ')' }">
-                            <img :src="link.icon || getFavicon(link.url) || DEFAULT_ICON" @error="handleIconError">
+                            <img :src="resolveIcon(link.icon, link.url)" @error="handleIconError">
                         </div>
                         <h4 class="font-bold text-xs w-full">{{ link.title }}</h4>
                     </div>

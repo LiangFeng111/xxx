@@ -40,11 +40,10 @@ body, h1, h2, h3, h4, p, span, div, .el-menu-item, .el-tree-node__label {
 
 /* 全局背景图片 */
 body {
-    background-image: url('https://images.pexels.com/photos/2559941/pexels-photo-2559941.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&dpr=2');
-    background-size: cover;
-    background-position: center center;
+    background:
+        radial-gradient(circle at 18% 18%, rgba(79, 70, 229, 0.2), transparent 28rem),
+        linear-gradient(135deg, #101827 0%, #1d2b3f 46%, #16251e 100%);
     background-attachment: fixed;
-    background-repeat: no-repeat;
     position: relative;
 }
 

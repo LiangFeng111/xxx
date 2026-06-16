@@ -1,6 +1,6 @@
 const {createApp, ref, onMounted, computed, watch, nextTick} = Vue;
 
-const DEFAULT_ICON = window.CONFIG.DEFAULT_IMAGE
+const DEFAULT_ICON = window.CONFIG.DEFAULT_IMAGE || 'resource/icon/default-icon.jpeg'
 
 const app = createApp({
     setup() {
@@ -66,6 +66,14 @@ const app = createApp({
             }
             return selectedFolder.value?.name || '书签浏览';
         });
+
+        const isFolderNode = (node) => node?.type === 'folder' || !!node?.children;
+        const isLinkNode = (node) => node?.type === 'link' || (!!node?.url && !isFolderNode(node));
+
+        const rootBookmarkFolders = computed(() => bookmarkTree.value.filter(isFolderNode));
+        const rootBookmarkLinks = computed(() => bookmarkTree.value.filter(isLinkNode));
+        const currentFolderFolders = computed(() => currentFolderItems.value.filter(isFolderNode));
+        const currentFolderLinks = computed(() => currentFolderItems.value.filter(isLinkNode));
 
         const enterFolder = (folder) => {
             navigationStack.value.push(folder);
@@ -225,15 +233,20 @@ const app = createApp({
         };
 
         const isImageUrl = (url) => {
-            return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(url) || url.startsWith('http');
+            return !!url && (/^(https?:|data:|resource\/|\/)/.test(url) || /\.(jpg|jpeg|png|webp|avif|gif|svg)$/i.test(url));
         };
 
-        // 获取 Favicon 图标，使用 Google 的 Favicon 服务
+        const resolveIcon = (icon, url) => {
+            if (isImageUrl(icon)) return icon;
+            return getFavicon(url) || DEFAULT_ICON;
+        };
+
+        // 获取 Favicon 图标。默认关闭外部 favicon 服务，避免无代理环境拖慢首页。
         const getFavicon = (url) => {
+            if (!window.CONFIG.ENABLE_REMOTE_FAVICON) return null;
             if (!url || url.includes('工具/') || url.includes('游戏/') || url.includes('vip/')) return null;
             try {
                 const domain = new URL(url).hostname;
-                // 使用 Google 的 Favicon 服务作为首选，通常更稳定
                 return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
             } catch (e) {
                 return null;
@@ -332,10 +345,11 @@ const app = createApp({
             settings, toolGroups, bookmarkTree, hideData, hideGroups, searchQuery, searchResults,
             activeMenu, isSidebarOpen, showNotice, isModalOpen, selectedFolder,
             navigationStack, currentFolderItems, currentFolderName,
+            rootBookmarkFolders, rootBookmarkLinks, currentFolderFolders, currentFolderLinks,
             enterFolder, jumpToFolder, resetNavigation,
             recentTools, expandedSections, toggleSection, currentCategory,
             handleMenuSelect, openLink, openAdmin, formatUrl,
-            isImageUrl, getFavicon, handleIconError, openBookmarkModal,
+            isImageUrl, resolveIcon, getFavicon, handleIconError, openBookmarkModal,
             handleSearch, unlockHideData,
             isAppLoading, DEFAULT_ICON
         };
