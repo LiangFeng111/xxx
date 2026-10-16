@@ -2,6 +2,12 @@
   "links": [
     {
       "category": "私密",
+      "title": "红果",
+      "url": "https://github.com/HankLiy/guoapp/releases/tag/v0.2.56",
+      "icon": "link"
+    },
+    {
+      "category": "私密",
       "title": "黄果",
       "url": "https://huangguoai.com/",
       "icon": "link"
